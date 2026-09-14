@@ -28,7 +28,7 @@ FastFrame is modular internally: a small **core** plus **components** that parti
 | CLI | Global + project commands | `fastframe` + `manage.py` |
 | Models | Declaration, discovery, thin manager API | SQLAlchemy (mapped classes) |
 | Migrations | Developer workflow | Alembic (convention-driven, not user-configured for standard projects) |
-| Shell | Bootstrapped REPL | stdlib; IPython/ptpython later |
+| Shell | Bootstrapped REPL | stdlib Python; configurable imports |
 | Testing | Discover and run tests | pytest integration |
 
 ## HTTP layer

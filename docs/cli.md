@@ -66,6 +66,5 @@ Exact discovery mechanism TBD; path follows Django familiarity.
 
 ## Future
 
-- `shell --ipython` / `--ptpython`
 - `check --deploy`
 - `collectstatic` when static files exist

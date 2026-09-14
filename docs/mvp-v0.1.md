@@ -95,7 +95,7 @@ Application initialized: settings, database, model discovery. Example experience
 >>> User.objects.get(id=1)
 ```
 
-Future: `--ipython`, `--ptpython`; stdlib REPL remains the fallback.
+Uses the stdlib Python REPL only. Custom imports via `SHELL_IMPORTS` and `config/shell_startup.py` — see [shell.md](shell.md).
 
 ## Development server
 

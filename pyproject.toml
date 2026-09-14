@@ -34,10 +34,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/0xdps/ff"
-Documentation = "https://github.com/0xdps/ff/tree/main/docs"
-Repository = "https://github.com/0xdps/ff"
-Issues = "https://github.com/0xdps/ff/issues"
+Homepage = "https://github.com/0xdps/fast-frame"
+Documentation = "https://github.com/0xdps/fast-frame/tree/trunk/docs"
+Repository = "https://github.com/0xdps/fast-frame"
+Issues = "https://github.com/0xdps/fast-frame/issues"
 
 [project.scripts]
 fastframe = "fastframe.cli.main:main"

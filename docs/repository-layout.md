@@ -1,13 +1,13 @@
 # Repository layout
 
-This document describes the **FastFrame framework repository** (`0xdps/ff`) and the planned **Python package layout** once implementation begins.
+This document describes the **FastFrame framework repository** ([0xdps/fast-frame](https://github.com/0xdps/fast-frame)) and the **Python package layout**.
 
 ## Current phase (documentation only)
 
 No `src/fastframe` implementation yet. The repo contains metadata, docs, and ADRs.
 
 ```text
-ff/                          # git repository root (short name)
+fast-frame/                  # git repository root
 ├── README.md
 ├── LICENSE
 ├── CONTRIBUTING.md
@@ -89,6 +89,6 @@ See [architecture.md](architecture.md). Not stored in this repo except as templa
 
 | Name | Meaning |
 | --- | --- |
-| `ff` | GitHub repository directory name |
+| `fast-frame` | GitHub repository name |
 | `fastframe` | PyPI / import package name |
 | FastFrame | Product name |

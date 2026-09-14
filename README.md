@@ -52,6 +52,7 @@ Inside a generated project, `manage.py` is the familiar entry point (similar to 
 | [App contract](docs/app-contract.md) | Installed apps and extension points (draft) |
 | [Session lifecycle](docs/session-lifecycle.md) | DB session rules (draft) |
 | [Public API v0.1](docs/public-api-v0.1.md) | Stable surface for the first release (draft) |
+| [Shell](docs/shell.md) | Stdlib REPL, `SHELL_IMPORTS`, startup script |
 | [Repository layout](docs/repository-layout.md) | This repo and future package structure |
 | [Contributing](CONTRIBUTING.md) | How to participate |
 
@@ -76,4 +77,5 @@ MIT — see [LICENSE](LICENSE).
 
 ## Links
 
-- Repository: `0xdps/ff` (package name: **fastframe**)
+- Repository: [github.com/0xdps/fast-frame](https://github.com/0xdps/fast-frame)
+- PyPI package name (planned): **fastframe**

@@ -51,7 +51,7 @@ def test_shell_invokes_interact(miniproject_env) -> None:
     from fastframe.cli.commands import shell
 
     with patch("code.interact") as interact:
-        shell.execute(argparse.Namespace(plain=True))
+        shell.execute(argparse.Namespace())
         interact.assert_called_once()
 
 
