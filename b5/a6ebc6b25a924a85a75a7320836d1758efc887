@@ -1,0 +1,61 @@
+tests/fixtures/miniproject/config/shell_startup.py
+  s_160de133452f8b::t_0cff7de255d513 3-4
+  s_160de133452f8b::t_b0cc55afda481c 1-2
+CHANGELOG.md
+  s_160de133452f8b::t_e7d06892eb34a6 12-20
+src/fastframe/cli/commands/shell.py
+  s_160de133452f8b::t_b77134fae5c2bd 6-10,13,22-23,26-31
+docs/development.md
+  s_160de133452f8b::t_a5382696cf0feb 50
+docs/README.md
+  s_160de133452f8b::t_121161fda289c0 15-17
+  s_160de133452f8b::t_2c21fe442c10b2 13-14
+tests/fixtures/miniproject/config/settings.py
+  s_160de133452f8b::t_a1591c553b2e54 20-24
+  s_160de133452f8b::t_336d8c00340630 25
+src/fastframe/shell/context.py
+  s_160de133452f8b::t_ed1a41431e9215 1-36,38-56,58-92
+  s_160de133452f8b::t_1b453c79f43ce6 37
+  s_160de133452f8b::t_c724d4ac42eb2d 57
+docs/shell.md
+  s_160de133452f8b::t_0868247656e53c 1-71
+src/fastframe/project_template/config/settings.py
+  s_160de133452f8b::t_85d102ec174929 19-22
+docs/mvp-v0.1.md
+  s_160de133452f8b::t_6d09f3f0682706 98
+tests/test_scaffold.py
+  s_160de133452f8b::t_1cb2cff3a46526 54
+tests/test_shell.py
+  s_160de133452f8b::t_f7af18fb958282 1-20,22-42
+  s_160de133452f8b::t_401af7f6021c4b 21
+  s_160de133452f8b::t_457e2f0563b5d8 43-44
+docs/architecture.md
+  s_160de133452f8b::t_058d24f0534bd4 31
+README.md
+  s_160de133452f8b::t_a56f9cf902d0c0 55
+  s_160de133452f8b::t_042bf167ba4415 80-81
+pyproject.toml
+  s_160de133452f8b::t_2b73c391fc740d 37-40
+src/fastframe/shell/__init__.py
+  s_160de133452f8b::t_9fc7d6f6fa4b04 1-3
+docs/repository-layout.md
+  s_160de133452f8b::t_10c62f948a1e43 10
+  s_160de133452f8b::t_62286bf10e4fef 92
+  s_160de133452f8b::t_72a78f95f79a58 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b5a6ebc6b25a924a85a75a7320836d1758efc887",
+  "prompts": {},
+  "sessions": {
+    "s_160de133452f8b": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cadd7120-f5b7-47e6-b237-28c9d5437074",
+        "model": "composer-2.5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
