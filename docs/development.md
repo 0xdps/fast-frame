@@ -47,7 +47,7 @@ Create a new project from the framework repo:
 ```text
 fastframe startproject mysite
 cd mysite
-pip install -e /path/to/ff   # install fastframe
+pip install -e /path/to/fast-frame   # install fastframe
 python manage.py migrate
 python manage.py runserver
 python manage.py test

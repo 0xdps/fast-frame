@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Shell: configurable startup via `SHELL_IMPORTS`, `config/shell_startup.py`, and `AppConfig.shell()` (stdlib REPL only).
+- Documentation: [docs/shell.md](docs/shell.md).
+
+### Changed
+
+- README and project URLs point to `0xdps/fast-frame`.
+
+### Added (initial release)
+
 - Repository scaffolding: documentation, ADRs, and project metadata.
 - Core package: settings loading, `INSTALLED_APPS` registry, `bootstrap()`, `get_asgi_application()`.
 - CLI: global `fastframe` (version stub), `manage.py` commands `runserver` and `check`.

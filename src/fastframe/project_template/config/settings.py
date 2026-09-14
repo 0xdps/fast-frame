@@ -16,3 +16,7 @@ ROOT_URLCONF = "config.urls"
 ASGI_APPLICATION = "config.asgi.application"
 
 DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
+
+SHELL_AUTO_IMPORT_MODELS = True
+# SHELL_IMPORTS = ["from myapp import utils"]
+# SHELL_STARTUP = "config/shell_startup.py"  # optional; auto-loads if file exists
