@@ -1,0 +1,304 @@
+src/fastframe/project_template/health/urls.py
+  s_160de133452f8b::t_96fae67fe9e639 1-8
+pyproject.toml
+  s_160de133452f8b::t_ec3793b0cc4147 42-43
+  s_160de133452f8b::t_de6cca8f5aa02c 52-54
+  s_160de133452f8b::t_032b59310b5074 21-34
+  s_160de133452f8b::t_5cb3acd605da9f 50
+  s_160de133452f8b::t_3e422ed68b94ea 61-64
+  s_160de133452f8b::t_6f7b1d17a2792c 18-20
+  s_160de133452f8b::t_dbe9937dbd4017 35-37,39-41
+  s_160de133452f8b::t_02e1368c3a40d3 44-49
+  s_160de133452f8b::t_6615551e8e5280 51
+  s_160de133452f8b::t_f34edc845c00ea 55-60
+  s_160de133452f8b::t_e97bbfbfcb82b9 65-67
+  s_160de133452f8b::t_8c8b4d5e44ba64 1-17,38,68-74
+src/fastframe/project_template/app/models.py.tpl
+  s_160de133452f8b::t_eda01124752107 1-7
+src/fastframe/project_template/config/asgi.py
+  s_160de133452f8b::t_6d81be0d721980 1-7
+src/fastframe/project_template/tests/test_health.py
+  s_160de133452f8b::t_1d317065968dea 1-10
+src/fastframe/cli/commands/startproject.py
+  s_160de133452f8b::t_04fa60be999b03 1-26,31-41
+  s_160de133452f8b::t_1fc2ba0019e13f 27-30
+.github/workflows/ci.yml
+  s_160de133452f8b::t_71f41f2b87413c 1-25
+src/fastframe/db/session.py
+  s_160de133452f8b::t_2d18ee959a117b 1-68
+  s_160de133452f8b::t_231223bcf8f596 69-86
+src/fastframe/migrations/paths.py
+  s_160de133452f8b::t_3cda7730b7f38e 1-36,38-66
+  s_160de133452f8b::t_a7a805973a06c5 37
+src/fastframe/core/bootstrap.py
+  s_160de133452f8b::t_16f01748bf470f 24-29
+  s_160de133452f8b::t_0d98c62496f6f5 1-23
+  s_160de133452f8b::t_623c7ab021c520 30-34
+docs/development.md
+  s_160de133452f8b::t_d7d1553e305301 45-55
+  s_160de133452f8b::t_b1efb5bb0c37c5 5-36
+  s_160de133452f8b::t_160a86d022487b 38-44
+  s_160de133452f8b::t_cc09d3b37305bf 2-4
+  s_160de133452f8b::t_cf650abb36005d 37
+  s_160de133452f8b::t_601361ad261767 56-58
+  s_160de133452f8b::t_7aa2526a5d8706 1,59-64
+tests/fixtures/miniproject/config/urls.py
+  s_160de133452f8b::t_ce92ad177ceed0 2,6
+  s_160de133452f8b::t_879071e052d742 1,3-5,7
+tests/fixtures/miniproject/manage.py
+  s_160de133452f8b::t_27fe88b1530d54 1-16
+tests/fixtures/miniproject/health/urls.py
+  s_160de133452f8b::t_943e3dc2083245 1-8
+src/fastframe/models/base.py
+  s_160de133452f8b::t_1602bbcfb232aa 31
+  s_160de133452f8b::t_3d3ce016ec7698 1-30,32
+src/fastframe/project_template/config/urls.py
+  s_160de133452f8b::t_bd6557ada10c6d 1-5
+src/fastframe/cli/__init__.py
+  s_160de133452f8b::t_11e205f3719e90 1
+src/fastframe/project_template/manage.py
+  s_160de133452f8b::t_24be588bae0b77 1-16
+src/fastframe/db/__init__.py
+  s_160de133452f8b::t_2a992fa874304e 1-3
+src/fastframe/migrations/runner.py
+  s_160de133452f8b::t_4501b422bfa76f 3-4,10,16,21,23-26
+  s_160de133452f8b::t_69fdd6c8dc7b53 22
+  s_160de133452f8b::t_dee4b22ef610c2 32
+  s_160de133452f8b::t_001ff214f1805c 1-2,5-9,11-15,17-20,27-31,33-44
+  s_160de133452f8b::t_e59ba7927fc1c7 45-48
+src/fastframe/migrations/templates/config/migrations/script.py.mako
+  s_160de133452f8b::t_8ceb4d977d2240 1-28
+src/fastframe/models/exceptions.py
+  s_160de133452f8b::t_76d10c7e54d0bd 1-6
+src/fastframe/project_template/config/settings.py
+  s_160de133452f8b::t_9b8ed631515d9d 1-18
+src/fastframe/cli/commands/startapp.py
+  s_160de133452f8b::t_d654313a59d6c1 1-34
+src/fastframe/__init__.py
+  s_160de133452f8b::t_10e3f22c1539f0 1-5
+src/fastframe/migrations/runtime.py
+  s_160de133452f8b::t_ce8eaa0e68ad7a 1-63
+docs/session-lifecycle.md
+  s_160de133452f8b::t_fb6e33aa743126 20-25
+  s_160de133452f8b::t_bc7b4b02f56d0c 17-19
+  s_160de133452f8b::t_33f4bbd194c477 26-28
+  s_160de133452f8b::t_f9b216ade0e01b 1-16,29-84
+src/fastframe/http/__init__.py
+  s_160de133452f8b::t_7e33127c0ce624 1-3
+src/fastframe/project_template/app/apps.py.tpl
+  s_160de133452f8b::t_c00eccbd79d89c 1-6
+docs/public-api-v0.1.md
+  s_160de133452f8b::t_d2752233a5996c 25-26
+  s_160de133452f8b::t_df07f6f7692749 41-49
+  s_160de133452f8b::t_9cc36df4738fa8 22-24
+  s_160de133452f8b::t_7f5ae15733c9e8 27-29,38-40
+  s_160de133452f8b::t_6da85f12051692 50-52
+  s_160de133452f8b::t_d908009c9ba374 1-21,30-37,53-69
+docs/cli.md
+  s_160de133452f8b::t_9cf3358266480b 36,39,42-43
+  s_160de133452f8b::t_5ff1869be7308b 17-18
+  s_160de133452f8b::t_46e2de23cf2710 14-16
+  s_160de133452f8b::t_80426409fa56f2 19-21,33-35
+  s_160de133452f8b::t_87b401a7d041dc 37-38
+  s_160de133452f8b::t_5c123dbce27f65 40-41
+  s_160de133452f8b::t_ebd697bf8bc931 44-46
+  s_160de133452f8b::t_a2b3a75d2a2370 1-13,22-32,47-71
+adr/README.md
+  s_160de133452f8b::t_81649723ffc7b4 19
+  s_160de133452f8b::t_38b19c4f0d799f 16-18
+  s_160de133452f8b::t_2695a55e2c85fa 20-21
+  s_160de133452f8b::t_2f68fc4f9337d7 1-15
+tests/test_models.py
+  s_160de133452f8b::t_bb59119063c33c 7-8,28-29
+  s_160de133452f8b::t_05d64f3123a5cb 1-6,9-13,15-27,30-48
+  s_160de133452f8b::t_b7237909f8f4e5 14
+tests/test_migrations.py
+  s_160de133452f8b::t_5c8ca8e970e939 1-32
+src/fastframe/project_template/tests/conftest.py
+  s_160de133452f8b::t_c311f6b9773b78 1-26
+tests/fixtures/miniproject/users/models.py
+  s_160de133452f8b::t_5fad88c4fd02a6 1-11
+tests/fixtures/miniproject/users/urls.py
+  s_160de133452f8b::t_b8ba6edcf31d91 1-15
+src/fastframe/http/asgi.py
+  s_160de133452f8b::t_e74148d90b4ccd 1-3,6,9-10,12-39,41
+  s_160de133452f8b::t_bb59119063c33c 5
+  s_160de133452f8b::t_59a177aa25efdd 40,42-49,51-52,54-55,57
+  s_160de133452f8b::t_1622896f1b53a7 50,53,56
+  s_160de133452f8b::t_fbdf8459ffd77c 11
+  s_160de133452f8b::t_8aa7ee02dba65e 4,7-8
+README.md
+  s_160de133452f8b::t_d3a6b0e858c818 11
+  s_160de133452f8b::t_4da3e2385d31e3 8-10
+  s_160de133452f8b::t_57206ed10ecd24 12-14
+  s_160de133452f8b::t_cf357570def15e 1-7,15-79
+tests/fixtures/miniproject/config/migrations/env.py
+  s_160de133452f8b::t_78823205569def 1-3
+src/fastframe/cli/scaffold.py
+  s_160de133452f8b::t_5f778fc8daaad1 54-55
+  s_160de133452f8b::t_8cea59b3a80f71 79-80
+  s_160de133452f8b::t_d9a214e921d3f5 70-78,81-85
+  s_160de133452f8b::t_ad1cc5ca309b84 1-34,48-53,56-69,86-131
+  s_160de133452f8b::t_3d0bcc539300de 35-47
+src/fastframe/project_template/pyproject.toml
+  s_160de133452f8b::t_74f91e250415a5 1-17
+src/fastframe/cli/commands/testcmd.py
+  s_160de133452f8b::t_4ec4f047614e0e 1-26
+src/fastframe/project_template/config/migrations/env.py
+  s_160de133452f8b::t_67f42c0277aaaa 1-3
+tests/test_import.py
+  s_160de133452f8b::t_d76bf7a71c3cc3 1-4
+src/fastframe/models/manager.py
+  s_160de133452f8b::t_e2f46cf4019164 1-54
+src/fastframe/cli/main.py
+  s_160de133452f8b::t_22f3c086df82a4 13-18
+  s_160de133452f8b::t_cc1525758d007e 22-25,28-29,31-32
+  s_160de133452f8b::t_8048ffb4da54a3 34-37
+  s_160de133452f8b::t_c8316dfaeff8a0 1-12,19-21,26-27,30,33,38-43
+src/fastframe/core/__init__.py
+  s_160de133452f8b::t_a2dda4006128ec 1-6
+src/fastframe/project_template/app/urls.py.tpl
+  s_160de133452f8b::t_508e2086880fdf 1-3
+src/fastframe/__version__.py
+  s_160de133452f8b::t_5af564290669e6 1
+tests/fixtures/miniproject/health/apps.py
+  s_160de133452f8b::t_2e7269b14277b1 1-6
+src/fastframe/db/init.py
+  s_160de133452f8b::t_479205bbc07509 1-21
+src/fastframe/project_template/health/apps.py
+  s_160de133452f8b::t_48ca3c9f775366 1-6
+tests/fixtures/miniproject/users/apps.py
+  s_160de133452f8b::t_9b828932029e48 1-6
+src/fastframe/cli/commands/makemigrations.py
+  s_160de133452f8b::t_fe56ce8570f63b 1-23
+src/fastframe/cli/commands/migrate.py
+  s_160de133452f8b::t_7e019fab8d3539 1-18
+src/fastframe/migrations/__init__.py
+  s_160de133452f8b::t_b41d0f23adafde 1-3
+src/fastframe/migrations/templates/config/migrations/env.py
+  s_160de133452f8b::t_3743ba7b7c6c33 2
+  s_160de133452f8b::t_32f36284f4a98d 1,3
+src/fastframe/core/apps.py
+  s_160de133452f8b::t_6afc964c025129 1-67
+tests/fixtures/miniproject/config/migrations/script.py.mako
+  s_160de133452f8b::t_8ceb4d977d2240 1-28
+src/fastframe/cli/commands/shell.py
+  s_160de133452f8b::t_a7d98aa5d1e6f5 31,35-48
+  s_160de133452f8b::t_edda1837acdb6a 1-18,21-30,32-34,49-59,61
+  s_160de133452f8b::t_4011e134cc4058 19-20
+  s_160de133452f8b::t_f559f838f5bbf0 60
+adr/0006-sync-sqlalchemy-for-v0-1.md
+  s_160de133452f8b::t_b367a0541fb24c 1-21
+src/fastframe/cli/commands/runserver.py
+  s_160de133452f8b::t_7c6ec239d0b21b 1-29,31-32,35-43
+  s_160de133452f8b::t_68a4f2a1ae45ce 30,33-34
+src/fastframe/cli/commands/check.py
+  s_160de133452f8b::t_11e222ddd1013b 1-16
+tests/test_miniproject.py
+  s_160de133452f8b::t_2bacce9e746c4a 26-27
+  s_160de133452f8b::t_1930caa8565faf 1-9,11-25,28-32
+  s_160de133452f8b::t_d3feefd98d58e4 10
+tests/fixtures/miniproject/config/asgi.py
+  s_160de133452f8b::t_409d2c0731c4a6 1-7
+CHANGELOG.md
+  s_160de133452f8b::t_c9086887174a78 12-17
+  s_160de133452f8b::t_403ab40a323a28 18-20
+  s_160de133452f8b::t_39b74d84cf74e0 23
+  s_160de133452f8b::t_00116d8150d45d 21-22
+  s_160de133452f8b::t_9fc8aadd4d9d51 9-11
+  s_160de133452f8b::t_98d536e1544db7 1-8
+src/fastframe/models/__init__.py
+  s_160de133452f8b::t_a141b4ebcb38a7 1-4
+tests/test_scaffold.py
+  s_160de133452f8b::t_ba81f838469d3e 1-10,12-14,17-72
+  s_160de133452f8b::t_1dc1f9370bbd3b 11,15-16
+  s_160de133452f8b::t_c2e410fa42f73b 73-74
+src/fastframe/core/settings.py
+  s_160de133452f8b::t_80862d55d313f6 1-24
+src/fastframe/project_template/health/models.py
+  s_160de133452f8b::t_af25bdf330a81c 1
+src/fastframe/cli/manage.py
+  s_160de133452f8b::t_ca2eac8c93a0db 7,14-16
+  s_160de133452f8b::t_c4ed0d05c33ee7 1-4,6,8-11,17-33
+  s_160de133452f8b::t_eaea4c906d5dcd 12-13
+  s_160de133452f8b::t_2bacce9e746c4a 5
+  s_160de133452f8b::t_e298b2d6d57429 34-41
+tests/fixtures/miniproject/config/settings.py
+  s_160de133452f8b::t_cc7742a8e0d840 1-2,8-12,14-18
+  s_160de133452f8b::t_d1dcf316d03252 13
+  s_160de133452f8b::t_41c1c72d854d3f 3,7
+  s_160de133452f8b::t_1ba76c157c39be 19
+  s_160de133452f8b::t_8a9f9ce1d158df 4-6
+src/fastframe/db/engine.py
+  s_160de133452f8b::t_9016aa8604239f 1-3,5-15,18-19,23-30
+  s_160de133452f8b::t_15148a5923d5b8 4,16-17,20-22
+src/fastframe/cli/commands/__init__.py
+  s_160de133452f8b::t_0ebd7d0c498e09 1
+tests/conftest.py
+  s_160de133452f8b::t_f1601dd19ba1c5 23
+  s_160de133452f8b::t_bd0f71717b8028 29
+  s_160de133452f8b::t_120656cc1d6ab7 1-22,24-25,28,32-33
+  s_160de133452f8b::t_5bd5e20816acf5 26-27,30-31
+.editorconfig
+  s_160de133452f8b::t_6ac3ff0d4e62cb 1-18
+tests/fixtures/miniproject/users/migrations/versions/de74e37aaf65_initial.py
+  s_160de133452f8b::t_c5d455d54475c5 1-37
+.github/ISSUE_TEMPLATE/bug_report.md
+  s_160de133452f8b::t_72c91c22732d18 1-25
+.github/ISSUE_TEMPLATE/feature_request.md
+  s_160de133452f8b::t_246506a7dfe56f 1-22
+.github/PULL_REQUEST_TEMPLATE.md
+  s_160de133452f8b::t_f6ce63d35c1f74 1-20
+.gitignore
+  s_160de133452f8b::t_fdc527f53c0a9d 1-73
+CONTRIBUTING.md
+  s_160de133452f8b::t_15f4d350f2afef 1-27
+LICENSE
+  s_160de133452f8b::t_6e0af72fd13ed3 1-21
+SECURITY.md
+  s_160de133452f8b::t_7e5fb1d14510bb 1-19
+adr/0001-record-architecture-decisions.md
+  s_160de133452f8b::t_64f481306b2548 1-18
+adr/0002-fastapi-as-http-layer.md
+  s_160de133452f8b::t_a9020800ef6091 1-22
+adr/0003-thin-orm-with-sqlalchemy-escape-hatch.md
+  s_160de133452f8b::t_647b0ca91fe560 1-21
+adr/0004-dual-cli-fastframe-and-manage-py.md
+  s_160de133452f8b::t_5912e89fc38ac6 1-19
+adr/0005-extensibility-via-installed-apps.md
+  s_160de133452f8b::t_d2117588c25875 1-21
+docs/README.md
+  s_160de133452f8b::t_dacb4987d7eb60 1-18
+docs/app-contract.md
+  s_160de133452f8b::t_163c7adccb1a36 1-88
+docs/architecture.md
+  s_160de133452f8b::t_894e2c4bc5d557 1-102
+docs/design-principles.md
+  s_160de133452f8b::t_9849932eb791d5 1-63
+docs/mvp-v0.1.md
+  s_160de133452f8b::t_a5d02e4b694071 1-142
+docs/non-goals.md
+  s_160de133452f8b::t_386f28a8d450be 1-50
+docs/repository-layout.md
+  s_160de133452f8b::t_7257553850e32c 1-94
+docs/roadmap.md
+  s_160de133452f8b::t_5f8f917473ed77 1-69
+docs/vision-and-thesis.md
+  s_160de133452f8b::t_80d5b9b62b9615 1-58
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3a333ede3e8c165e206318e55827377ca017a5d0",
+  "prompts": {},
+  "sessions": {
+    "s_160de133452f8b": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cadd7120-f5b7-47e6-b237-28c9d5437074",
+        "model": "composer-2.5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
