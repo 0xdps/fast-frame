@@ -55,10 +55,13 @@ include = ["src/fastframe", "README.md", "LICENSE"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+exclude = [
+    "src/fastframe/project_template/app/*.tpl",
+    "tests/fixtures/miniproject/*/migrations/versions/*.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
-exclude = ["src/fastframe/project_template/app/*.tpl"]
 
 [tool.ruff.lint.per-file-ignores]
 "src/fastframe/project_template/**" = ["E501"]

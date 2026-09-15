@@ -12,6 +12,16 @@ class Model(DeclarativeBase):
 
     objects: ClassVar[Manager[Any]]
 
+    def __repr__(self) -> str:
+        """Return a Django-style repr showing primary key and attributes."""
+        attrs = []
+        for col in self.__table__.columns:
+            val = getattr(self, col.name, None)
+            if isinstance(val, str):
+                val = repr(val)
+            attrs.append(f"{col.name}={val}")
+        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
+
     def save(self) -> None:
         from fastframe.db.session import get_current_session
 

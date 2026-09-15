@@ -7,7 +7,7 @@ def test_bootstrap_loads_apps(miniproject_env) -> None:
     from fastframe.core.bootstrap import bootstrap, get_apps_registry
 
     registry = bootstrap(None)
-    assert len(registry.app_configs) == 2
+    assert len(registry.app_configs) == 3  # health, users, posts
     assert registry.app_configs[0].label == "health"
     assert get_apps_registry() is registry
 
