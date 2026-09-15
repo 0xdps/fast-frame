@@ -5,10 +5,12 @@ from collections.abc import Callable
 from typing import Any
 
 from fastapi import FastAPI, Request, Response
+from fastapi.responses import JSONResponse
 
 from fastframe.core.bootstrap import bootstrap, get_apps_registry
 from fastframe.core.settings import load_settings
 from fastframe.db.session import begin_session, end_session
+from fastframe.models.exceptions import DoesNotExist, MultipleObjectsReturned
 
 
 def _include_routers(app: FastAPI, settings_module: str | None) -> None:
@@ -38,6 +40,7 @@ def get_asgi_application(settings_module: str | None = None, **kwargs: Any) -> F
     app = FastAPI(title=title, debug=debug, **kwargs)
     _include_routers(app, settings_module)
     _add_session_middleware(app, settings_module)
+    _register_exception_handlers(app)
     return app
 
 
@@ -55,3 +58,15 @@ def _add_session_middleware(app: FastAPI, settings_module: str | None) -> None:
         except Exception:
             end_session(session, token, commit=False)
             raise
+
+
+def _register_exception_handlers(app: FastAPI) -> None:
+    @app.exception_handler(DoesNotExist)
+    async def handle_does_not_exist(request: Request, exc: DoesNotExist) -> JSONResponse:
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
+
+    @app.exception_handler(MultipleObjectsReturned)
+    async def handle_multiple_objects(
+        request: Request, exc: MultipleObjectsReturned
+    ) -> JSONResponse:
+        return JSONResponse(status_code=500, content={"detail": str(exc)})

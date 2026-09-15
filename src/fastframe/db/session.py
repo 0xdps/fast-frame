@@ -49,7 +49,18 @@ def session_scope(settings_module: str | None = None) -> Iterator[Session]:
 
 
 def get_session() -> Generator[Session, None, None]:
-    """FastAPI dependency: one session per request."""
+    """FastAPI dependency: one session per request.
+    
+    If middleware has already bound a session, reuses it.
+    Otherwise opens a new session (e.g. for standalone routers).
+    """
+    existing = _session_ctx.get()
+    if existing is not None:
+        # Reuse middleware session; don't commit/close here
+        yield existing
+        return
+    
+    # Standalone use: manage our own session
     session = _get_session_factory()()
     token = _session_ctx.set(session)
     try:

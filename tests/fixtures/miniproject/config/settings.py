@@ -11,6 +11,7 @@ DEBUG = True
 INSTALLED_APPS = [
     "health",
     "users",
+    "posts",
 ]
 
 ROOT_URLCONF = "config.urls"
