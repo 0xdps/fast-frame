@@ -1,0 +1,75 @@
+pyproject.toml
+  s_160de133452f8b::t_991bfa3818aeb7 58-61
+tests/fixtures/miniproject/users/urls.py
+  s_160de133452f8b::t_76b41de29a2c73 1,10-11
+src/fastframe/models/base.py
+  s_160de133452f8b::t_fb3b0cd76261cb 15-24
+tests/test_model_repr.py
+  s_160de133452f8b::t_454cb9ed2d5ed8 1-12
+  s_160de133452f8b::t_eea0505803f4be 13-14
+tests/test_miniproject.py
+  s_160de133452f8b::t_2b4e315ebe7e30 10
+tests/fixtures/miniproject/posts/models.py
+  s_160de133452f8b::t_43bd079e5847eb 18
+  s_160de133452f8b::t_9e03dcb9868bb1 1-17
+tests/fixtures/miniproject/config/settings.py
+  s_160de133452f8b::t_13cd4f8cc77f33 14
+src/fastframe/db/session.py
+  s_160de133452f8b::t_7bf0e66bd6a25f 52-63
+src/fastframe/models/manager.py
+  s_160de133452f8b::t_de6ff4c73bf308 6,14-17,19-20,26-28,30-38,40-75,78-79,89-97,100-101,105-158,160
+tests/fixtures/miniproject/config/shell_startup.py
+  s_160de133452f8b::t_0ea1c6c3aff601 5
+tests/test_exception_handlers.py
+  s_160de133452f8b::t_3203edefb17d13 1-10
+  s_160de133452f8b::t_aea69cb2a5fba7 11
+tests/test_empty_migration.py
+  s_160de133452f8b::t_451a0579f7465c 1-3,5,7,10
+  s_160de133452f8b::t_a2fb1b31d51f08 4,6,8-9,11-12
+tests/test_queryset.py
+  s_160de133452f8b::t_db18e478ce9250 1-23,26-78,81-130,133-175,177-194,197-226
+  s_160de133452f8b::t_6e06ae89d4c140 176
+  s_160de133452f8b::t_bb18bd11243cc6 24-25
+  s_160de133452f8b::t_fddb5c819d1474 79-80
+  s_160de133452f8b::t_fa2ee4cb33fa16 131-132
+  s_160de133452f8b::t_3e7f3c52f329ac 195-196
+tests/fixtures/miniproject/posts/apps.py
+  s_160de133452f8b::t_9e6c69a1f9e2ce 1-6
+src/fastframe/migrations/runner.py
+  s_160de133452f8b::t_789ae093f927c7 35,39-50,56,58-60
+tests/test_relationships.py
+  s_160de133452f8b::t_698245b26e112d 40
+  s_160de133452f8b::t_e62fd688e7abfb 1-39,41-59
+src/fastframe/models/__init__.py
+  s_160de133452f8b::t_495f838082f167 3,5
+tests/fixtures/miniproject/users/models.py
+  s_160de133452f8b::t_73006cb25fdeb5 1,12-13
+  s_160de133452f8b::t_4c861fc57bf414 14
+tests/test_db_session.py
+  s_160de133452f8b::t_2ab7533e3a88b9 1-5,7-18,20-40
+  s_160de133452f8b::t_b20050a1a7c5c4 19
+  s_160de133452f8b::t_caf3716ac5ba96 6
+src/fastframe/http/asgi.py
+  s_160de133452f8b::t_d63cf38276085a 8,13
+  s_160de133452f8b::t_47006cb1020191 43
+  s_160de133452f8b::t_1c2018db1a902a 61-68,72
+  s_160de133452f8b::t_2661e9e2e5899f 69-71
+tests/fixtures/miniproject/users/migrations/versions/4ff561f900cc_auto.py
+  s_160de133452f8b::t_6605a2fe889616 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8e51b253a8560accf972cea8f37a4ec6795d377c",
+  "prompts": {},
+  "sessions": {
+    "s_160de133452f8b": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cadd7120-f5b7-47e6-b237-28c9d5437074",
+        "model": "claude-sonnet-4-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
