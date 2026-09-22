@@ -1,0 +1,42 @@
+docs/cli.md
+  s_8de26d66febf8a::t_84e4c3a13ebfa5 56-86
+tests/test_checks.py
+  s_8de26d66febf8a::t_f0c5f4c80e152b 113-114,118-127
+  s_8de26d66febf8a::t_6e965ceb21f918 1-109,115-116,128,132-147
+  s_8de26d66febf8a::t_7f2e96f6d5271b 110-112,117,129-131
+src/fastframe/core/checks.py
+  s_8de26d66febf8a::t_0faa124cfbb626 1-237
+docs/repository-layout.md
+  s_8de26d66febf8a::t_d1660b3c3f44cc 3,5,8-9,11,13-17,20,25-59,62-68,70,72,74-77
+docs/app-contract.md
+  s_8de26d66febf8a::t_6cfeabea91de30 33
+  s_8de26d66febf8a::t_63810839caf842 48-52
+src/fastframe/core/apps.py
+  s_8de26d66febf8a::t_53ad7364cac496 6-9,21-34
+  s_8de26d66febf8a::t_21b46ce2455e89 35
+docs/public-api-v0.1.md
+  s_8de26d66febf8a::t_0cb148b056891c 23
+src/fastframe/cli/commands/check.py
+  s_8de26d66febf8a::t_fb851ab168cb1a 19-20
+  s_8de26d66febf8a::t_27d9a394e21856 7-11,16,21-33
+tests/test_miniproject.py
+  s_8de26d66febf8a::t_dc9a4f02107934 31-42
+CHANGELOG.md
+  s_8de26d66febf8a::t_bf06f3c50b5970 10-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4e9cb088a9a93fa5094fe8f8ce3d1300c6a7a511",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
