@@ -8,7 +8,7 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**v0.1 released.** The core development loop — `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`, `check`), thin models with a chainable `QuerySet`, and Alembic migrations — is implemented and validated end-to-end against a real app (see [`examples/todo_app`](examples/todo_app)). See [docs/development.md](docs/development.md) and [docs/mvp-v0.1.md](docs/mvp-v0.1.md).
+**v0.2 released.** v0.1's core development loop — `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin models with a chainable `QuerySet`, and Alembic migrations — is implemented and validated end-to-end against a real app (see [`examples/todo_app`](examples/todo_app)). v0.2 adds developer-experience polish on top: a real `check`/`check --database` framework, `showmigrations`/`dbshell`, app lifecycle hooks (`AppConfig.checks()`/`shutdown()`), `.env` support, a pagination dependency, and test utilities (`fastframe.testing.override_settings`). See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md), and [docs/roadmap.md](docs/roadmap.md).
 
 ## What FastFrame is (and is not)
 
@@ -22,7 +22,7 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 HTTP stays **FastAPI**. Hard data access stays **SQLAlchemy**. FastFrame owns **lifecycle, conventions, and the daily loop**.
 
-## Planned developer loop (v0.1)
+## Developer loop
 
 ```text
 fastframe startproject myproject
@@ -33,11 +33,14 @@ python manage.py startapp users
 # define models in users/models.py
 python manage.py makemigrations
 python manage.py migrate
+python manage.py showmigrations
 python manage.py shell
-python manage.py test
+python manage.py dbshell
+python manage.py test -v
+python manage.py check --database
 ```
 
-Inside a generated project, `manage.py` is the familiar entry point (similar to Django). The global installer CLI is planned as `fastframe` (see [docs/cli.md](docs/cli.md)).
+Inside a generated project, `manage.py` is the familiar entry point (similar to Django). The global installer CLI is `fastframe` (see [docs/cli.md](docs/cli.md)).
 
 ## Documentation
 
@@ -49,9 +52,9 @@ Inside a generated project, `manage.py` is the familiar entry point (similar to 
 | [MVP v0.1](docs/mvp-v0.1.md) | First release scope and success criteria |
 | [Roadmap](docs/roadmap.md) | v0.2+ direction |
 | [Non-goals](docs/non-goals.md) | What we explicitly drop or defer |
-| [App contract](docs/app-contract.md) | Installed apps and extension points (draft) |
-| [Session lifecycle](docs/session-lifecycle.md) | DB session rules (draft) |
-| [Public API v0.1](docs/public-api-v0.1.md) | Stable surface for the first release (draft) |
+| [App contract](docs/app-contract.md) | Installed apps and extension points |
+| [Session lifecycle](docs/session-lifecycle.md) | DB session rules |
+| [Public API](docs/public-api-v0.1.md) | Stable surface (v0.1 + v0.2) |
 | [Shell](docs/shell.md) | Stdlib REPL, `SHELL_IMPORTS`, startup script |
 | [Repository layout](docs/repository-layout.md) | This repo and future package structure |
 | [Contributing](CONTRIBUTING.md) | How to participate |

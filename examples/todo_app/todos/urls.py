@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel, ConfigDict
 
-from fastapi import APIRouter
-
+from fastframe.http.pagination import Pagination, pagination
 from todos.models import Todo
 
 router = APIRouter(prefix="/todos", tags=["todos"])
@@ -27,12 +27,18 @@ class TodoOut(BaseModel):
 
 
 @router.get("", response_model=list[TodoOut])
-def list_todos(done: bool | None = None) -> list[Todo]:
-    """List todos, optionally filtered by completion status."""
+def list_todos(
+    done: bool | None = None,
+    page: Pagination = Depends(pagination),
+) -> list[Todo]:
+    """List todos, optionally filtered by completion status.
+
+    Supports `?limit=&offset=` pagination (default limit 20, max 100).
+    """
     qs = Todo.objects.all().order_by("-created_at")
     if done is not None:
         qs = qs.filter(done=done)
-    return list(qs)
+    return list(page.apply(qs))
 
 
 @router.post("", response_model=TodoOut, status_code=201)

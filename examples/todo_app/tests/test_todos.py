@@ -47,3 +47,12 @@ def test_filter_by_done(client: TestClient) -> None:
     assert resp.status_code == 200
     assert len(resp.json()) == 1
     assert resp.json()[0]["title"] == "A"
+
+
+def test_list_todos_pagination(client: TestClient) -> None:
+    for i in range(5):
+        client.post("/todos", json={"title": f"Todo {i}"})
+
+    resp = client.get("/todos", params={"limit": 2, "offset": 1})
+    assert resp.status_code == 200
+    assert len(resp.json()) == 2

@@ -1,6 +1,6 @@
 [project]
 name = "fastframe"
-version = "0.1.0"
+version = "0.2.0"
 description = "A batteries-included Python web framework built on FastAPI."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -24,6 +24,7 @@ dependencies = [
     "uvicorn[standard]>=0.32.0",
     "sqlalchemy>=2.0.36",
     "alembic>=1.14.0",
+    "python-dotenv>=1.0.1",
 ]
 
 [project.optional-dependencies]
@@ -62,6 +63,10 @@ exclude = [
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
+# B008: flags `Depends(...)` in a default argument, which is FastAPI's
+# standard, idiomatic dependency-injection pattern (and appears throughout
+# route code, e.g. `Depends(pagination)`). Not a real bug here.
+ignore = ["B008"]
 
 [tool.ruff.lint.per-file-ignores]
 "src/fastframe/project_template/**" = ["E501"]
