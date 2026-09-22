@@ -18,6 +18,13 @@ class AppConfig:
     def ready(self) -> None:
         """Hook run after the app registry is loaded."""
 
+    def shutdown(self) -> None:
+        """Hook run when the ASGI app shuts down (see `get_asgi_application()`).
+
+        Not called for CLI commands (`manage.py shell`, `check`, etc.) —
+        those are short-lived processes; use `try`/`finally` there instead.
+        """
+
     def checks(self) -> list[CheckMessage]:
         """Hook run by ``manage.py check``. Return a list of CheckMessage.
 

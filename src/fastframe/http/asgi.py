@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import importlib
-from collections.abc import Callable
+from collections.abc import AsyncIterator, Callable
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, Request, Response
@@ -37,11 +38,37 @@ def get_asgi_application(settings_module: str | None = None, **kwargs: Any) -> F
     title = getattr(settings, "APP_NAME", "FastFrame")
     debug = getattr(settings, "DEBUG", False)
 
+    kwargs.setdefault("lifespan", _make_lifespan())
+
     app = FastAPI(title=title, debug=debug, **kwargs)
     _include_routers(app, settings_module)
     _add_session_middleware(app, settings_module)
     _register_exception_handlers(app)
     return app
+
+
+def _make_lifespan() -> Callable[[FastAPI], Any]:
+    """Default lifespan: run every installed app's `shutdown()` hook when
+    the ASGI app shuts down. `AppConfig.ready()` already runs synchronously
+    during `bootstrap()`, before the app object even exists, so it isn't
+    repeated here.
+
+    Only installed when the caller doesn't already pass their own
+    `lifespan=` to `get_asgi_application()` — an explicit `lifespan` from
+    the caller always wins, and app shutdown hooks won't run automatically
+    in that case.
+    """
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        yield
+        registry = get_apps_registry()
+        for app_config in registry.app_configs:
+            hook = getattr(app_config, "shutdown", None)
+            if callable(hook):
+                hook()
+
+    return lifespan
 
 
 def _add_session_middleware(app: FastAPI, settings_module: str | None) -> None:

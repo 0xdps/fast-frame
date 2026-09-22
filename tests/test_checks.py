@@ -103,6 +103,29 @@ def test_run_checks_isolates_broken_app_checks_hook() -> None:
     assert "boom" in critical[0].message
 
 
+def test_run_checks_catches_unimportable_app() -> None:
+    typo_app = AppConfig()
+    typo_app.name = "definitely_not_a_real_module_xyz"
+    typo_app.label = "definitely_not_a_real_module_xyz"
+    registry = AppsRegistry(settings=_settings(), app_configs=[typo_app])
+
+    messages = run_checks(registry)
+    ids = [m.id for m in messages]
+    assert "fastframe.E005" in ids
+    assert is_serious(messages)
+
+
+def test_run_checks_allows_real_importable_app() -> None:
+    real_app = AppConfig()
+    real_app.name = "fastframe"
+    real_app.label = "fastframe"
+    registry = AppsRegistry(settings=_settings(), app_configs=[real_app])
+
+    messages = run_checks(registry)
+    ids = [m.id for m in messages]
+    assert "fastframe.E005" not in ids
+
+
 def test_default_app_config_checks_returns_empty_list() -> None:
     assert AppConfig().checks() == []
 

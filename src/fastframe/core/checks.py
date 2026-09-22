@@ -10,6 +10,7 @@ Apps opt in by overriding :meth:`fastframe.core.apps.AppConfig.checks`.
 
 from __future__ import annotations
 
+import importlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -88,6 +89,7 @@ def run_checks(
 
     messages.extend(_check_installed_apps(registry))
     messages.extend(_check_duplicate_labels(registry))
+    messages.extend(_check_apps_importable(registry))
     messages.extend(_check_database_url(registry))
 
     if include_database:
@@ -154,6 +156,34 @@ def _check_duplicate_labels(registry: AppsRegistry) -> list[CheckMessage]:
         )
         for label in duplicates
     ]
+
+
+def _check_apps_importable(registry: AppsRegistry) -> list[CheckMessage]:
+    """Catch a typo'd `INSTALLED_APPS` entry.
+
+    Without this, a misspelled app name fails silently: `populate_apps()`
+    falls back to a bare `AppConfig` for any app whose `<app>.apps` module
+    can't be imported (by design, since `apps.py` is optional), and
+    migration discovery does the same for `<app>.models`. Nothing ever
+    raises — the app is just quietly never used. This check surfaces that.
+    """
+    messages = []
+    for app_config in registry.app_configs:
+        if not app_config.name:
+            continue
+        try:
+            importlib.import_module(app_config.name)
+        except ModuleNotFoundError as exc:
+            messages.append(
+                CheckMessage(
+                    level=ERROR,
+                    message=f"App '{app_config.name}' could not be imported: {exc}",
+                    hint="Check for a typo in INSTALLED_APPS, or that the app package exists.",
+                    id="fastframe.E005",
+                    obj=app_config.label,
+                )
+            )
+    return messages
 
 
 def _check_database_url(registry: AppsRegistry) -> list[CheckMessage]:

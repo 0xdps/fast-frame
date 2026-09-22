@@ -7,11 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-22
+
+Developer-experience release. Closes out every item under `docs/roadmap.md`'s
+"v0.2 — Developer experience," and resolves nearly every long-standing
+"TBD"/"(later)" placeholder left over from the pre-implementation docs.
+
 ### Added
 
-- Core: real system check framework — `fastframe.core.checks.CheckMessage` / `run_checks()`, and `AppConfig.checks()` hook for apps to register their own checks.
-- CLI: `manage.py check` now runs structural checks (empty `INSTALLED_APPS`, duplicate app labels, missing `DATABASE_URL`) by default, and `--database` opts into DB connectivity + pending-migration checks (compares Alembic script heads against the DB's current heads). Exits `1` on any `ERROR`/`CRITICAL` result — usable as a CI gate.
-- Docs: `docs/cli.md` documents `check`/`check --database`; `docs/app-contract.md` and `docs/repository-layout.md` resolve their long-standing `checks.py` "(later)"/TBD placeholders against the shipped `AppConfig.checks()` design; `docs/repository-layout.md` refreshed to match the actual v0.1.0 package layout (was still describing a pre-implementation draft).
+- **Check framework**: `fastframe.core.checks.CheckMessage` / `run_checks()`, and `AppConfig.checks()` hook for apps to register their own checks. Built-in checks: empty `INSTALLED_APPS`, duplicate app labels, unimportable/typo'd app in `INSTALLED_APPS`, missing `DATABASE_URL` (always run, no I/O), plus DB connectivity and pending-migrations (opt-in via `--database`, matching Django's `check --database` precedent). `manage.py check` exits `1` on any `ERROR`/`CRITICAL` — usable as a CI gate.
+- **CLI polish**:
+  - `manage.py showmigrations` — lists every migration with an `[X]`/`[ ]` applied marker.
+  - `manage.py dbshell` — opens the native DB client (`sqlite3`/`psql`/`mysql`) with connection args pre-filled from `DATABASE_URL`.
+  - `manage.py test` now forwards flags straight through to pytest — `manage.py test -v` works without needing `manage.py test -- -v` (argparse subparsers can't reliably pass dash-prefixed tokens through `nargs=REMAINDER`; `test` is now special-cased in dispatch, `git`/`npm`-style). `--` is still accepted for backward compatibility.
+  - `manage.py --version`.
+  - `SettingsError` (e.g. unset `FASTFRAME_SETTINGS_MODULE`) now prints a clean one-line error and exits `1` instead of a raw traceback.
+- **Lifecycle hooks**: `AppConfig.shutdown()`, run for every installed app when the ASGI app shuts down (via `get_asgi_application()`'s default `lifespan`). A caller-supplied `lifespan=` always takes precedence.
+- **`.env` file support**: loaded via `python-dotenv` before the settings module is imported, without overriding real environment variables. Generated projects ship a `.env.example` (tracked) and `.gitignore` (ignoring the real `.env`, `db.sqlite3`, etc. — new; project template previously shipped none).
+- **`fastframe.testing.override_settings(**kwargs)`**: context manager for temporarily overriding settings-module attributes within a single test.
+- **`fastframe.http.pagination`**: `Pagination`/`pagination` — a `Depends(pagination)` FastAPI dependency parsing `?limit=&offset=`, pairing with `QuerySet.limit()`/`.offset()`. Dogfooded into `examples/todo_app`'s `GET /todos`.
+
+### Fixed
+
+- A typo'd `INSTALLED_APPS` entry used to fail completely silently (the app was just never used, with no error anywhere) — now caught by `manage.py check`.
+
+### Docs
+
+- Resolved essentially every "(TBD)"/"(later)"/"(draft)" marker in `docs/app-contract.md`, `docs/repository-layout.md`, `docs/session-lifecycle.md`, `docs/public-api-v0.1.md`, and `docs/cli.md` against what's actually shipped: settings module shape, router export convention, migration revision layout (single combined chain, documented as a deliberate decision, not an accident), app declaration order, default `AppConfig`/`apps.py` auto-creation, commit policy in requests/shell, test isolation granularity. `docs/repository-layout.md` was rewritten wholesale — it still described a pre-implementation draft ("No `src/fastframe` implementation yet") despite v0.1.0 having shipped.
+- Explicitly deferred custom management command auto-discovery (`<app>/management/commands/`) to v0.6+ per `docs/roadmap.md`, rather than half-building it now.
 
 ## [0.1.0] - 2026-09-22
 
