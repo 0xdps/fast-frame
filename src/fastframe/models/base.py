@@ -1,14 +1,108 @@
 from __future__ import annotations
 
-from typing import Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from sqlalchemy.orm import DeclarativeBase
 
 from fastframe.models.manager import Manager
 
+if TYPE_CHECKING:
+    from fastframe.models.fields import Field
 
-class Model(DeclarativeBase):
-    """SQLAlchemy declarative base with a thin Django-like manager."""
+
+class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
+    """Metaclass that processes Field declarations into SQLAlchemy columns.
+
+    When a Model subclass is created, this metaclass:
+    1. Collects all Field instances from the class
+    2. Processes Meta class options
+    3. Converts fields to SQLAlchemy mapped_column()
+    4. Auto-adds primary key if not specified
+    5. Stores field metadata for admin introspection
+    """
+
+    def __new__(
+        mcs,
+        name: str,
+        bases: tuple[type, ...],
+        namespace: dict[str, Any],
+        **kwargs: Any,
+    ) -> type:
+        # Don't process the base Model class itself
+        if name == "Model" and not any(isinstance(b, ModelMeta) for b in bases):
+            return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+        # Extract and process Meta class
+        meta_class = namespace.pop("Meta", None)
+        meta_options = {}
+        if meta_class:
+            for attr in dir(meta_class):
+                if not attr.startswith("_"):
+                    meta_options[attr] = getattr(meta_class, attr)
+
+        # Collect Field instances from namespace
+        fields: dict[str, Field] = {}
+        for key, value in list(namespace.items()):
+            # Import here to avoid circular dependency
+            from fastframe.models.fields import Field
+
+            if isinstance(value, Field):
+                fields[key] = value
+                value.model_class = name  # type: ignore[attr-defined]
+                # Manually call __set_name__ since we're about to replace it
+                value.__set_name__(None, key)  # type: ignore[arg-type]
+
+        # Auto-add primary key if not present
+        has_pk = any(f.primary_key for f in fields.values())
+        if not has_pk and "id" not in fields:
+            from fastframe.models.fields import AutoField
+
+            auto_id = AutoField()
+            auto_id.__set_name__(None, "id")  # type: ignore[arg-type]
+            fields["id"] = auto_id
+
+        # Convert fields to SQLAlchemy mapped_column and type annotations
+        annotations = namespace.setdefault("__annotations__", {})
+        for field_name, field in fields.items():
+            # Add type annotation (e.g. Mapped[str])
+            annotations[field_name] = field.get_type_annotation()
+            # Replace Field instance with mapped_column()
+            namespace[field_name] = field.to_sqlalchemy_column()
+
+        # Apply Meta.db_table if specified
+        if "db_table" in meta_options and "__tablename__" not in namespace:
+            namespace["__tablename__"] = meta_options["db_table"]
+
+        # Store metadata for introspection (admin forms, validation, etc.)
+        namespace["_meta"] = {
+            "fields": fields,
+            "ordering": meta_options.get("ordering", []),
+            "verbose_name": meta_options.get("verbose_name", name),
+            "verbose_name_plural": meta_options.get(
+                "verbose_name_plural", f"{name}s"
+            ),
+            "unique_together": meta_options.get("unique_together", []),
+            "indexes": meta_options.get("indexes", []),
+            **meta_options,
+        }
+
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class Model(DeclarativeBase, metaclass=ModelMeta):
+    """SQLAlchemy declarative base with Django-like field API and manager.
+
+    Example:
+        from fastframe.models import Model, fields
+
+        class Book(Model):
+            title = fields.CharField(max_length=200)
+            published = fields.DateField()
+
+            class Meta:
+                db_table = "books"
+                ordering = ["-published"]
+    """
 
     objects: ClassVar[Manager[Any]]
 
