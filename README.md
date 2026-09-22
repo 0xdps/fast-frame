@@ -8,7 +8,7 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**Early implementation (v0.1 loop).** `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`, …), models, and Alembic migrations. See [docs/development.md](docs/development.md).
+**v0.1 released.** The core development loop — `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`, `check`), thin models with a chainable `QuerySet`, and Alembic migrations — is implemented and validated end-to-end against a real app (see [`examples/todo_app`](examples/todo_app)). See [docs/development.md](docs/development.md) and [docs/mvp-v0.1.md](docs/mvp-v0.1.md).
 
 ## What FastFrame is (and is not)
 
