@@ -24,3 +24,20 @@ def project_env(monkeypatch: pytest.MonkeyPatch) -> Path:
     bootstrap(None)
     migrate()
     return PROJECT_ROOT
+
+
+@pytest.fixture
+def client(project_env: Path):
+    """A FastAPI TestClient wired to a fresh, isolated in-memory database.
+
+    IMPORTANT: `config.asgi` is imported here, inside the fixture, *after*
+    `project_env` has set DATABASE_URL and re-bootstrapped the app registry.
+    Importing `from config.asgi import application` at module level in a
+    test file would build the ASGI app against whatever DATABASE_URL was
+    active at collection time, and silently leak state between tests.
+    Prefer using this fixture over importing `application` yourself.
+    """
+    from config.asgi import application
+    from fastapi.testclient import TestClient
+
+    return TestClient(application)

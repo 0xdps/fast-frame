@@ -37,7 +37,18 @@ def execute(args: argparse.Namespace) -> None:
 
 
 def _split_addrport(addrport: str) -> tuple[str, int]:
+    """Parse Django-style 'addrport' argument.
+
+    Accepts:
+    - "8000"            -> ("127.0.0.1", 8000)
+    - "0.0.0.0:8000"     -> ("0.0.0.0", 8000)
+    - "localhost:8000"   -> ("localhost", 8000)
+    """
     if ":" in addrport:
         host, port_str = addrport.rsplit(":", 1)
         return host, int(port_str)
+    if addrport.isdigit():
+        # Bare port number, e.g. "8000" -> default host, that port.
+        return "127.0.0.1", int(addrport)
+    # Bare host with no port, e.g. "0.0.0.0" -> that host, default port.
     return addrport, 8000
