@@ -1,0 +1,29 @@
+tests/test_import.py
+  s_8de26d66febf8a::t_0cbd8b554c8940 4
+pyproject.toml
+  s_8de26d66febf8a::t_1c9149c094d6a9 3
+README.md
+  s_8de26d66febf8a::t_ee37df69ce3361 11
+src/fastframe/project_template/pyproject.toml
+  s_8de26d66febf8a::t_02feafc3b1c368 7
+src/fastframe/__version__.py
+  s_8de26d66febf8a::t_dc1a0da16067a8 1
+CHANGELOG.md
+  s_8de26d66febf8a::t_e75fad7a69f643 10-14,17-21,23-30,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c66c13bc8354921fa2570f16283fb9b8cdd08768",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
