@@ -35,7 +35,7 @@ def run_startproject(name: str, directory: str | None = None) -> Path:
 
     print(f"Project '{project_slug}' created at {destination}")
     print(f"  cd {destination.name}")
-    print("  pip install fastframe  # or pip install -e /path/to/ff")
+    print("  pip install fastframe  # or pip install -e /path/to/fast-frame")
     print("  python manage.py migrate")
     print("  python manage.py runserver")
     return destination

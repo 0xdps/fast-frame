@@ -39,9 +39,34 @@ python manage.py migrate
 python manage.py test
 python manage.py check
 python manage.py startapp users
-python manage.py shell
-python manage.py test
 ```
+
+### `runserver` address/port
+
+Django-style single positional argument, not `--host`/`--port` flags:
+
+```text
+python manage.py runserver            # 127.0.0.1:8000 (default)
+python manage.py runserver 8080       # 127.0.0.1:8080 (bare port)
+python manage.py runserver 0.0.0.0    # 0.0.0.0:8000 (bare host)
+python manage.py runserver 0.0.0.0:8080
+python manage.py runserver --reload   # auto-reload for development
+```
+
+### `test` and forwarding args to pytest
+
+`manage.py test` wraps `pytest.main()`. Because of how Python's `argparse`
+handles remainder arguments, flags meant for pytest must come **after `--`**:
+
+```text
+python manage.py test                    # runs `pytest tests`
+python manage.py test -- -v              # verbose
+python manage.py test -- -k health       # keyword filter
+python manage.py test -- tests/test_todos.py -v
+```
+
+Omitting `--` before pytest flags (e.g. `manage.py test -v`) raises
+`unrecognized arguments`.
 
 ## Bootstrap behavior
 
