@@ -53,6 +53,37 @@ python manage.py runserver 0.0.0.0:8080
 python manage.py runserver --reload   # auto-reload for development
 ```
 
+### `check`
+
+Runs structural checks (settings shape, duplicate app labels, `DATABASE_URL`
+presence) plus every installed app's `AppConfig.checks()` hook, and prints
+each result as `LEVEL: obj: id: message` (with an optional `HINT:` line).
+Exits `1` if any `ERROR`/`CRITICAL` message was found — safe to use as a CI
+gate.
+
+```text
+python manage.py check              # structural checks only, no I/O
+python manage.py check --database   # + DB connectivity + pending migrations
+```
+
+`--database` opts into checks that require a live database connection
+(connectivity, and comparing Alembic's migration heads against what's
+actually applied). It's opt-in, not the default, so a plain `check` stays
+fast and safe to run before a database even exists — matching Django's
+`check --database` precedent.
+
+Apps add their own checks via `AppConfig.checks()`:
+
+```python
+from fastframe.core.checks import CheckMessage, WARNING
+
+class BillingConfig(AppConfig):
+    def checks(self) -> list[CheckMessage]:
+        if not getattr(settings, "STRIPE_KEY", None):
+            return [CheckMessage(level=WARNING, message="STRIPE_KEY not set.")]
+        return []
+```
+
 ### `test` and forwarding args to pytest
 
 `manage.py test` wraps `pytest.main()`. Because of how Python's `argparse`

@@ -28,5 +28,16 @@ def test_check_command(miniproject_env, capsys) -> None:
 
     execute(argparse.Namespace())
     out = capsys.readouterr().out
-    assert "health" in out
+    assert "no issues" in out
+
+
+def test_check_command_with_database_flag(miniproject_env, capsys) -> None:
+    import argparse
+
+    from fastframe.cli.commands.check import execute
+
+    execute(argparse.Namespace(database=True))
+    out = capsys.readouterr().out
+    # miniproject_env has already migrated, so a fresh --database check
+    # should still be clean.
     assert "no issues" in out

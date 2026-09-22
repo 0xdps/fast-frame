@@ -1,89 +1,80 @@
 # Repository layout
 
-This document describes the **FastFrame framework repository** ([0xdps/fast-frame](https://github.com/0xdps/fast-frame)) and the **Python package layout**.
+This document describes the **FastFrame framework repository** ([0xdps/fast-frame](https://github.com/0xdps/fast-frame)) and the **Python package layout**, as of v0.1.0.
 
-## Current phase (documentation only)
-
-No `src/fastframe` implementation yet. The repo contains metadata, docs, and ADRs.
+## Repository root
 
 ```text
-fast-frame/                  # git repository root
-├── README.md
-├── LICENSE
-├── CONTRIBUTING.md
-├── CHANGELOG.md
+fast-frame/
+├── README.md, LICENSE, CONTRIBUTING.md, CHANGELOG.md, SECURITY.md
 ├── pyproject.toml
-├── .gitignore
-├── docs/                    # product & technical documentation
+├── docs/                    # product & technical documentation (this file included)
 ├── adr/                     # architecture decision records
-├── .github/                 # issue/PR templates, CI (when added)
-└── (future) src/fastframe/  # framework package — not created yet
+├── .github/                 # issue/PR templates, CI workflow
+├── examples/
+│   └── todo_app/            # real end-to-end app built with the v0.1 loop
+├── src/fastframe/           # the framework package (see below)
+└── tests/                   # framework's own test suite + integration fixture
 ```
 
-## Planned framework package layout (implementation)
+## Framework package layout (`src/fastframe/`)
 
 Target: **src layout** with Hatchling (see `pyproject.toml`).
 
 ```text
-src/
-└── fastframe/
-    ├── __init__.py
-    ├── __version__.py
-    ├── cli/
-    │   ├── __init__.py
-    │   ├── main.py              # fastframe entry
-    │   └── management/          # shared command utilities
-    ├── core/
-    │   ├── __init__.py
-    │   ├── apps.py              # AppConfig, registry
-    │   ├── lifecycle.py         # bootstrap
-    │   └── checks.py            # check command (later)
-    ├── conf/
-    │   ├── __init__.py
-    │   └── settings.py          # settings loading helpers
-    ├── http/
-    │   ├── __init__.py
-    │   └── asgi.py              # get_asgi_application
-    ├── db/
-    │   ├── __init__.py
-    │   ├── session.py           # get_session
-    │   └── engine.py
-    ├── models/
-    │   ├── __init__.py
-    │   ├── base.py
-    │   ├── fields.py            # ergonomic field helpers (TBD)
-    │   └── manager.py
-    ├── migrations/
-    │   ├── __init__.py
-    │   └── ...                  # Alembic integration
-    ├── contrib/
-    │   └── ...                  # optional in-repo apps (e.g. orm, health)
-    └── project_template/        # files copied by startproject
-        ├── manage.py
-        ├── pyproject.toml
-        └── config/
-            └── ...
-
-tests/
-├── unit/
-├── integration/
-└── conftest.py
-
-examples/                        # optional: minimal demo project for CI
-└── demo_project/
+src/fastframe/
+├── __init__.py
+├── __version__.py
+├── cli/
+│   ├── main.py               # `fastframe` entry (startproject, version)
+│   ├── manage.py             # `manage.py` command dispatcher
+│   ├── scaffold.py           # project/app template rendering
+│   └── commands/             # runserver, check, makemigrations, migrate,
+│                              # shell, test, startapp
+├── core/
+│   ├── apps.py                # AppConfig, AppsRegistry, populate_apps()
+│   ├── bootstrap.py           # bootstrap(), get_apps_registry(), reset_bootstrap()
+│   ├── settings.py            # settings module loading (FASTFRAME_SETTINGS_MODULE)
+│   └── checks.py              # CheckMessage, run_checks(); backs `manage.py check`
+├── http/
+│   └── asgi.py                 # get_asgi_application(), session middleware,
+│                                # DoesNotExist/MultipleObjectsReturned handlers
+├── db/
+│   ├── engine.py               # get_engine() from DATABASE_URL
+│   ├── session.py              # get_session, session_scope, begin/end_session
+│   └── init.py                 # create_tables() (dev/test convenience)
+├── models/
+│   ├── base.py                  # Model (DeclarativeBase) with `objects`, save/delete
+│   ├── manager.py               # Manager + QuerySet (filter/exclude/order_by/...)
+│   └── exceptions.py            # DoesNotExist, MultipleObjectsReturned
+├── migrations/
+│   ├── paths.py, runner.py, runtime.py   # Alembic integration
+│   └── templates/                        # env.py / script.py.mako for new projects
+├── shell/
+│   └── context.py               # build_shell_namespace() for `manage.py shell`
+└── project_template/            # files copied by `fastframe startproject`
+    ├── manage.py, pyproject.toml
+    ├── config/                   # settings.py, urls.py, asgi.py, migrations/
+    ├── health/                   # example built-in app
+    └── tests/                    # conftest.py (project_env, client fixtures), test_health.py
 ```
 
-Exact module names may change; boundaries should stay:
+Module boundaries to preserve:
 
-- **cli** — entrypoints
-- **core** — apps and lifecycle
-- **http** — FastAPI wiring only
-- **db / models / migrations** — data layer
-- **project_template** — generated user projects
+- **cli** — entrypoints and command dispatch only; delegates real work to other modules.
+- **core** — settings loading, app registry, lifecycle (`bootstrap`), checks.
+- **http** — FastAPI/ASGI wiring only.
+- **db / models / migrations** — the data layer.
+- **project_template** — what gets copied into a *generated user project*; not imported by the framework itself at runtime.
 
-## Generated user project (reference)
+## Not (yet) present
 
-See [architecture.md](architecture.md). Not stored in this repo except as templates under `project_template/`.
+A few structures sketched in earlier drafts of this doc were never built and are not currently planned as separate concepts:
+
+- A standalone `conf/` package — settings loading lives in `core/settings.py`.
+- `fastframe.contrib.*` optional in-repo apps — no contrib apps exist yet.
+- `models/fields.py` ergonomic field helpers — deferred; use SQLAlchemy's `mapped_column()` directly (see [public-api-v0.1.md](public-api-v0.1.md)).
+- Custom management command auto-discovery (`<app>/management/commands/`) — planned for v0.2 (see [app-contract.md](app-contract.md), [roadmap.md](roadmap.md)).
 
 ## Naming
 
