@@ -3,6 +3,10 @@ from __future__ import annotations
 import importlib
 from dataclasses import dataclass, field
 from types import ModuleType
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from fastframe.core.checks import CheckMessage
 
 
 class AppConfig:
@@ -13,6 +17,21 @@ class AppConfig:
 
     def ready(self) -> None:
         """Hook run after the app registry is loaded."""
+
+    def checks(self) -> list[CheckMessage]:
+        """Hook run by ``manage.py check``. Return a list of CheckMessage.
+
+        Override to validate app-specific configuration, e.g.:
+
+            from fastframe.core.checks import CheckMessage, WARNING
+
+            class BillingConfig(AppConfig):
+                def checks(self) -> list[CheckMessage]:
+                    if not getattr(settings, "STRIPE_KEY", None):
+                        return [CheckMessage(level=WARNING, message="STRIPE_KEY not set.")]
+                    return []
+        """
+        return []
 
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)

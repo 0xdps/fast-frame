@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Core: real system check framework — `fastframe.core.checks.CheckMessage` / `run_checks()`, and `AppConfig.checks()` hook for apps to register their own checks.
+- CLI: `manage.py check` now runs structural checks (empty `INSTALLED_APPS`, duplicate app labels, missing `DATABASE_URL`) by default, and `--database` opts into DB connectivity + pending-migration checks (compares Alembic script heads against the DB's current heads). Exits `1` on any `ERROR`/`CRITICAL` result — usable as a CI gate.
+- Docs: `docs/cli.md` documents `check`/`check --database`; `docs/app-contract.md` and `docs/repository-layout.md` resolve their long-standing `checks.py` "(later)"/TBD placeholders against the shipped `AppConfig.checks()` design; `docs/repository-layout.md` refreshed to match the actual v0.1.0 package layout (was still describing a pre-implementation draft).
+
 ## [0.1.0] - 2026-09-22
 
 First tagged release. Proves the core FastFrame development loop end-to-end,

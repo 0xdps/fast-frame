@@ -30,7 +30,7 @@ Each app is a Python package. Conventional files FastFrame **may** auto-discover
 | `models.py` | ORM models for migration discovery |
 | `urls.py` → `router` | FastAPI `APIRouter` to mount |
 | `management/commands/` | Custom `manage.py` commands |
-| `checks.py` | Registrations for `manage.py check` (later) |
+| `AppConfig.checks()` | Hook returning `list[CheckMessage]` for `manage.py check` |
 
 Apps **must not** be required to implement every file. Missing modules are skipped.
 
@@ -44,6 +44,11 @@ class UsersConfig(AppConfig):
 
     def ready(self) -> None:
         # import side effects, register hooks, etc.
+        ...
+
+    def checks(self) -> list[CheckMessage]:
+        # return CheckMessage(level=WARNING, message="...") entries;
+        # see fastframe.core.checks
         ...
 ```
 

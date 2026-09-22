@@ -20,7 +20,7 @@ Entry point (future): `fastframe = fastframe.cli.main:main`
 | `makemigrations` | Generate migrations from models |
 | `migrate` | Apply migrations |
 | `test` | Run pytest with app context |
-| `check` | Minimal validation (expand later) |
+| `check` / `check --database` | Structural + optional DB/migration checks (`fastframe.core.checks`) |
 | `startapp <name>` | Scaffold app package |
 | `makemigrations` | Autogenerate schema migrations (Alembic) |
 | `migrate` | Apply migrations (`head` by default) |
