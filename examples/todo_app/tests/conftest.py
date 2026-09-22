@@ -37,8 +37,7 @@ def client(project_env: Path):
     active at collection time, and silently leak state between tests.
     Prefer using this fixture over importing `application` yourself.
     """
-    from fastapi.testclient import TestClient
-
     from config.asgi import application
+    from fastapi.testclient import TestClient
 
     return TestClient(application)
