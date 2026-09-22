@@ -1,6 +1,6 @@
 [project]
 name = "fastframe"
-version = "0.0.0"
+version = "0.1.0"
 description = "A batteries-included Python web framework built on FastAPI."
 readme = "README.md"
 requires-python = ">=3.11"
