@@ -1,0 +1,276 @@
+src/fastframe/admin/templates/admin-ui/tsconfig.node.json
+  s_8de26d66febf8a::t_7b26aab39339e5 1-23
+examples/simple_auth_example/app.py
+  s_8de26d66febf8a::t_97795a84b862c0 1-114
+src/fastframe/admin/templates/admin-ui/src/App.css
+  s_8de26d66febf8a::t_7b26aab39339e5 1-184
+src/fastframe/admin/templates/admin-ui/src/assets/vite.svg
+  s_8de26d66febf8a::t_7b26aab39339e5 1
+examples/custom_user/accounts/admin.py
+  s_8de26d66febf8a::t_e983db4219dc3a 1-14
+src/fastframe/contrib/auth/models.py
+  s_8de26d66febf8a::t_e6034781c8052c 93,98,103,108,113,118,123,128,133
+  s_8de26d66febf8a::t_0e9fd0f0785092 1-59,63-92,94-97,99-102,104-107,109-112,114-117,119-122,124-127,129-132,134-194
+  s_8de26d66febf8a::t_0fa84e1d8971c8 60-62
+src/fastframe/admin/static/favicon.svg
+  s_8de26d66febf8a::t_9b351962f176a2 1
+src/fastframe/admin/static/assets/index-B7F03J_O.css
+  s_8de26d66febf8a::t_9b351962f176a2 1
+src/fastframe/admin/templates/admin-ui/vite.config.ts
+  s_8de26d66febf8a::t_fe06e1b3a661be 1-2,4-7,9-10
+  s_8de26d66febf8a::t_7b26aab39339e5 3,8
+tests/fixtures/test_settings.py
+  s_8de26d66febf8a::t_d4618cf2cfc7ee 1-30
+examples/admin_simple/manage.py
+  s_8de26d66febf8a::t_e84700ec02f695 1-16
+src/fastframe/cli/commands/startadmin.py
+  s_8de26d66febf8a::t_d4021747b68a54 12-25
+  s_8de26d66febf8a::t_09e3b1382e5666 26-28
+  s_8de26d66febf8a::t_dd5eb85a6f9f89 29-32,37-52,54-57,59-70,72-76
+  s_8de26d66febf8a::t_204ff1acfbfc28 10-11
+  s_8de26d66febf8a::t_1f8af1cd9cb3d9 1-4,6-9,53,58,71
+  s_8de26d66febf8a::t_57bfe3aed476f9 5
+  s_8de26d66febf8a::t_3c5b539c1fba90 33-36
+docs/README.md
+  s_8de26d66febf8a::t_6f661685c89c01 18-21
+src/fastframe/core/__init__.py
+  s_8de26d66febf8a::t_30c823bb2d2d97 3,7
+src/fastframe/contrib/auth/__init__.py
+  s_8de26d66febf8a::t_d9cea0cab9794f 1-39
+examples/admin_custom/README.md
+  s_8de26d66febf8a::t_8811c8660d5feb 1-22
+docs/settings.md
+  s_8de26d66febf8a::t_7995fbb29c03ff 1-62
+src/fastframe/admin/templates/admin-ui/src/App.tsx
+  s_8de26d66febf8a::t_7b26aab39339e5 1-33,35-62,64-113
+  s_8de26d66febf8a::t_d42fddf7408f20 34
+  s_8de26d66febf8a::t_38121231cee623 63
+src/fastframe/cli/commands/createadminuser.py
+  s_8de26d66febf8a::t_0ff3f2322bb183 69-82,84-104
+  s_8de26d66febf8a::t_40a72e92a90c35 83
+  s_8de26d66febf8a::t_016d37daa8e1b2 36-40
+  s_8de26d66febf8a::t_30259db1c5d2c2 1-7,65
+  s_8de26d66febf8a::t_9728c3ae4cd07c 10-29
+  s_8de26d66febf8a::t_7adc2a4448d7bc 30-35,41-64,66-68
+  s_8de26d66febf8a::t_005991ef52451e 8-9
+examples/admin_simple/README.md
+  s_8de26d66febf8a::t_55228f1bf40635 1-16
+src/fastframe/admin/templates/admin-ui/index.html
+  s_8de26d66febf8a::t_7b26aab39339e5 1-19
+pyproject.toml
+  s_8de26d66febf8a::t_aa559550e631f1 29
+  s_8de26d66febf8a::t_d9dd06a63721ed 55-58
+src/fastframe/admin/templates/admin-ui/src/theme.ts
+  s_8de26d66febf8a::t_7b26aab39339e5 1-81
+src/fastframe/admin/templates/admin-ui/src/users.tsx
+  s_8de26d66febf8a::t_7b26aab39339e5 1-137,144-172
+  s_8de26d66febf8a::t_ecae9d849dedca 138-143
+src/fastframe/admin/api.py
+  s_8de26d66febf8a::t_ef5c9bb8ee8cbd 62-81
+src/fastframe/conf/__init__.py
+  s_8de26d66febf8a::t_8b726b8c059e63 1,3-8,17-26,28-49
+  s_8de26d66febf8a::t_32e8127deed1bf 2,9-16,27,50
+src/fastframe/contrib/auth/admin.py
+  s_8de26d66febf8a::t_a9bacd3c1cd538 1-11,13-43
+  s_8de26d66febf8a::t_295ff54e68d128 12
+docs/admin-customization.md
+  s_8de26d66febf8a::t_4eaa2380c110bf 1-14,16-55
+  s_8de26d66febf8a::t_3c603b0111c0f9 15
+src/fastframe/admin/static/index.html
+  s_8de26d66febf8a::t_adc16b019f3d93 2,13
+  s_8de26d66febf8a::t_1eacc4cc50b2fa 14
+  s_8de26d66febf8a::t_9b351962f176a2 1,3-12,15-20
+src/fastframe/admin/templates/admin-ui/src/layout.tsx
+  s_8de26d66febf8a::t_7b26aab39339e5 1-12,14-22
+  s_8de26d66febf8a::t_810eda30e51159 13
+src/fastframe/admin/templates/admin-ui/src/main.tsx
+  s_8de26d66febf8a::t_7b26aab39339e5 22,26
+  s_8de26d66febf8a::t_0ad84f0d04b9df 1-21,23-25,27
+src/fastframe/admin/views.py
+  s_8de26d66febf8a::t_ad89e646048aae 25-26,33,109
+  s_8de26d66febf8a::t_a390ece9c70df6 23-24,27-32,34-96,98-100,102-106,108,110-121
+src/fastframe/admin/templates/admin-ui/src/api.ts
+  s_8de26d66febf8a::t_7b26aab39339e5 7,10-58
+  s_8de26d66febf8a::t_c6e41ccbf6f9e3 1-6,8-9
+examples/admin_custom/app.py
+  s_8de26d66febf8a::t_a3c5883a1c360d 1-21
+examples/custom_user/manage.py
+  s_8de26d66febf8a::t_818e16f1aff55a 1-16
+tests/test_create_app.py
+  s_8de26d66febf8a::t_fb35ea4b70c352 1-28,30-41
+  s_8de26d66febf8a::t_269edcf398e201 29
+docs/admin-deployment.md
+  s_8de26d66febf8a::t_d679b7dd5163dd 24
+  s_8de26d66febf8a::t_a572284ce2338e 1-23,25-71
+examples/admin_simple/config/__init__.py
+  s_8de26d66febf8a::t_617b7bdc911012 1
+src/fastframe/conf/global_settings.py
+  s_8de26d66febf8a::t_e9f28b190ca410 1-46
+src/fastframe/core/bootstrap.py
+  s_8de26d66febf8a::t_2586c1ded11d9a 13-15
+src/fastframe/admin/static/icons.svg
+  s_8de26d66febf8a::t_9b351962f176a2 1-24
+examples/custom_user/config/settings.py
+  s_8de26d66febf8a::t_a6bb0e9da8de73 1-18
+examples/simple_auth_example/config/settings.py
+  s_8de26d66febf8a::t_3956568efa5393 1-12,14-31
+  s_8de26d66febf8a::t_1a83857906858b 13
+src/fastframe/admin/templates/admin-ui/tsconfig.json
+  s_8de26d66febf8a::t_7b26aab39339e5 1-7
+examples/simple_auth_example/config/migrations/env.py
+  s_8de26d66febf8a::t_9e6af565286b8a 1-3
+src/fastframe/models/base.py
+  s_8de26d66febf8a::t_fd5c3e916f766b 74
+  s_8de26d66febf8a::t_bf1e912b3a2685 58-73,75-80
+docs/IMPLEMENTATION_SUMMARY.md
+  s_8de26d66febf8a::t_52fc96becfc9a8 1-219
+examples/custom_user/config/__init__.py
+  s_8de26d66febf8a::t_4db1a1aae1ff2e 1
+src/fastframe/admin/templates/admin-ui/README.md
+  s_8de26d66febf8a::t_7b26aab39339e5 1-23
+examples/admin_simple/app.py
+  s_8de26d66febf8a::t_b43b9515ae33fe 4
+  s_8de26d66febf8a::t_6f3f2f0d573c84 1-3,5-17
+examples/custom_user/accounts/__init__.py
+  s_8de26d66febf8a::t_47d5fe5a65abed 1
+src/fastframe/admin/templates/admin-ui/src/assets/react.svg
+  s_8de26d66febf8a::t_7b26aab39339e5 1
+src/fastframe/admin/templates/admin-ui/tsconfig.app.json
+  s_8de26d66febf8a::t_7b26aab39339e5 1-26
+examples/custom_user/README.md
+  s_8de26d66febf8a::t_d8e0ef709674b7 1-13
+tests/test_auth_user_model.py
+  s_8de26d66febf8a::t_a6d8c8ef8b490f 1-17,21-22,28-37,44-64,66-70,72-92,94-98,100-104,106-110,112-116,118-211
+  s_8de26d66febf8a::t_d3f1dc30163341 38-43
+  s_8de26d66febf8a::t_f55c01b6efe9ba 93,99,105,111,117
+  s_8de26d66febf8a::t_ef8dae2aaecd7c 23-27
+  s_8de26d66febf8a::t_270e097d8369af 65,71
+  s_8de26d66febf8a::t_fe3b32c2c25a81 18-20
+src/fastframe/admin/templates/admin-ui/.oxlintrc.json
+  s_8de26d66febf8a::t_7b26aab39339e5 1-8
+examples/custom_user/accounts/models.py
+  s_8de26d66febf8a::t_46071f2491d361 1-32
+examples/custom_user/app.py
+  s_8de26d66febf8a::t_362e7b1525b0f5 1-13
+src/fastframe/cli/commands/buildadmin.py
+  s_8de26d66febf8a::t_b88bad9da7016a 1-76,79-101
+  s_8de26d66febf8a::t_adccdb66f70fba 77-78
+src/fastframe/admin/static/assets/index-BjrN87JF.js
+  s_8de26d66febf8a::t_1eacc4cc50b2fa 1-184
+src/fastframe/admin/templates/admin-ui/src/resources.tsx
+  s_8de26d66febf8a::t_7b26aab39339e5 1-237
+src/fastframe/cli/manage.py
+  s_8de26d66febf8a::t_14cd2b9469a440 9
+  s_8de26d66febf8a::t_4ec08cd7a9d479 35
+  s_8de26d66febf8a::t_865e3ea758a24c 11,18
+  s_8de26d66febf8a::t_a3353ba6e1c761 33-34
+src/fastframe/core/app.py
+  s_8de26d66febf8a::t_9d81496308cda9 48-51
+  s_8de26d66febf8a::t_0cff1d61fa667e 1-47,52-56
+src/fastframe/contrib/auth/hashers.py
+  s_8de26d66febf8a::t_36a5503becf964 1-57
+src/fastframe/contrib/__init__.py
+  s_8de26d66febf8a::t_131e5c111d6146 1
+src/fastframe/admin/templates/admin-ui/.gitignore
+  s_8de26d66febf8a::t_7b26aab39339e5 1-24
+examples/simple_auth_example/manage.py
+  s_8de26d66febf8a::t_fe38bebeeb07f0 1-16
+examples/admin_custom/config/settings.py
+  s_8de26d66febf8a::t_3bce60f63bd42a 1-22
+src/fastframe/admin/templates/admin-ui/package.json
+  s_8de26d66febf8a::t_7b26aab39339e5 1-26
+src/fastframe/admin/templates/admin-ui/public/favicon.svg
+  s_8de26d66febf8a::t_7b26aab39339e5 1
+src/fastframe/admin/__init__.py
+  s_8de26d66febf8a::t_2e32ad6d782d13 30-33
+  s_8de26d66febf8a::t_dd911c48a8897f 42-44,46-77
+examples/blog_app/config/settings.py
+  s_8de26d66febf8a::t_901209063aa5d9 12-28,32
+examples/admin_custom/config/__init__.py
+  s_8de26d66febf8a::t_d47d18f6d726af 1
+examples/admin_simple/config/settings.py
+  s_8de26d66febf8a::t_d10f8b48069caf 1-22
+examples/admin_custom/manage.py
+  s_8de26d66febf8a::t_cda35b4a8fc112 1-16
+src/fastframe/admin/templates/admin-ui/public/icons.svg
+  s_8de26d66febf8a::t_7b26aab39339e5 1-24
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_8de26d66febf8a::t_7b26aab39339e5 1-335
+src/fastframe/admin/templates/admin-ui/src/dataProvider.ts
+  s_8de26d66febf8a::t_7b26aab39339e5 1-138
+src/fastframe/models/fields.py
+  s_8de26d66febf8a::t_617e45b4500544 426-435,437-448,450-468,470-487
+tests/fixtures/openapi_off_settings.py
+  s_8de26d66febf8a::t_f3832cc607eee7 1-10
+docs/auth.md
+  s_8de26d66febf8a::t_c035a7ae572b51 1-80
+docs/cli.md
+  s_8de26d66febf8a::t_72eaef0ad0ac77 44-46
+  s_8de26d66febf8a::t_e4d3cf2ebb304f 163-193
+examples/simple_auth_example/test-admin-ui/.gitignore
+  s_8de26d66febf8a::t_def0a3a8bd4139 1-24
+examples/simple_auth_example/test-admin-ui/.oxlintrc.json
+  s_8de26d66febf8a::t_054c7fcd8e2423 1-8
+examples/simple_auth_example/test-admin-ui/README.md
+  s_8de26d66febf8a::t_06c60496e2b754 1-23
+examples/simple_auth_example/test-admin-ui/index.html
+  s_8de26d66febf8a::t_abda2c63b698e0 1-19
+examples/simple_auth_example/test-admin-ui/package-lock.json
+  s_8de26d66febf8a::t_7eacd33fdc62ad 1-2999
+examples/simple_auth_example/test-admin-ui/package.json
+  s_8de26d66febf8a::t_a620789e382d9c 1-26
+examples/simple_auth_example/test-admin-ui/public/favicon.svg
+  s_8de26d66febf8a::t_6859fcdde13649 1
+examples/simple_auth_example/test-admin-ui/public/icons.svg
+  s_8de26d66febf8a::t_4f6269c387be48 1-24
+examples/simple_auth_example/test-admin-ui/src/App.css
+  s_8de26d66febf8a::t_a8cb4ade093549 1-184
+examples/simple_auth_example/test-admin-ui/src/App.tsx
+  s_8de26d66febf8a::t_4abe1fc83e4088 1-113
+examples/simple_auth_example/test-admin-ui/src/api.ts
+  s_8de26d66febf8a::t_6f99862093f745 1-52
+examples/simple_auth_example/test-admin-ui/src/assets/react.svg
+  s_8de26d66febf8a::t_07f54f2c7d99e2 1
+examples/simple_auth_example/test-admin-ui/src/assets/vite.svg
+  s_8de26d66febf8a::t_ce6773bbbc29b1 1
+examples/simple_auth_example/test-admin-ui/src/dataProvider.ts
+  s_8de26d66febf8a::t_f3aedf94cc87c6 1-138
+examples/simple_auth_example/test-admin-ui/src/index.css
+  s_8de26d66febf8a::t_7adee35a985016 1-335
+examples/simple_auth_example/test-admin-ui/src/layout.tsx
+  s_8de26d66febf8a::t_8e72426de1df41 1-22
+examples/simple_auth_example/test-admin-ui/src/main.tsx
+  s_8de26d66febf8a::t_52be4d3fedf443 1-10
+examples/simple_auth_example/test-admin-ui/src/resources.tsx
+  s_8de26d66febf8a::t_6b742c45e62725 1-237
+examples/simple_auth_example/test-admin-ui/src/theme.ts
+  s_8de26d66febf8a::t_ee89a3d23d4bf3 1-81
+examples/simple_auth_example/test-admin-ui/src/users.tsx
+  s_8de26d66febf8a::t_d8d7cb97bba22c 1-167
+examples/simple_auth_example/test-admin-ui/tsconfig.app.json
+  s_8de26d66febf8a::t_cf6fab410713c6 1-26
+examples/simple_auth_example/test-admin-ui/tsconfig.json
+  s_8de26d66febf8a::t_32c58055b35e56 1-7
+examples/simple_auth_example/test-admin-ui/tsconfig.node.json
+  s_8de26d66febf8a::t_3d851675051085 1-23
+examples/simple_auth_example/test-admin-ui/vite.config.ts
+  s_8de26d66febf8a::t_c6c4243e57ebd7 1-7
+src/fastframe/admin/templates/admin-ui/package-lock.json
+  s_8de26d66febf8a::t_e956b166aa8329 1-2999
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c15d83599c4f492907cc8832313985b92df2d4bf",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
