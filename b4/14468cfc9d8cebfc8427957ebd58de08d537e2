@@ -1,0 +1,31 @@
+src/fastframe/models/fields.py
+  s_8de26d66febf8a::t_fc4d7b9955d663 500
+  s_8de26d66febf8a::t_492d55f71198da 517,519-520,522-523,532-533
+tests/test_relationships.py
+  s_8de26d66febf8a::t_e7f3503fb060b4 25-27,29-32,35
+  s_8de26d66febf8a::t_217e12222427d8 92-96,99-100,102,104-107,110-111,113-114,117-118,120,122-124,127-128,130-131,134-135,137,139-140,143-144,146-147,150-151,153-164
+  s_8de26d66febf8a::t_7da8d3a5b39460 1-2,5-18,20-23,34,36-91,97-98,101,103,108-109,112,115-116,119,121,125-126,129,132-133,136,138,141-142,145,148-149,152,165-210
+  s_8de26d66febf8a::t_5fa3a4bffc05ce 33
+src/fastframe/models/base.py
+  s_8de26d66febf8a::t_8e7d32f64e3782 98-102,104,109-110,122-155,165,172-176
+  s_8de26d66febf8a::t_03e2d8ae91a557 91-92,97,105,115-121,156-164,166-171
+  s_8de26d66febf8a::t_b5aaa6946ddcd8 89-90,93-96,103,106-108,111-114
+tests/fixtures/miniproject/users/migrations/versions/409c010398cd_auto.py
+  s_8de26d66febf8a::t_31a62334c252f1 1-110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b414468cfc9d8cebfc8427957ebd58de08d537e2",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-4-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
