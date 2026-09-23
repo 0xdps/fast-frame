@@ -69,6 +69,7 @@ class Field:
         help_text: str = "",
         verbose_name: str | None = None,
         validators: list[Any] | None = None,
+        write_only: bool = False,
         **kwargs: Any,
     ) -> None:
         """Initialize a field.
@@ -84,6 +85,7 @@ class Field:
             help_text: Help text for admin forms.
             verbose_name: Human-readable name (defaults to field name).
             validators: List of validator callables.
+            write_only: Accept the value on write, but omit it from admin API responses.
             **kwargs: Additional SQLAlchemy column kwargs.
         """
         self.primary_key = primary_key
@@ -96,6 +98,7 @@ class Field:
         self.help_text = help_text
         self.verbose_name = verbose_name
         self.validators = validators or []
+        self.write_only = write_only
         self.extra_kwargs = kwargs
 
         # Set by ModelMeta when model class is created

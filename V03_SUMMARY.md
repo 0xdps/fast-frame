@@ -4,8 +4,56 @@
 
 This document summarizes the implementation of v0.3, which focused on:
 1. Django-like Model Fields API with validation
-2. Admin interface (initial SSR-based implementation)  
-3. Comprehensive test project demonstrating all model features
+2. **Admin REST API** (JSON CRUD endpoints for SPA frontends — ADR 0008)
+3. Admin interface (initial SSR-based implementation, superseded by REST API)
+4. Comprehensive test project demonstrating all model features
+
+## 2b. Admin REST API (ADR 0008 — Current Approach)
+
+### Why REST API over SSR
+React Admin / Refine provide battle-tested CRUD UIs out of the box. Instead of
+building ~3000 lines of forms/widgets/templates, we expose a ~500-line JSON API
+that any frontend (React SPA, mobile, CLI) can consume.
+
+### Endpoints (`src/fastframe/admin/api.py`)
+```
+GET    /api/admin/schema                      Model + field metadata for auto-forms
+GET    /api/admin/{resource}                  List: page, perPage, sortField, sortOrder, q, field filters
+GET    /api/admin/{resource}/{id}             Retrieve one
+POST   /api/admin/{resource}                  Create (201 / 422 with per-field errors)
+PUT    /api/admin/{resource}/{id}             Update (partial allowed)
+DELETE /api/admin/{resource}/{id}             Delete one
+DELETE /api/admin/{resource}?ids=a&ids=b      Bulk delete
+GET    /api/admin/{resource}/choices/{field}  FK dropdown options (with search)
+```
+
+### Response Format (React Admin compatible)
+- List: `{"data": [...], "total": N, "page": 1, "perPage": 25}`
+- Single: `{"data": {...}}`
+- Validation error: `422 {"detail": {"message": "...", "errors": {"field": "msg"}}}`
+- Integrity error: `409` (unique violation, FK restrict)
+
+### Serialization (`src/fastframe/admin/serializers.py`)
+- UUID → string, datetime/date → ISO 8601, Decimal → float, JSON → as-is
+- ForeignKey: raw id + related object as `{"id": ..., "display": "..."}`
+- Payload coercion for all field types (ISO strings → datetime, str → UUID, etc.)
+- `model_schema()` emits everything a frontend needs: field types, labels,
+  required/nullable, maxLength, choices, FK references, readOnly flags,
+  listDisplay, searchFields, permissions
+
+### Supporting Changes
+- `ValidationError` now carries structured `errors` dict (backward compatible)
+- `Model.__init__` applies field defaults at construction (Django-style), so
+  `full_clean()` works on unsaved instances
+- `_admin_session` dependency avoids ContextVar reset errors on exception paths
+- **Bug fix**: migrations now scope autogenerate to installed apps' tables only
+  (`include_object` hook) — fixes test-suite pollution where stray models in the
+  process-global metadata generated bogus migrations
+
+### Tests
+`tests/test_admin_api.py` — 21 tests covering schema, list (pagination, search,
+filter, sort), retrieve, create (defaults, 422, unknown fields), update (partial,
+422, 404), delete (single, bulk, 404). **Full suite: 185 passed.**
 
 ## 1. Model Fields & ORM Enhancements
 

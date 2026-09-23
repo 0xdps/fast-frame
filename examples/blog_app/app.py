@@ -9,7 +9,9 @@ Then visit:
     http://localhost:8000/admin/
 """
 
+import hashlib
 import os
+import secrets
 import sys
 from pathlib import Path
 
@@ -18,33 +20,50 @@ sys.path.insert(0, str(Path(__file__).parent))
 os.environ.setdefault("FASTFRAME_SETTINGS_MODULE", "config.settings")
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import validates
 
-from fastframe.admin import ModelAdmin, admin_site, get_admin_router
+from fastframe.admin import ModelAdmin, admin_site, get_admin_api_router, get_admin_router
 from fastframe.core.bootstrap import bootstrap
-from fastframe.db.session import get_session
 from fastframe.models import Model, ValidationError, fields
 
 # Initialize FastFrame
 bootstrap()
 
+def hash_password(password: str) -> str:
+    """Hash a password with PBKDF2. Already-hashed values are returned unchanged."""
+    if password.startswith("pbkdf2_sha256$"):
+        return password
+    salt = secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 120_000).hex()
+    return f"pbkdf2_sha256${salt}${digest}"
+
+
 # Define models
 class SimpleUser(Model):
-    """User with UUID PK, email validation, JSON preferences."""
-    
+    """Account used by the admin. Password is stored hashed and never returned by the API."""
+
     id = fields.UUIDField(primary_key=True)
+    first_name = fields.CharField(max_length=50)
+    last_name = fields.CharField(max_length=50)
     username = fields.CharField(max_length=50, unique=True)
     email = fields.EmailField(unique=True)
-    bio = fields.TextField(blank=True, default="")
-    karma = fields.IntegerField(default=0)
+    password = fields.CharField(max_length=255, write_only=True)
     is_active = fields.BooleanField(default=True)
     preferences = fields.JSONField(default=dict)
-    
+
     class Meta:
         db_table = "simple_users"
         ordering = ["username"]
         verbose_name = "User"
         verbose_name_plural = "Users"
         app_label = "users"
+
+    @validates("password")
+    def _hash_password(self, _key: str, value: str | None) -> str | None:
+        if not value:
+            return value
+        return hash_password(value)
 
     def clean(self):
         if not self.username.replace("_", "").isalnum():
@@ -131,8 +150,8 @@ class Comment(Model):
 
 # Configure admin classes
 class SimpleUserAdmin(ModelAdmin):
-    list_display = ["username", "email", "karma", "is_active"]
-    search_fields = ["username", "email", "bio"]
+    list_display = ["first_name", "last_name", "username", "email", "is_active"]
+    search_fields = ["first_name", "last_name", "username", "email"]
     list_filter = ["is_active"]
     list_per_page = 50
 
@@ -178,6 +197,15 @@ app = FastAPI(
     version="0.3.0",
 )
 
+# CORS for the React admin dev server (Vite on :5173)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Create tables on startup
 @app.on_event("startup")
@@ -189,8 +217,9 @@ async def startup():
     print("✓ Database tables created")
 
 
-# Include admin router
+# Include admin routers: SSR views (legacy) + REST API (for React admin)
 app.include_router(get_admin_router())
+app.include_router(get_admin_api_router())
 
 
 # Sample API endpoint

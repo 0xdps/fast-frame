@@ -193,6 +193,34 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
 
     objects: ClassVar[Manager[Any]]
 
+    def __init__(self, **kwargs: Any) -> None:
+        """Initialize a model instance, applying field defaults (Django-style).
+
+        SQLAlchemy only applies ``default=`` at INSERT time, which leaves
+        unset fields as None on new instances. Django instead applies defaults
+        in ``__init__`` so instances are always in a valid in-memory state.
+        We do the same: any field not passed gets its default applied here.
+        """
+        from fastframe.models.fields import NOT_PROVIDED
+
+        fields_meta = self._meta.get("fields", {}) if hasattr(self, "_meta") else {}
+        for field_name, field in fields_meta.items():
+            if field_name in kwargs:
+                continue
+            default = getattr(field, "default", NOT_PROVIDED)
+            if default is not NOT_PROVIDED:
+                kwargs[field_name] = default() if callable(default) else default
+
+        # Same behavior as SQLAlchemy's _declarative_constructor
+        cls_attrs = type(self).__dict__
+        for key, value in kwargs.items():
+            if key not in cls_attrs and not hasattr(type(self), key):
+                raise TypeError(
+                    f"{type(self).__name__!r} is an invalid keyword argument "
+                    f"for {type(self).__name__}"
+                )
+            setattr(self, key, value)
+
     def __repr__(self) -> str:
         """Return a Django-style repr showing primary key and attributes."""
         attrs = []
@@ -253,7 +281,7 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
         if errors:
             from fastframe.models.exceptions import ValidationError
 
-            raise ValidationError(str(errors))
+            raise ValidationError(errors=errors)
 
     def save(self, validate: bool = False) -> None:
         """Save the model instance to the database.
