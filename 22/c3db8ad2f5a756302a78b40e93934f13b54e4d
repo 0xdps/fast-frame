@@ -1,0 +1,155 @@
+docs/admin-crud-implementation-plan.md
+  s_8de26d66febf8a::t_2dcae014384148 1-865
+examples/blog_app/admin-ui/public/favicon.svg
+  s_8de26d66febf8a::t_59baab837c5abf 1
+examples/blog_app/admin-ui/README.md
+  s_8de26d66febf8a::t_c33767b3e33d9b 1,3,5,7,9-11,13,15-18,20-21,23
+  s_8de26d66febf8a::t_59baab837c5abf 2,4,6,8,12,14,19,22
+src/fastframe/models/fields.py
+  s_8de26d66febf8a::t_8fd53072eb4099 72
+  s_8de26d66febf8a::t_4b06b97b8dd295 88
+  s_8de26d66febf8a::t_cd43f54a6fbaee 101
+examples/blog_app/admin-ui/src/dataProvider.ts
+  s_8de26d66febf8a::t_bc9cbbe8597015 10-13
+  s_8de26d66febf8a::t_dfc5deade48cf3 67
+  s_8de26d66febf8a::t_2965407c769a1b 101,109
+  s_8de26d66febf8a::t_5fc270a8c0dd88 1
+  s_8de26d66febf8a::t_8888fb445227b3 129
+  s_8de26d66febf8a::t_f2fd5be230bde4 45
+  s_8de26d66febf8a::t_9616109071fc97 74,83
+  s_8de26d66febf8a::t_1e47982683c67f 138
+  s_8de26d66febf8a::t_4791fd013e6bbc 2-9,14-44,46-66,68-73,75-82,84-100,102-108,110-128,130-137
+examples/blog_app/admin-ui/.oxlintrc.json
+  s_8de26d66febf8a::t_59baab837c5abf 1-8
+examples/blog_app/admin-ui/vite.config.ts
+  s_8de26d66febf8a::t_59baab837c5abf 1-7
+examples/blog_app/admin-ui/src/assets/vite.svg
+  s_8de26d66febf8a::t_59baab837c5abf 1
+examples/blog_app/populate_db.py
+  s_8de26d66febf8a::t_6a0e2189af88de 39-40,43,45,48-49,52,54,57-58,61,63
+src/fastframe/admin/__init__.py
+  s_8de26d66febf8a::t_19f1e4c4c71ec6 30,36,38-39
+adr/0008-rest-api-react-admin.md
+  s_8de26d66febf8a::t_037162a806891a 1-580
+examples/blog_app/admin-ui/src/assets/react.svg
+  s_8de26d66febf8a::t_59baab837c5abf 1
+examples/blog_app/admin-ui/index.html
+  s_8de26d66febf8a::t_59baab837c5abf 1-6,14-19
+  s_8de26d66febf8a::t_34ebf565bffff1 7-13
+tests/test_admin.py
+  s_8de26d66febf8a::t_4651efd0eabcfd 1-5,13-23,27-30,33-43,45-47,52,54-60,63,65-66,68-72,74-76,85,87,92,94-95,99-101
+examples/blog_app/admin-ui/src/App.css
+  s_8de26d66febf8a::t_59baab837c5abf 1-184
+examples/blog_app/admin-ui/src/main.tsx
+  s_8de26d66febf8a::t_59baab837c5abf 1-10
+examples/blog_app/admin-ui/src/resources.tsx
+  s_8de26d66febf8a::t_a63de55d0ce846 77-93
+  s_8de26d66febf8a::t_77f51ef8213454 1-76,113-137,139-149,151-161,163,181-208,210-216,223-224,226-237
+  s_8de26d66febf8a::t_ee1b671350f989 162,164-180
+  s_8de26d66febf8a::t_d4db87a476ceda 94-108
+  s_8de26d66febf8a::t_fe8571e5192488 109-112
+  s_8de26d66febf8a::t_b4885ce37fa9b6 209
+  s_8de26d66febf8a::t_8240824e39cb79 217-222,225
+  s_8de26d66febf8a::t_fba8eb64734bee 138
+  s_8de26d66febf8a::t_b5ad515943a82d 150
+examples/blog_app/admin-ui/package.json
+  s_8de26d66febf8a::t_ff4657b3bacf0c 14
+  s_8de26d66febf8a::t_59baab837c5abf 1-13,15-26
+examples/blog_app/admin-ui/tsconfig.node.json
+  s_8de26d66febf8a::t_59baab837c5abf 1-23
+examples/blog_app/admin-ui/src/api.ts
+  s_8de26d66febf8a::t_e58ecc24f118e5 1-18,20-52
+  s_8de26d66febf8a::t_ce91f1640a2d2e 19
+examples/blog_app/admin-ui/.gitignore
+  s_8de26d66febf8a::t_59baab837c5abf 1-24
+src/fastframe/admin/views.py
+  s_8de26d66febf8a::t_56f8089715a948 8-9
+  s_8de26d66febf8a::t_bb08967fd27fc6 45
+examples/blog_app/README.md
+  s_8de26d66febf8a::t_f97d4b98e0b1f4 55-68
+examples/blog_app/admin-ui/src/App.tsx
+  s_8de26d66febf8a::t_de190f9d66786c 23
+  s_8de26d66febf8a::t_68dfbd6bf9aa0c 2,7,9-22,24-26,31-41,72,81,89,93-99
+  s_8de26d66febf8a::t_59baab837c5abf 4,45,67
+  s_8de26d66febf8a::t_b826230badceac 1,3,5-6,8,27-30,42-44,46-66,68-71,73-80,82-88,90-92,100-113
+src/fastframe/admin/api.py
+  s_8de26d66febf8a::t_21f64aa1b8e658 296-298,327-329,338
+  s_8de26d66febf8a::t_05ae2a687ac25b 7,222,227,261,266,335-337,339-343
+  s_8de26d66febf8a::t_7764b96737c108 1-6,8-36,38,58-92,94-95,97-142,144-145,147-185,187-188,190-203,205-206,208-221,223-226,228-240,242-243,245-260,262-265,267-278,280-281,283-295,299-306,308-309,311-326,330-334,344-400
+  s_8de26d66febf8a::t_20ecb04e24b1a3 37,39-57
+  s_8de26d66febf8a::t_4083f4c4eec5d6 93,143,186,204,241,279,307
+  s_8de26d66febf8a::t_4ab1154f985c8f 96,146,189,207,244,282,310
+src/fastframe/models/base.py
+  s_8de26d66febf8a::t_8c2f7138270e13 204-205,210-211
+  s_8de26d66febf8a::t_2e0c39f8a61e75 196-203,206-209,212,223
+  s_8de26d66febf8a::t_dde4f8d35893ae 284
+  s_8de26d66febf8a::t_a8820f17504af7 213-222
+examples/blog_app/admin-ui/public/icons.svg
+  s_8de26d66febf8a::t_59baab837c5abf 1-24
+examples/blog_app/admin-ui/src/theme.ts
+  s_8de26d66febf8a::t_1d9d31c4284312 67-72,75
+  s_8de26d66febf8a::t_c1b3efaa2ed20b 1-66,73-74,76-80
+  s_8de26d66febf8a::t_cb232af94f94b0 81
+src/fastframe/migrations/runtime.py
+  s_8de26d66febf8a::t_00d3110b738ef4 26-67
+  s_8de26d66febf8a::t_ff3d927c235ba8 72,80,90,98
+examples/blog_app/admin-ui/src/users.tsx
+  s_8de26d66febf8a::t_35f7026f5eeb96 1-3,6,16-21,27,32-36,38,41-43,45-52,54,57-93,96-113,115,119-120,122-131,133,142,145-146,153,159,162-165
+  s_8de26d66febf8a::t_181a0ed3b6a094 132
+  s_8de26d66febf8a::t_31d2aba4fcaa18 4-5,7-15,22-26,28-31,37,39-40,44,53,55-56,94-95,114,116-118,121,134-141,143-144,147-152,154-158,160-161,166-167
+examples/blog_app/admin-ui/src/index.css
+  s_8de26d66febf8a::t_f7756eb6d99a10 1-2,4
+  s_8de26d66febf8a::t_058789e2afb55b 244-247,250-256,260-267,270,276-282,285-289,292-295,299-304,307-314
+  s_8de26d66febf8a::t_df3c5cdad9876a 329,334
+  s_8de26d66febf8a::t_ce7bae941e3c43 7-212,218-219,222,224-243,248-249,257-259,268-269,271-275,283-284,290-291,296-298,305-306,315-328,330-333,335
+  s_8de26d66febf8a::t_26013bb81a1d6f 213-217
+  s_8de26d66febf8a::t_59baab837c5abf 3,5-6
+  s_8de26d66febf8a::t_453cfa0eef262e 220-221,223
+V03_SUMMARY.md
+  s_8de26d66febf8a::t_a98699874f161f 7-56
+examples/blog_app/admin-ui/tsconfig.json
+  s_8de26d66febf8a::t_59baab837c5abf 1-7
+examples/blog_app/app.py
+  s_8de26d66febf8a::t_c09696016a0d8d 153-154
+  s_8de26d66febf8a::t_37fe080e4b219e 200-208
+  s_8de26d66febf8a::t_8805ab31570272 12,14
+  s_8de26d66febf8a::t_c51d403099a19a 23,26
+  s_8de26d66febf8a::t_aedbb8f1e7f69a 33-41,44-45,47-48,51,54,62-66
+  s_8de26d66febf8a::t_fd87835c6f3a48 220,222
+  s_8de26d66febf8a::t_0a48de1b947bee 24
+  s_8de26d66febf8a::t_d19e65ede90e4e 67
+examples/blog_app/admin-ui/src/layout.tsx
+  s_8de26d66febf8a::t_5aac27dcdf6ac7 1-22
+tests/test_admin_api.py
+  s_8de26d66febf8a::t_45a658d7b4a863 74-79
+  s_8de26d66febf8a::t_7cc2637203dade 1,3-7,17-19,22-50,53-68,70-72,83-88,94-95,115,249
+  s_8de26d66febf8a::t_166ea5d052676c 2,8-16,20-21,51-52,69,73,80-82,89-93,96-114,116-248,250-298
+src/fastframe/admin/site.py
+  s_8de26d66febf8a::t_56f8089715a948 20
+src/fastframe/models/exceptions.py
+  s_8de26d66febf8a::t_889b4413dd1a69 10,12-25
+src/fastframe/admin/serializers.py
+  s_8de26d66febf8a::t_23920c91af6d66 1-61,64-216,220-256
+  s_8de26d66febf8a::t_eb1c0268c706cd 217-219
+  s_8de26d66febf8a::t_e434b10e63c1bc 62-63
+examples/blog_app/admin-ui/tsconfig.app.json
+  s_8de26d66febf8a::t_59baab837c5abf 1-26
+examples/blog_app/admin-ui/package-lock.json
+  s_8de26d66febf8a::t_93cf1000b274f1 1-2999
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "22c3db8ad2f5a756302a78b40e93934f13b54e4d",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
