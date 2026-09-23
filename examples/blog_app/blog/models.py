@@ -40,6 +40,10 @@ class Post(Model):
     is_featured = fields.BooleanField(default=False)
     view_count = fields.IntegerField(default=0)
     like_count = fields.IntegerField(default=0)
+    
+    # Relationships
+    author_id = fields.ForeignKey("SimpleUser", on_delete="CASCADE", related_name="posts")
+    category_id = fields.ForeignKey("Category", on_delete="SET NULL", null=True, related_name="posts")
 
     class Meta:
         db_table = "posts"
@@ -72,6 +76,9 @@ class Comment(Model):
     content = fields.TextField()
     is_approved = fields.BooleanField(default=False)
     like_count = fields.IntegerField(default=0)
+    
+    # Relationships
+    post_id = fields.ForeignKey("Post", on_delete="CASCADE", related_name="comments")
 
     class Meta:
         db_table = "comments"

@@ -540,13 +540,28 @@ class ForeignKey(Field):
             to_field: Field on target model to reference (default "id").
             **kwargs: Additional field options.
         """
-        if on_delete not in ("CASCADE", "SET_NULL", "RESTRICT", "SET_DEFAULT"):
+        # Normalize on_delete to SQLAlchemy format
+        valid_options = {
+            "CASCADE": "CASCADE",
+            "SET_NULL": "SET NULL",
+            "SET NULL": "SET NULL",
+            "RESTRICT": "RESTRICT",
+            "SET_DEFAULT": "SET DEFAULT",
+            "SET DEFAULT": "SET DEFAULT",
+            "NO_ACTION": "NO ACTION",
+            "NO ACTION": "NO ACTION",
+        }
+        
+        if on_delete not in valid_options:
             raise ValueError(
-                f"on_delete must be CASCADE, SET_NULL, RESTRICT, or SET_DEFAULT, got {on_delete}"
+                f"on_delete must be CASCADE, SET NULL, RESTRICT, SET DEFAULT, or NO ACTION, got {on_delete}"
             )
+        
+        # Normalize to SQLAlchemy's expected format
+        on_delete = valid_options[on_delete]
 
-        if on_delete == "SET_NULL" and not kwargs.get("null", False):
-            raise ValueError("on_delete='SET_NULL' requires null=True")
+        if on_delete == "SET NULL" and not kwargs.get("null", False):
+            raise ValueError("on_delete='SET NULL' requires null=True")
 
         self.to = to
         self.on_delete = on_delete
@@ -560,22 +575,23 @@ class ForeignKey(Field):
         super().__init__(**kwargs)
 
     def get_sqlalchemy_type(self) -> Any:
-        # Type is determined by the referenced field, but we need to return something
-        # The actual type will be set by the ForeignKey constraint
-        return Integer  # Most common case, will be overridden if needed
+        # Type is determined by the referenced field
+        # For now, return Integer - will be inferred from target at setup time
+        # TODO: Infer type from target model's PK field
+        return Integer  # Most common case
 
     def get_type_annotation(self) -> type:
-        # Foreign keys store the ID, typically int
-        return Mapped[int]
+        # Foreign keys store the ID - type depends on target PK
+        # For simplicity, use Any for now since we don't know target PK type yet
+        from typing import Any
+        return Mapped[Any]
 
     def to_sqlalchemy_column(self) -> ColumnElement[Any]:
         """Convert ForeignKey to SQLAlchemy column.
-
-        We create just the integer column here. The FK constraint and relationship
-        will be set up by the ModelMeta metaclass after all models are defined.
+        
+        The FK constraint will be added later in _setup_fk_relationships
+        after all models are registered and table names can be resolved.
         """
-        # Just create the column without FK constraint for now
-        # The constraint will be added in _setup_fk_relationships
         kwargs = {
             "nullable": self.null,
             **self.extra_kwargs,
@@ -584,7 +600,6 @@ class ForeignKey(Field):
         if self.default is not NOT_PROVIDED:
             kwargs["default"] = self.default
 
-        # Store FK info for later resolution
         return mapped_column(self.get_sqlalchemy_type(), **kwargs)
 
 

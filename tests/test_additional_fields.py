@@ -100,9 +100,14 @@ def test_uuidfield():
     session_id_col = mapper.columns["session_id"]
     assert "UUID" in str(session_id_col.type)
 
-    # Check auto-generation
+    # Check auto-generation (UUID7, not UUID4)
     field = Session._meta["fields"]["session_id"]
-    assert field.default == uuid.uuid4
+    assert field.default is not None
+    assert callable(field.default)
+    # UUID7 is either built-in (Python 3.14+) or from uuid-utils
+    # Just verify it generates valid UUIDs
+    generated = field.default()
+    assert len(str(generated)) == 36  # UUID string format
 
 
 def test_jsonfield():
