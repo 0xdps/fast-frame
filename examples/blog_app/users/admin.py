@@ -1,8 +1,16 @@
-"""Admin configuration for blog app users."""
+"""User admin configuration."""
 
 from fastframe.admin import ModelAdmin, admin_site
 
-# Models will be imported once we set up the full FK-enabled demo
-# For now, this shows the structure
+from .models import SimpleUser
 
-__all__ = []
+
+class SimpleUserAdmin(ModelAdmin):
+    list_display = ["first_name", "last_name", "username", "email", "is_active"]
+    search_fields = ["first_name", "last_name", "username", "email"]
+    list_filter = ["is_active"]
+    list_per_page = 50
+
+
+# Register
+admin_site.register(SimpleUser, SimpleUserAdmin)
