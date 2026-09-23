@@ -116,7 +116,67 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
             attrs.append(f"{col.name}={val}")
         return f"<{self.__class__.__name__}({', '.join(attrs)})>"
 
-    def save(self) -> None:
+    def clean(self) -> None:
+        """Hook for custom model-level validation.
+
+        Override this method to add validation logic that spans multiple fields.
+        Raises ValidationError if validation fails.
+
+        Example:
+            def clean(self):
+                if self.age < 18 and self.has_driver_license:
+                    raise ValidationError("Underage drivers not allowed.")
+        """
+
+    def full_clean(self, exclude: list[str] | None = None) -> None:
+        """Validate all fields and call clean().
+
+        Args:
+            exclude: List of field names to skip validation for.
+
+        Raises:
+            ValidationError: If any field or model validation fails.
+        """
+        exclude = exclude or []
+        errors = {}
+
+        # Validate each field
+        for field_name, field in self._meta["fields"].items():
+            if field_name in exclude:
+                continue
+
+            # Skip auto-incrementing primary keys (they're generated)
+            from fastframe.models.fields import AutoField, BigAutoField
+
+            if isinstance(field, (AutoField, BigAutoField)):
+                continue
+
+            try:
+                value = getattr(self, field_name, None)
+                field.validate(value)
+            except Exception as e:
+                errors[field_name] = str(e)
+
+        # Call custom model-level validation
+        try:
+            self.clean()
+        except Exception as e:
+            errors["__all__"] = str(e)
+
+        if errors:
+            from fastframe.models.exceptions import ValidationError
+
+            raise ValidationError(str(errors))
+
+    def save(self, validate: bool = False) -> None:
+        """Save the model instance to the database.
+
+        Args:
+            validate: If True, calls full_clean() before saving.
+        """
+        if validate:
+            self.full_clean()
+
         from fastframe.db.session import get_current_session
 
         session = get_current_session()
