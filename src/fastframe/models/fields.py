@@ -423,16 +423,68 @@ class URLField(CharField):
 
 
 class UUIDField(Field):
-    """UUID field (typically for primary keys)."""
+    """UUID v7 field (time-ordered, database-optimized).
+    
+    Always uses UUID v7 for better database performance:
+    - Sequential inserts reduce index fragmentation
+    - Natural chronological ordering
+    - Better query performance
+    - Can extract timestamp if needed
+    
+    Requires: uuid-utils package for Python < 3.14
+    """
 
-    def __init__(self, **kwargs: Any) -> None:
-        """Initialize UUIDField.
-
-        Auto-generates UUID4 by default if no default specified.
+    def __init__(
+        self, 
+        *,
+        generation: str | None = None,     # "python" or "database"
+        **kwargs: Any
+    ) -> None:
+        """Initialize UUIDField with UUID v7 generation.
+        
+        Args:
+            generation: "python" for Python-side generation (default),
+                       "database" for database-side generation (requires DB support)
+            **kwargs: Additional field options
         """
-        if "default" not in kwargs:
-            kwargs["default"] = uuid_module.uuid4
+        from fastframe.conf import settings
+        
+        self.generation = generation or getattr(settings, 'UUID_GENERATION', 'python')
+        
+        if self.generation not in ("python", "database"):
+            raise ValueError(
+                f"UUID generation must be 'python' or 'database', got {self.generation}"
+            )
+        
+        if "default" not in kwargs and self.generation == "python":
+            # Python-side UUID v7 generation
+            kwargs["default"] = self._get_uuid7_generator()
+        
+        elif self.generation == "database":
+            # Database-side generation
+            from sqlalchemy import text
+            # Requires database extension/function (e.g., pg_uuidv7)
+            kwargs["server_default"] = text("uuid_generate_v7()")
+        
         super().__init__(**kwargs)
+    
+    @staticmethod
+    def _get_uuid7_generator():
+        """Get UUID v7 generator function."""
+        # Try Python 3.14+ native uuid7
+        if hasattr(uuid_module, 'uuid7'):
+            return uuid_module.uuid7
+        
+        # Fall back to uuid-utils library
+        try:
+            from uuid_utils import uuid7
+            return uuid7
+        except ImportError:
+            raise ImportError(
+                "UUID v7 requires Python 3.14+ or the 'uuid-utils' package.\n"
+                "Install with: pip install uuid-utils\n"
+                "Or upgrade to Python 3.14+"
+            )
 
     def get_sqlalchemy_type(self) -> Any:
         return UUID(as_uuid=True)

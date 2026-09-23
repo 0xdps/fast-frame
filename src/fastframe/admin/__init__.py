@@ -27,6 +27,10 @@ Usage:
 Then visit http://localhost:8000/admin/
 """
 
+from __future__ import annotations
+
+from typing import Any
+
 from fastframe.admin.api import get_admin_api_router
 from fastframe.admin.site import AdminSite, ModelAdmin, admin_site
 from fastframe.admin.views import get_admin_router
@@ -35,6 +39,39 @@ __all__ = [
     "AdminSite",
     "ModelAdmin",
     "admin_site",
-    "get_admin_router",  # SSR views (optional)
-    "get_admin_api_router",  # REST API for React/SPA admins
+    "get_admin_router",
+    "get_admin_api_router",
+    "include_admin",
 ]
+
+
+def _import_user_admin() -> None:
+    """Import the active user model's admin module so it is registered."""
+    import importlib
+
+    from fastframe.conf import settings
+
+    model_path = getattr(settings, "AUTH_USER_MODEL", "auth.User")
+    app_label = model_path.split(".", 1)[0]
+    if app_label == "auth":
+        importlib.import_module("fastframe.contrib.auth.admin")
+        return
+    importlib.import_module(f"{app_label}.models")
+    try:
+        importlib.import_module(f"{app_label}.admin")
+    except ImportError:
+        return
+
+
+def include_admin(app: Any) -> None:
+    """Mount the admin API and UI when ``ENABLE_ADMIN`` is true.
+
+    Does nothing when admin is disabled, so OpenAPI stays free of admin routes.
+    """
+    from fastframe.conf import settings
+
+    if not getattr(settings, "ENABLE_ADMIN", True):
+        return
+    _import_user_admin()
+    app.include_router(get_admin_api_router())
+    app.include_router(get_admin_router())

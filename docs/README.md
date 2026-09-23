@@ -15,5 +15,9 @@ Start here:
 11. [Roadmap](roadmap.md) — beyond v0.1
 12. [Repository layout](repository-layout.md) — repo and package structure
 13. [Development](development.md) — working on the framework
+14. [Settings](settings.md) — admin, OpenAPI, auth, primary keys
+15. [Auth](auth.md) — user model and `AUTH_USER_MODEL`
+16. [Admin deployment](admin-deployment.md) — static, custom, or none
+17. [Admin customization](admin-customization.md) — React admin source
 
 Architecture Decision Records: [../adr/README.md](../adr/README.md)

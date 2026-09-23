@@ -55,9 +55,29 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
         # Auto-add primary key if not present
         has_pk = any(f.primary_key for f in fields.values())
         if not has_pk and "id" not in fields:
-            from fastframe.models.fields import AutoField
-
-            auto_id = AutoField()
+            # Use DEFAULT_AUTO_FIELD setting to determine PK type
+            try:
+                from fastframe.conf import settings
+                auto_field_type = settings.DEFAULT_AUTO_FIELD
+            except (ImportError, AttributeError):
+                # Fallback if settings not available
+                auto_field_type = "AutoField"
+            
+            if auto_field_type == "AutoField":
+                from fastframe.models.fields import AutoField
+                auto_id = AutoField()
+            elif auto_field_type == "BigAutoField":
+                from fastframe.models.fields import BigAutoField
+                auto_id = BigAutoField()
+            elif auto_field_type == "UUIDField":
+                from fastframe.models.fields import UUIDField
+                auto_id = UUIDField(primary_key=True)
+            else:
+                raise ValueError(
+                    f"Invalid DEFAULT_AUTO_FIELD: {auto_field_type}. "
+                    f"Must be 'AutoField', 'BigAutoField', or 'UUIDField'."
+                )
+            
             auto_id.__set_name__(None, "id")  # type: ignore[arg-type]
             fields["id"] = auto_id
 

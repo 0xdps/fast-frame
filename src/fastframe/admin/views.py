@@ -20,13 +20,105 @@ ADMIN_DIR = pathlib.Path(__file__).parent
 templates = Jinja2Templates(directory=str(ADMIN_DIR / "templates"))
 
 
-def get_admin_router() -> APIRouter:
-    """Create and return the admin router with all routes.
+def _admin_settings() -> tuple[bool, str, str]:
+    """Return (enabled, mode, url prefix) from settings, with safe defaults."""
+    try:
+        from fastframe.conf import settings
 
-    Returns:
-        FastAPI APIRouter with admin routes.
+        return (
+            bool(getattr(settings, "ENABLE_ADMIN", True)),
+            str(getattr(settings, "ADMIN_MODE", "static")),
+            str(getattr(settings, "ADMIN_PREFIX", "/admin")),
+        )
+    except (ImportError, AttributeError):
+        return True, "static", "/admin"
+
+
+def _built_admin_router(directory: pathlib.Path, prefix: str) -> APIRouter:
+    """Serve a built SPA (index.html + hashed assets) under ``prefix``."""
+    from fastapi.responses import FileResponse
+
+    root = directory.resolve()
+    router = APIRouter(prefix=prefix, tags=["admin"], include_in_schema=False)
+
+    def _file_for(full_path: str) -> pathlib.Path:
+        if not full_path or full_path.endswith("/"):
+            return root / "index.html"
+        candidate = (root / full_path).resolve()
+        try:
+            candidate.relative_to(root)
+        except ValueError:
+            return root / "index.html"
+        if candidate.is_file():
+            return candidate
+        return root / "index.html"
+
+    @router.get("")
+    @router.get("/")
+    @router.get("/{full_path:path}")
+    async def serve_built_admin(full_path: str = "") -> FileResponse:
+        return FileResponse(_file_for(full_path))
+
+    return router
+
+
+def _custom_admin_missing_router(prefix: str) -> APIRouter:
+    """Explain how to build the advanced admin when dist/ is not present."""
+    router = APIRouter(prefix=prefix, tags=["admin"], include_in_schema=False)
+    page = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>FastFrame Admin</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:40rem;margin:4rem auto;padding:0 1rem;color:#172033}
+code,pre{background:#f4f7fb;border-radius:8px}
+pre{padding:1rem;overflow:auto}
+</style></head>
+<body>
+<h1>Admin UI is not built yet</h1>
+<p>This project uses the advanced admin (<code>ADMIN_MODE = "custom"</code>).
+Generate it, then build the static files:</p>
+<pre>python manage.py startadmin
+cd admin-ui
+npm install
+npm run build</pre>
+<p>Restart the server and open this page again. The REST API stays available
+at the admin API prefix either way.</p>
+</body></html>"""
+
+    @router.get("")
+    @router.get("/")
+    @router.get("/{full_path:path}")
+    async def missing_custom_admin(full_path: str = "") -> HTMLResponse:
+        del full_path
+        return HTMLResponse(page)
+
+    return router
+
+
+def get_admin_router() -> APIRouter:
+    """Create and return the admin UI router.
+
+    ``ADMIN_MODE`` selects the UI:
+
+    * ``static`` — compiled HTML/JS/CSS shipped with FastFrame
+    * ``custom`` — ``admin-ui/dist`` produced by ``startadmin`` + ``npm run build``
+    * ``ssr`` — server-rendered fallback
+
+    When ``ENABLE_ADMIN`` is false, the router has no routes.
     """
-    router = APIRouter(prefix="/admin", tags=["admin"])
+    enable_admin, admin_mode, prefix = _admin_settings()
+    if not enable_admin:
+        return APIRouter(prefix=prefix, tags=["admin"], include_in_schema=False)
+
+    if admin_mode == "static":
+        return _built_admin_router(ADMIN_DIR / "static", prefix)
+
+    if admin_mode == "custom":
+        dist = pathlib.Path.cwd() / "admin-ui" / "dist"
+        if (dist / "index.html").is_file():
+            return _built_admin_router(dist, prefix)
+        return _custom_admin_missing_router(prefix)
+
+    router = APIRouter(prefix=prefix, tags=["admin"])
 
     @router.get("/", response_class=HTMLResponse)
     async def admin_index(request: Request) -> HTMLResponse:
