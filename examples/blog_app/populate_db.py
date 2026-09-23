@@ -17,8 +17,10 @@ from fastframe.models import Model
 # Initialize FastFrame
 bootstrap()
 
-# Import models from app
-from app import Category, Comment, Post, SimpleUser, Tag
+# Import models from app modules
+from blog.models import Category, Comment, Post, Tag
+from users.models import SimpleUser
+
 
 def main():
     print("=" * 70)
