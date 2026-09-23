@@ -36,9 +36,6 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy import (
-    ForeignKey as SQLAlchemyForeignKey,
-)
 from sqlalchemy.orm import Mapped, mapped_column
 
 if TYPE_CHECKING:
@@ -500,6 +497,7 @@ class ForeignKey(Field):
         self.on_delete = on_delete
         self.related_name = related_name
         self.to_field = to_field
+        self.relationship_name: str | None = None  # Set by ModelMeta
 
         # ForeignKey columns are nullable by default (unlike other fields)
         kwargs.setdefault("null", True)
@@ -516,28 +514,13 @@ class ForeignKey(Field):
         return Mapped[int]
 
     def to_sqlalchemy_column(self) -> ColumnElement[Any]:
-        """Convert ForeignKey to SQLAlchemy column + relationship.
+        """Convert ForeignKey to SQLAlchemy column.
 
-        This is more complex than other fields because we need to:
-        1. Determine the target table name
-        2. Create a ForeignKey constraint
-        3. Store metadata for relationship() creation in metaclass
+        We create just the integer column here. The FK constraint and relationship
+        will be set up by the ModelMeta metaclass after all models are defined.
         """
-        # Get target table name
-        if isinstance(self.to, str):
-            # String reference like "Author"
-            # Try to resolve from registry, fallback to simple pluralization
-            target_table = self.to.lower() + "s"  # Simplified for now
-        else:
-            # Model class
-            target_table = getattr(
-                self.to, "__tablename__", self.to.__name__.lower() + "s"
-            )
-
-        # Create SQLAlchemy ForeignKey constraint
-        fk_target = f"{target_table}.{self.to_field}"
-        fk_constraint = SQLAlchemyForeignKey(fk_target, ondelete=self.on_delete)
-
+        # Just create the column without FK constraint for now
+        # The constraint will be added in _setup_fk_relationships
         kwargs = {
             "nullable": self.null,
             **self.extra_kwargs,
@@ -546,7 +529,8 @@ class ForeignKey(Field):
         if self.default is not NOT_PROVIDED:
             kwargs["default"] = self.default
 
-        return mapped_column(self.get_sqlalchemy_type(), fk_constraint, **kwargs)
+        # Store FK info for later resolution
+        return mapped_column(self.get_sqlalchemy_type(), **kwargs)
 
 
 __all__ = [

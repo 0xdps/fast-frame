@@ -86,7 +86,94 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
             **meta_options,
         }
 
-        return super().__new__(mcs, name, bases, namespace, **kwargs)
+        cls = super().__new__(mcs, name, bases, namespace, **kwargs)
+
+        # Setup relationships after class is created
+        _setup_fk_relationships(cls, fields)
+
+        return cls
+
+
+def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
+    """Create relationship attributes and FK constraints for ForeignKey fields.
+
+    For a field like `author_id = ForeignKey("Author")`, this creates:
+    - `author_id`: The integer column with FK constraint
+    - `author`: A relationship to the Author model
+    """
+    from sqlalchemy import ForeignKeyConstraint
+    from sqlalchemy.orm import relationship as sa_relationship
+
+    from fastframe.models.fields import ForeignKey
+
+    fk_constraints = []
+
+    for field_name, field in fields.items():
+        if not isinstance(field, ForeignKey):
+            continue
+
+        # Determine relationship attribute name
+        # author_id → author, user_id → user
+        if field_name.endswith("_id"):
+            rel_attr_name = field_name[:-3]
+        else:
+            rel_attr_name = field_name + "_rel"
+
+        # Get target model - look it up from the registry
+        if isinstance(field.to, str):
+            # String reference - will be resolved by SQLAlchemy
+            target_model_name = field.to
+            # Try to find the target model in the registry to get its table name
+            target_table_name = None
+            for mapper in model_class.registry.mappers:
+                if mapper.class_.__name__ == target_model_name:
+                    target_table_name = mapper.local_table.name
+                    break
+            
+            if target_table_name is None:
+                # Model not yet defined, skip FK constraint for now
+                # (will be resolved when relationship is accessed)
+                target_model_name = field.to
+            else:
+                # Add FK constraint using actual table name
+                fk_constraints.append(
+                    ForeignKeyConstraint(
+                        [field_name],
+                        [f"{target_table_name}.{field.to_field}"],
+                        ondelete=field.on_delete,
+                    )
+                )
+        else:
+            target_model_name = field.to.__name__
+            target_table_name = field.to.__tablename__
+            fk_constraints.append(
+                ForeignKeyConstraint(
+                    [field_name],
+                    [f"{target_table_name}.{field.to_field}"],
+                    ondelete=field.on_delete,
+                )
+            )
+
+        # Create the relationship
+        kwargs = {
+            "lazy": "select",
+        }
+
+        if field.related_name:
+            kwargs["back_populates"] = field.related_name
+
+        rel = sa_relationship(target_model_name, **kwargs)
+
+        # Set the relationship attribute on the model
+        setattr(model_class, rel_attr_name, rel)
+
+        # Store relationship name in field metadata for later use
+        field.relationship_name = rel_attr_name
+
+    # Add FK constraints to the table
+    if fk_constraints and hasattr(model_class, "__table__"):
+        for fk_constraint in fk_constraints:
+            model_class.__table__.append_constraint(fk_constraint)
 
 
 class Model(DeclarativeBase, metaclass=ModelMeta):
