@@ -36,28 +36,31 @@ def main():
         print("\n[2] Creating users...")
         users = [
             SimpleUser.objects.create(
+                first_name="Alice",
+                last_name="Nguyen",
                 username="alice",
                 email="alice@example.com",
-                bio="Python developer and blogger",
-                karma=150,
+                password="changeme",
                 is_active=True,
-                preferences={"theme": "dark", "notifications": True}
+                preferences={"theme": "dark", "notifications": True},
             ),
             SimpleUser.objects.create(
+                first_name="Bob",
+                last_name="Martinez",
                 username="bob",
                 email="bob@example.com",
-                bio="Tech enthusiast",
-                karma=75,
+                password="changeme",
                 is_active=True,
-                preferences={"theme": "light"}
+                preferences={"theme": "light"},
             ),
             SimpleUser.objects.create(
+                first_name="Charlie",
+                last_name="Okoye",
                 username="charlie",
                 email="charlie@example.com",
-                bio="Content writer",
-                karma=200,
+                password="changeme",
                 is_active=True,
-                preferences={}
+                preferences={},
             ),
         ]
         print(f"✓ Created {len(users)} users")

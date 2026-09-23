@@ -27,12 +27,14 @@ Usage:
 Then visit http://localhost:8000/admin/
 """
 
+from fastframe.admin.api import get_admin_api_router
 from fastframe.admin.site import AdminSite, ModelAdmin, admin_site
 from fastframe.admin.views import get_admin_router
 
 __all__ = [
     "AdminSite",
-    "ModelAdmin", 
+    "ModelAdmin",
     "admin_site",
-    "get_admin_router",
+    "get_admin_router",  # SSR views (optional)
+    "get_admin_api_router",  # REST API for React/SPA admins
 ]

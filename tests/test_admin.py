@@ -1,92 +1,79 @@
-"""Tests for FastFrame Admin."""
+"""Tests for FastFrame Admin (site registry and ModelAdmin config).
+
+The model is defined once at module level to avoid SQLAlchemy's
+"table already defined" errors from re-creating classes per test.
+"""
 
 import pytest
-from fastapi.testclient import TestClient
 
 from fastframe.admin import ModelAdmin, admin_site
-from fastframe.db.session import session_scope
 from fastframe.models import Model, fields
 
 
-@pytest.fixture
-def test_model():
-    """Create a test model."""
-    
-    class TestModel(Model):
-        id = fields.IntegerField(primary_key=True)
-        name = fields.CharField(max_length=100)
-        email = fields.EmailField()
-        is_active = fields.BooleanField(default=True)
-        
-        class Meta:
-            db_table = "test_admin_models"
-            verbose_name = "Test Model"
-            verbose_name_plural = "Test Models"
-            app_label = "testapp"
-    
-    return TestModel
+class AdminTestModel(Model):
+    id = fields.IntegerField(primary_key=True)
+    name = fields.CharField(max_length=100)
+    email = fields.EmailField()
+    is_active = fields.BooleanField(default=True)
+
+    class Meta:
+        db_table = "test_admin_models"
+        verbose_name = "Test Model"
+        verbose_name_plural = "Test Models"
+        app_label = "testapp"
 
 
 @pytest.fixture
-def test_admin(test_model):
-    """Register test model with admin."""
-    
-    class TestModelAdmin(ModelAdmin):
+def test_admin():
+    """Register the test model with a configured ModelAdmin."""
+
+    class AdminTestModelAdmin(ModelAdmin):
         list_display = ["name", "email", "is_active"]
         search_fields = ["name", "email"]
-    
-    # Register
-    if not admin_site.is_registered(test_model):
-        admin_site.register(test_model, TestModelAdmin)
-    
-    yield admin_site.get_model_admin(test_model)
-    
-    # Cleanup
-    if admin_site.is_registered(test_model):
-        admin_site.unregister(test_model)
+
+    if not admin_site.is_registered(AdminTestModel):
+        admin_site.register(AdminTestModel, AdminTestModelAdmin)
+
+    yield admin_site.get_model_admin(AdminTestModel)
+
+    if admin_site.is_registered(AdminTestModel):
+        admin_site.unregister(AdminTestModel)
 
 
-def test_model_admin_init(test_model):
+def test_model_admin_init():
     """Test ModelAdmin initialization."""
-    admin = ModelAdmin(model=test_model, admin_site=admin_site)
-    
-    assert admin.model == test_model
+    admin = ModelAdmin(model=AdminTestModel, admin_site=admin_site)
+
+    assert admin.model == AdminTestModel
     assert admin.admin_site == admin_site
     assert admin.list_per_page == 100
 
 
-def test_admin_site_register(test_model):
+def test_admin_site_register():
     """Test registering a model with admin site."""
-    
-    # Unregister if exists
-    if admin_site.is_registered(test_model):
-        admin_site.unregister(test_model)
-    
-    # Register
-    admin_site.register(test_model)
-    
-    assert admin_site.is_registered(test_model)
-    model_admin = admin_site.get_model_admin(test_model)
+    if admin_site.is_registered(AdminTestModel):
+        admin_site.unregister(AdminTestModel)
+
+    admin_site.register(AdminTestModel)
+
+    assert admin_site.is_registered(AdminTestModel)
+    model_admin = admin_site.get_model_admin(AdminTestModel)
     assert isinstance(model_admin, ModelAdmin)
-    
-    # Cleanup
-    admin_site.unregister(test_model)
+
+    admin_site.unregister(AdminTestModel)
 
 
-def test_admin_site_register_duplicate(test_model):
+def test_admin_site_register_duplicate():
     """Test that registering same model twice raises error."""
-    
-    # Unregister if exists
-    if admin_site.is_registered(test_model):
-        admin_site.unregister(test_model)
-    
-    admin_site.register(test_model)
-    
+    if admin_site.is_registered(AdminTestModel):
+        admin_site.unregister(AdminTestModel)
+
+    admin_site.register(AdminTestModel)
+
     with pytest.raises(ValueError, match="already registered"):
-        admin_site.register(test_model)
-    
-    # Cleanup
-    admin_site.unregister(test_model)
+        admin_site.register(AdminTestModel)
+
+    admin_site.unregister(AdminTestModel)
 
 
 def test_get_list_display(test_admin):
@@ -95,23 +82,21 @@ def test_get_list_display(test_admin):
     assert display == ["name", "email", "is_active"]
 
 
-def test_get_list_display_default(test_model):
+def test_get_list_display_default():
     """Test default list_display when not configured."""
-    admin = ModelAdmin(model=test_model, admin_site=admin_site)
+    admin = ModelAdmin(model=AdminTestModel, admin_site=admin_site)
     display = admin.get_list_display()
     assert display == ["__str__"]
 
 
-def test_search_results(test_model, test_admin):
+def test_search_results(test_admin):
     """Test search filtering."""
-    # This is a basic unit test; integration tests would use actual DB
-    qs = test_model.objects
-    
+    qs = AdminTestModel.objects
+
     # Empty search should return unchanged
     result = test_admin.get_search_results(qs, "")
     assert result == qs
-    
-    # Search term should build Q objects (tested separately)
-    # For now just ensure it doesn't crash
-    result = test_admin.get_search_results(qs, "test")
+
+    # Search term should build Q objects (doesn't need a DB to construct)
+    result = test_admin.get_search_results(qs.all(), "test")
     assert result is not None

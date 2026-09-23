@@ -5,6 +5,8 @@ Provides list, detail, create, update, and delete views for registered models.
 
 from __future__ import annotations
 
+# Templates directory
+import pathlib
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -13,10 +15,6 @@ from fastapi.templating import Jinja2Templates
 
 from fastframe.admin.site import admin_site
 from fastframe.db.session import _session_ctx, get_session
-
-
-# Templates directory
-import pathlib
 
 ADMIN_DIR = pathlib.Path(__file__).parent
 templates = Jinja2Templates(directory=str(ADMIN_DIR / "templates"))
@@ -44,7 +42,7 @@ def get_admin_router() -> APIRouter:
         
         # Group models by app
         apps: dict[str, list[dict[str, Any]]] = {}
-        for model, model_admin in registry.items():
+        for model, _model_admin in registry.items():
             app_label = model._meta.get("app_label", "Unknown")
             if app_label not in apps:
                 apps[app_label] = []

@@ -52,6 +52,20 @@ This example project demonstrates all of FastFrame's Django-like ORM features in
 - **unique_together**: Composite unique constraints
 - **verbose_name**: Human-readable names
 
+## Admin UI (React Admin)
+
+The admin SPA lives in `admin-ui/` and talks to `GET/POST /api/admin/*`.
+
+```bash
+# API
+python -m uvicorn app:app --host 127.0.0.1 --port 8000
+
+# UI (another terminal)
+cd admin-ui && npm install && npm run dev
+```
+
+Open http://localhost:5173
+
 ## Running the Demos
 
 ### Simple Demo (No ForeignKeys)
