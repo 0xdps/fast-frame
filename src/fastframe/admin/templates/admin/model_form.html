@@ -1,0 +1,53 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="bg-white rounded-lg shadow-md p-8">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">{{ title }}</h2>
+        
+        <form method="post" class="space-y-6">
+            <!-- Form fields will be dynamically generated here -->
+            <!-- For now, show a placeholder -->
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" 
+                                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" 
+                                  clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-blue-800">Form coming soon</h3>
+                        <p class="mt-2 text-sm text-blue-700">
+                            Form generation is in progress. This will automatically create forms based on your model fields.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex items-center justify-between border-t pt-6">
+                <a href="/admin/{{ app_label }}/{{ model_name }}/" 
+                   class="text-gray-600 hover:text-gray-900">
+                    ← Back to list
+                </a>
+                <div class="flex space-x-3">
+                    <button type="submit" 
+                            name="_save" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        Save
+                    </button>
+                    {% if not is_add %}
+                    <button type="submit" 
+                            name="_delete" 
+                            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        Delete
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
