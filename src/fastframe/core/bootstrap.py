@@ -10,6 +10,9 @@ def bootstrap(settings_module: str | None = None) -> AppsRegistry:
     """Load settings, build the app registry, and run AppConfig.ready()."""
     global _registry
     settings = load_settings(settings_module)
+    from fastframe.conf import settings as conf_settings
+
+    conf_settings.reload()
     registry = populate_apps(settings)
     for app_config in registry.app_configs:
         app_config.ready()

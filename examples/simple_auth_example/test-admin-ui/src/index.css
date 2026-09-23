@@ -1,0 +1,335 @@
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f4f7fb;
+  color: #172033;
+}
+
+.boot-message {
+  padding: 48px;
+  font-family: "Figtree", "Segoe UI", sans-serif;
+  max-width: 640px;
+}
+
+.frame-menu {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: #172033;
+}
+
+.frame-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 16px 12px;
+  color: #f4f7fb;
+}
+
+.frame-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #3157e8;
+  color: white;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.frame-name {
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.frame-sub {
+  color: #93a0b3;
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
+
+.RaSidebar-fixed,
+.RaSidebar-docked {
+  background: #172033;
+}
+
+.RaSidebar-fixed .MuiPaper-root,
+.RaSidebar-docked .MuiPaper-root {
+  background: #172033;
+}
+
+.RaMenuItemLink-root {
+  color: #d5dce6 !important;
+  margin: 2px 10px;
+  border-radius: 10px;
+  min-height: 40px;
+}
+
+.RaMenuItemLink-root .MuiTypography-root {
+  font-family: "Figtree", sans-serif;
+  font-weight: 500;
+}
+
+.RaMenuItemLink-active {
+  background: #243049 !important;
+  color: #ffffff !important;
+}
+
+.RaLayout-content {
+  background: #f4f7fb;
+  padding: 8px 20px 28px;
+}
+
+.RaList-main,
+.RaEdit-main,
+.RaCreate-main {
+  margin-top: 8px;
+}
+
+.RaList-content {
+  border-radius: 16px;
+  border: 1px solid #e3e8ee;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.RaDatagrid-root {
+  border: none;
+}
+
+.RaDatagrid-rowCell,
+.RaDatagrid-headerCell {
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.home {
+  padding: 12px 8px 32px;
+}
+
+.home-head h1 {
+  margin: 4px 0 0;
+  font-family: "Outfit", sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #3157e8;
+  font-family: "Outfit", sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 18px 16px;
+  background: #ffffff;
+  border: 1px solid #e3e8ee;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  min-height: 148px;
+}
+
+.tile:hover {
+  border-color: #3157e8;
+}
+
+.tile-people {
+  background: #172033;
+  border-color: #172033;
+  color: #f4f7fb;
+}
+
+.tile-people .tile-app,
+.tile-people .tile-hint {
+  color: #93a0b3;
+}
+
+.tile-app {
+  color: #5c6b7a;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+}
+
+.tile-count {
+  font-family: "Outfit", sans-serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-top: 8px;
+}
+
+.tile-label {
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+}
+
+.tile-hint {
+  margin-top: auto;
+  color: #5c6b7a;
+  font-size: 0.85rem;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.avatar.lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  font-size: 1.25rem;
+  flex: none;
+}
+
+.user-email {
+  margin: 2px 0 8px;
+  color: #5c6b7a;
+  font-size: 0.95rem;
+}
+
+.pill {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.pill.on {
+  background: #e7f7f1;
+  color: #0b7a54;
+}
+
+.pill.off {
+  background: #fdecec;
+  color: #a33b42;
+}
+
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e3e8ee;
+  border-radius: 16px;
+  padding: 20px 24px;
+}
+
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.profile-identity h2 {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.password-panel {
+  width: 100%;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid #e3e8ee;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: grid;
+  gap: 12px;
+}
+
+.password-panel h3 {
+  margin: 0;
+  font-family: "Outfit", sans-serif;
+}
+
+.password-panel label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #5c6b7a;
+}
+
+.password-panel input {
+  border: 1px solid #d5dde6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: #172033;
+}
+
+.password-error {
+  margin: 0;
+  color: #c2414a;
+}
+
+.password-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.user-edit .RaEdit-main,
+.user-create .RaCreate-main {
+  background: transparent;
+  box-shadow: none;
+}
+
+.user-edit .RaEdit-card,
+.user-create .RaCreate-card {
+  background: transparent;
+  box-shadow: none;
+}
+
+.user-edit .RaSimpleForm-root,
+.user-create form {
+  background: #ffffff;
+  border: 1px solid #e3e8ee;
+  border-radius: 16px;
+  width: 100%;
+}

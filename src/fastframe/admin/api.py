@@ -59,7 +59,26 @@ def _admin_session():
 
 def get_admin_api_router() -> APIRouter:
     """Create the admin REST API router."""
-    router = APIRouter(prefix="/api/admin", tags=["admin-api"])
+    try:
+        from fastframe.conf import settings
+        enable_admin = getattr(settings, 'ENABLE_ADMIN', True)
+        enable_admin_docs = getattr(settings, 'ENABLE_ADMIN_DOCS', True)
+        admin_api_prefix = getattr(settings, 'ADMIN_API_PREFIX', '/api/admin')
+    except (ImportError, AttributeError):
+        enable_admin = True
+        enable_admin_docs = True
+        admin_api_prefix = '/api/admin'
+    
+    if not enable_admin:
+        # Return empty router if admin is disabled
+        return APIRouter(prefix=admin_api_prefix, tags=["admin-api"])
+    
+    # Create router with conditional OpenAPI inclusion
+    router = APIRouter(
+        prefix=admin_api_prefix, 
+        tags=["admin-api"],
+        include_in_schema=enable_admin_docs
+    )
 
     # ------------------------------------------------------------------
     # Schema

@@ -41,6 +41,9 @@ python manage.py check
 python manage.py showmigrations
 python manage.py dbshell
 python manage.py startapp users
+python manage.py createadminuser
+python manage.py startadmin
+python manage.py buildadmin
 python manage.py --version
 ```
 
@@ -156,6 +159,37 @@ This is **deferred past v0.2** — `docs/roadmap.md` places the "custom
 management commands ecosystem" at v0.6+, alongside background tasks, email,
 caching, and the other later batteries. Exact discovery mechanism still TBD
 when that lands; path follows Django familiarity.
+
+### `createadminuser`
+
+Creates a user from `AUTH_USER_MODEL` with `user_data.admin_access` and
+`user_data.superuser` set. Prompts for username, email, and password unless
+the flags are passed:
+
+```text
+python manage.py createadminuser --username admin --email admin@example.com --password secret --no-input
+```
+
+### `startadmin`
+
+Copies the React admin source into the project so it can be themed and
+extended. See [admin-customization.md](admin-customization.md).
+
+```text
+python manage.py startadmin              # creates ./admin-ui
+python manage.py startadmin ui --force   # replace an existing directory
+```
+
+### `buildadmin`
+
+Runs `npm run build` and copies the compiled files. By default the source is
+the admin template inside FastFrame and the output is `fastframe/admin/static`
+(the bundle served when `ADMIN_MODE = "static"`).
+
+```text
+python manage.py buildadmin
+python manage.py buildadmin --source admin-ui --output admin-ui/dist
+```
 
 ## Future
 
