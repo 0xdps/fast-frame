@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ title }} | FastFrame Admin{% endblock %}</title>
+    
+    <!-- Tailwind CSS via CDN for rapid development -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- htmx for progressive enhancement -->
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    
+    <!-- Alpine.js for interactive components -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <h1 class="text-2xl font-bold">
+                        <a href="/admin/" class="hover:text-blue-200">FastFrame Admin</a>
+                    </h1>
+                </div>
+                <nav class="flex items-center space-x-6">
+                    <a href="/admin/" class="hover:text-blue-200">Home</a>
+                    <a href="/docs" class="hover:text-blue-200">API Docs</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Breadcrumbs -->
+    {% if breadcrumbs %}
+    <div class="bg-white border-b">
+        <div class="container mx-auto px-4 py-2">
+            <nav class="flex text-sm text-gray-600">
+                {% for crumb in breadcrumbs %}
+                    {% if not loop.last %}
+                        <a href="{{ crumb.url }}" class="hover:text-blue-600">{{ crumb.label }}</a>
+                        <span class="mx-2">/</span>
+                    {% else %}
+                        <span class="text-gray-900">{{ crumb.label }}</span>
+                    {% endif %}
+                {% endfor %}
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t mt-12">
+        <div class="container mx-auto px-4 py-6 text-center text-gray-600 text-sm">
+            <p>FastFrame Admin v0.3 | Built with FastAPI, htmx, and Alpine.js</p>
+        </div>
+    </footer>
+
+    {% block extra_body %}{% endblock %}
+</body>
+</html>
