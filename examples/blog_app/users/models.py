@@ -20,12 +20,12 @@ def hash_password(password: str) -> str:
 class SimpleUser(Model):
     """Account used by the admin. Password is stored hashed and never returned by the API."""
 
-    id = fields.UUIDField(primary_key=True)
-    first_name = fields.CharField(max_length=50)
-    last_name = fields.CharField(max_length=50)
+    # Using AutoField for simplicity - UUID support needs type matching in FK fields
+    first_name = fields.CharField(max_length=50, blank=True, default="")
+    last_name = fields.CharField(max_length=50, blank=True, default="")
     username = fields.CharField(max_length=50, unique=True)
     email = fields.EmailField(unique=True)
-    password = fields.CharField(max_length=255, write_only=True)
+    password = fields.CharField(max_length=255, write_only=True, blank=True, default="")
     is_active = fields.BooleanField(default=True)
     preferences = fields.JSONField(default=dict)
 

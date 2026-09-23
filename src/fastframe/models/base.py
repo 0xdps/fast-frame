@@ -106,27 +106,29 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
             **meta_options,
         }
 
-        cls = super().__new__(mcs, name, bases, namespace, **kwargs)
+        # Store fields for later FK setup
+        namespace["_fields_for_fk_setup"] = fields
 
-        # Setup relationships after class is created
-        _setup_fk_relationships(cls, fields)
+        cls = super().__new__(mcs, name, bases, namespace, **kwargs)
 
         return cls
 
 
 def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
-    """Create relationship attributes and FK constraints for ForeignKey fields.
+    """Create FK constraints and relationship attributes for ForeignKey fields.
 
     For a field like `author_id = ForeignKey("Author")`, this creates:
-    - `author_id`: The integer column with FK constraint
+    - FK constraint on author_id column (deferred until target table exists)
     - `author`: A relationship to the Author model
+    - reverse: `posts` on Author (if related_name="posts")
     """
-    from sqlalchemy import ForeignKeyConstraint
-    from sqlalchemy.orm import relationship as sa_relationship
+    from sqlalchemy import ForeignKey as SAForeignKey, event
+    from sqlalchemy.orm import backref, relationship as sa_relationship
 
     from fastframe.models.fields import ForeignKey
 
-    fk_constraints = []
+    if not hasattr(model_class, "__table__"):
+        return  # Table not yet created
 
     for field_name, field in fields.items():
         if not isinstance(field, ForeignKey):
@@ -139,61 +141,78 @@ def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
         else:
             rel_attr_name = field_name + "_rel"
 
-        # Get target model - look it up from the registry
+        # Get target model name
         if isinstance(field.to, str):
-            # String reference - will be resolved by SQLAlchemy
             target_model_name = field.to
-            # Try to find the target model in the registry to get its table name
-            target_table_name = None
-            for mapper in model_class.registry.mappers:
-                if mapper.class_.__name__ == target_model_name:
-                    target_table_name = mapper.local_table.name
-                    break
-            
-            if target_table_name is None:
-                # Model not yet defined, skip FK constraint for now
-                # (will be resolved when relationship is accessed)
-                target_model_name = field.to
-            else:
-                # Add FK constraint using actual table name
-                fk_constraints.append(
-                    ForeignKeyConstraint(
-                        [field_name],
-                        [f"{target_table_name}.{field.to_field}"],
-                        ondelete=field.on_delete,
-                    )
-                )
         else:
             target_model_name = field.to.__name__
-            target_table_name = field.to.__tablename__
-            fk_constraints.append(
-                ForeignKeyConstraint(
-                    [field_name],
-                    [f"{target_table_name}.{field.to_field}"],
-                    ondelete=field.on_delete,
-                )
-            )
+
+        # Add FK constraint to column
+        # We need to resolve the target model to get its table name
+        col = model_class.__table__.c.get(field_name)
+        if col is not None:
+            # Try to find target model in registry
+            target_table_name = None
+            if hasattr(model_class, "registry") and model_class.registry:
+                for mapper in model_class.registry.mappers:
+                    if mapper.class_.__name__ == target_model_name:
+                        target_table_name = mapper.local_table.name
+                        break
+            
+            if target_table_name:
+                # Target found, add FK immediately
+                fk_ref = f"{target_table_name}.{field.to_field}"
+                fk = SAForeignKey(fk_ref, ondelete=field.on_delete)
+                col.foreign_keys.add(fk)
+                fk._set_parent(col)
+            else:
+                # Target not found yet, defer FK creation
+                # Store FK info for later resolution
+                def add_deferred_fk(mapper_registry, model_cls=model_class, col_obj=col, 
+                                   target_name=target_model_name, fk_field=field):
+                    """Add FK constraint after all mappers are configured."""
+                    # Find target table
+                    for m in mapper_registry.mappers:
+                        if m.class_.__name__ == target_name:
+                            tbl_name = m.local_table.name
+                            fk_ref = f"{tbl_name}.{fk_field.to_field}"
+                            if not col_obj.foreign_keys:  # Only add if not already present
+                                fk = SAForeignKey(fk_ref, ondelete=fk_field.on_delete)
+                                col_obj.foreign_keys.add(fk)
+                                fk._set_parent(col_obj)
+                            break
+                
+                # Register event to add FK after mapper configuration
+                if hasattr(model_class, "registry"):
+                    event.listen(
+                        model_class.registry,
+                        "after_configured",
+                        add_deferred_fk,
+                        once=True
+                    )
 
         # Create the relationship
-        kwargs = {
+        rel_kwargs = {
             "lazy": "select",
         }
 
         if field.related_name:
-            kwargs["back_populates"] = field.related_name
+            # Use backref to automatically create reverse relationship
+            backref_kwargs = {
+                "lazy": "select",
+            }
+            if field.on_delete == "CASCADE":
+                backref_kwargs["cascade"] = "all, delete-orphan"
+            
+            rel_kwargs["backref"] = backref(field.related_name, **backref_kwargs)
 
-        rel = sa_relationship(target_model_name, **kwargs)
+        rel = sa_relationship(target_model_name, **rel_kwargs)
 
         # Set the relationship attribute on the model
         setattr(model_class, rel_attr_name, rel)
 
         # Store relationship name in field metadata for later use
         field.relationship_name = rel_attr_name
-
-    # Add FK constraints to the table
-    if fk_constraints and hasattr(model_class, "__table__"):
-        for fk_constraint in fk_constraints:
-            model_class.__table__.append_constraint(fk_constraint)
 
 
 class Model(DeclarativeBase, metaclass=ModelMeta):
@@ -329,3 +348,8 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
         super().__init_subclass__(**kwargs)
         if cls is not Model and getattr(cls, "__tablename__", None):
             cls.objects = Manager(cls)
+            
+            # Setup FK relationships now that __table__ exists
+            fields_for_fk = getattr(cls, "_fields_for_fk_setup", {})
+            if fields_for_fk:
+                _setup_fk_relationships(cls, fields_for_fk)
