@@ -33,11 +33,43 @@ class QuerySet(Generic[T]):
             self._result_cache = list(self.session.scalars(self._stmt).all())
         return self._result_cache
 
-    def filter(self, **kwargs: Any) -> QuerySet[T]:
-        """Filter by field equality. Returns a new QuerySet for chaining."""
+    def filter(self, *args: Any, **kwargs: Any) -> QuerySet[T]:
+        """Filter by field conditions. Returns a new QuerySet for chaining.
+
+        Supports:
+        - Simple equality: .filter(name="Alice")
+        - Field lookups: .filter(age__gte=18, name__icontains="alice")
+        - Q objects: .filter(Q(published=True) | Q(featured=True))
+
+        Field lookups:
+            - exact: field == value (default)
+            - iexact: case-insensitive exact
+            - contains, icontains: substring matching
+            - gt, gte, lt, lte: comparisons
+            - in: field in list
+            - isnull: field is NULL
+            - startswith, istartswith, endswith, iendswith: string matching
+        """
+        from fastframe.models.query import Q, _apply_lookup
+
         clone = self._clone()
+
+        # Handle Q objects
+        for q_obj in args:
+            if isinstance(q_obj, Q):
+                clone._stmt = clone._stmt.where(q_obj.to_sqlalchemy(self.model_class))
+
+        # Handle field lookups
         for key, value in kwargs.items():
-            clone._stmt = clone._stmt.where(getattr(self.model_class, key) == value)
+            if "__" in key:
+                # Field lookup like "age__gte"
+                field_name, lookup = key.rsplit("__", 1)
+                column = getattr(self.model_class, field_name)
+                clone._stmt = clone._stmt.where(_apply_lookup(column, lookup, value))
+            else:
+                # Simple equality
+                clone._stmt = clone._stmt.where(getattr(self.model_class, key) == value)
+
         return clone
 
     def exclude(self, **kwargs: Any) -> QuerySet[T]:
@@ -128,9 +160,9 @@ class Manager(Generic[T]):
         """Return a QuerySet for all objects."""
         return QuerySet(self.model_class)
 
-    def filter(self, **kwargs: Any) -> QuerySet[T]:
-        """Return a QuerySet filtered by field equality."""
-        return self.all().filter(**kwargs)
+    def filter(self, *args: Any, **kwargs: Any) -> QuerySet[T]:
+        """Return a QuerySet filtered by field conditions."""
+        return self.all().filter(*args, **kwargs)
 
     def exclude(self, **kwargs: Any) -> QuerySet[T]:
         """Return a QuerySet excluding objects matching field equality."""

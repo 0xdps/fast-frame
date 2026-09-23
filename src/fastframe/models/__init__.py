@@ -6,6 +6,7 @@ from fastframe.models.exceptions import (
     ValidationError,
 )
 from fastframe.models.manager import QuerySet
+from fastframe.models.query import F, Q
 
 __all__ = [
     "Model",
@@ -14,4 +15,6 @@ __all__ = [
     "QuerySet",
     "ValidationError",
     "fields",
+    "Q",
+    "F",
 ]
