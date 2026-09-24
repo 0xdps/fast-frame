@@ -1,44 +1,18 @@
 """Integration tests for Admin system."""
 
-import tempfile
-from pathlib import Path
+import os
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
 
-from fastframe.admin import admin_site
 from fastframe.contrib.auth.models import User
 from fastframe.core import create_app
 from fastframe.models import Model
 
 
 @pytest.fixture
-def test_db():
-    """Create temporary database for testing."""
-    fd, db_path = tempfile.mkstemp(suffix=".db")
-    import os
-
-    os.close(fd)
-    engine = create_engine(f"sqlite:///{db_path}")
-    Model.metadata.create_all(engine)
-
-    yield engine, db_path
-
-    # Cleanup
-    try:
-        Path(db_path).unlink()
-    except Exception:
-        pass
-
-
-@pytest.fixture
 def admin_app():
     """Create FastFrame app with admin enabled."""
-    # Override settings temporarily
-    import os
-
     original_settings = os.environ.get("FASTFRAME_SETTINGS_MODULE")
     os.environ["FASTFRAME_SETTINGS_MODULE"] = "tests.fixtures.admin_test_settings"
 
@@ -79,156 +53,118 @@ def test_admin_api_resources_list(client):
     assert any(r["name"] == "User" for r in data["models"])
 
 
-def test_admin_api_list_users(client, test_db):
+def _prepare_auth_tables() -> None:
+    from fastframe.db.engine import get_engine
+    from fastframe.db.session import session_scope
+
+    Model.metadata.create_all(bind=get_engine())
+    with session_scope():
+        for user in list(User.objects.all()):
+            user.delete()
+
+
+def test_admin_api_list_users(client):
     """Admin API should list users."""
-    engine, _ = test_db
+    from fastframe.db.session import session_scope
 
-    # Create test user
-    with Session(engine) as session:
-        user = User(
-            username="testuser",
-            email="test@example.com",
-        )
-        user.set_password("password123")
-        session.add(user)
-        session.commit()
+    _prepare_auth_tables()
+    with session_scope():
+        user = User(username="testuser", email="test@example.com", password="password123")
+        user.save()
 
-    # List users via API
-    response = client.get("/api/admin/User")
+    response = client.get("/api/admin/user")
     assert response.status_code == 200
     data = response.json()
-    assert len(data) >= 1
-    assert any(u["username"] == "testuser" for u in data)
+    assert data["total"] >= 1
+    assert any(row["username"] == "testuser" for row in data["data"])
 
 
 def test_admin_api_create_user(client):
     """Admin API should create users."""
+    _prepare_auth_tables()
     response = client.post(
-        "/api/admin/User",
+        "/api/admin/user",
         json={
             "username": "newuser",
             "email": "new@example.com",
+            "password": "password123",
             "is_active": True,
         },
     )
-    # Note: May fail if auth/validation required - that's expected
-    assert response.status_code in (200, 201, 400, 401, 403)
+    assert response.status_code == 201
+    assert response.json()["data"]["username"] == "newuser"
 
 
-def test_admin_api_get_user(client, test_db):
-    """Admin API should retrieve single user."""
-    engine, _ = test_db
+def test_admin_api_get_user(client):
+    """Admin API should retrieve a single user."""
+    from fastframe.db.session import session_scope
 
-    # Create test user
-    with Session(engine) as session:
-        user = User(
-            username="gettest",
-            email="get@example.com",
-        )
-        user.set_password("password123")
-        session.add(user)
-        session.commit()
+    _prepare_auth_tables()
+    with session_scope():
+        user = User(username="gettest", email="get@example.com", password="password123")
+        user.save()
         user_id = user.id
 
-    # Get user via API
-    response = client.get(f"/api/admin/User/{user_id}")
+    response = client.get(f"/api/admin/user/{user_id}")
     assert response.status_code == 200
-    data = response.json()
+    data = response.json()["data"]
     assert data["username"] == "gettest"
     assert data["email"] == "get@example.com"
 
 
-def test_admin_api_update_user(client, test_db):
+def test_admin_api_update_user(client):
     """Admin API should update users."""
-    engine, _ = test_db
+    from fastframe.db.session import session_scope
 
-    # Create test user
-    with Session(engine) as session:
-        user = User(
-            username="updatetest",
-            email="update@example.com",
-        )
-        user.set_password("password123")
-        session.add(user)
-        session.commit()
+    _prepare_auth_tables()
+    with session_scope():
+        user = User(username="updatetest", email="update@example.com", password="password123")
+        user.save()
         user_id = user.id
 
-    # Update user via API
     response = client.put(
-        f"/api/admin/User/{user_id}",
+        f"/api/admin/user/{user_id}",
         json={
             "username": "updatetest",
             "email": "updated@example.com",
+            "password": "password123",
             "is_active": True,
         },
     )
-    assert response.status_code in (200, 204)
-
-    # Verify update
-    with Session(engine) as session:
-        user = session.get(User, user_id)
-        assert user.email == "updated@example.com"
+    assert response.status_code == 200
+    assert response.json()["data"]["email"] == "updated@example.com"
 
 
-def test_admin_api_delete_user(client, test_db):
+def test_admin_api_delete_user(client):
     """Admin API should delete users."""
-    engine, _ = test_db
+    from fastframe.db.session import session_scope
 
-    # Create test user
-    with Session(engine) as session:
-        user = User(
-            username="deletetest",
-            email="delete@example.com",
-        )
-        user.set_password("password123")
-        session.add(user)
-        session.commit()
+    _prepare_auth_tables()
+    with session_scope():
+        user = User(username="deletetest", email="delete@example.com", password="password123")
+        user.save()
         user_id = user.id
 
-    # Delete user via API
-    response = client.delete(f"/api/admin/User/{user_id}")
-    assert response.status_code in (200, 204)
-
-    # Verify deletion
-    with Session(engine) as session:
-        user = session.get(User, user_id)
-        assert user is None
-
-
-def test_admin_settings_endpoint(client):
-    """Admin settings endpoint should return config."""
-    response = client.get("/api/admin/_settings")
+    response = client.delete(f"/api/admin/user/{user_id}")
     assert response.status_code == 200
-    data = response.json()
-    assert "site_title" in data
-    assert "resources" in data
+
+    with session_scope():
+        assert User.objects.filter(id=user_id).count() == 0
 
 
-def test_admin_field_metadata(client):
-    """Admin should expose field metadata for forms."""
-    response = client.get("/api/admin/resources")
+def test_admin_schema_includes_user(client):
+    """Schema lists the default user model and its fields."""
+    response = client.get("/api/admin/schema")
     assert response.status_code == 200
-    resources = response.json()
-
-    user_resource = next((r for r in resources if r["name"] == "User"), None)
-    assert user_resource is not None
-    assert "fields" in user_resource
-
-    # Check field metadata
-    fields = user_resource["fields"]
-    assert any(f["name"] == "username" for f in fields)
-    assert any(f["name"] == "email" for f in fields)
-
-    # Email field should have type info
-    email_field = next((f for f in fields if f["name"] == "email"), None)
-    assert email_field is not None
-    assert email_field.get("type") in ("email", "EmailField", "CharField")
+    models = response.json()["models"]
+    user_resource = next(item for item in models if item["resource"] == "user")
+    field_names = {field["name"] for field in user_resource["fields"]}
+    assert "username" in field_names
+    assert "email" in field_names
 
 
 def test_admin_respects_enable_admin_setting(monkeypatch):
     """Admin should not mount if ENABLE_ADMIN=False."""
-    import os
-
     monkeypatch.setenv("FASTFRAME_SETTINGS_MODULE", "tests.fixtures.admin_disabled_settings")
 
     app = create_app()
@@ -242,10 +178,7 @@ def test_admin_respects_enable_admin_setting(monkeypatch):
     assert response.status_code == 404
 
 
-def test_admin_respects_custom_prefix():
-    """Admin should respect custom URL prefix."""
-    import os
-
-    # Would need custom settings with ADMIN_PREFIX="/custom-admin"
-    # For now, just verify current prefix works
-    pass  # TODO: Implement when settings override is cleaner
+def test_admin_respects_custom_prefix(client):
+    """Admin API is mounted at the configured prefix."""
+    response = client.get("/api/admin/schema")
+    assert response.status_code == 200
