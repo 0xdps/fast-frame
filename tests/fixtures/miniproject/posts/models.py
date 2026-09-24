@@ -15,4 +15,7 @@ class Post(Model):
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     # SQLAlchemy relationship (escape hatch example)
-    author: Mapped["User"] = relationship("User", back_populates="posts")  # type: ignore[name-defined] # noqa: F821, UP037
+    author: Mapped["User"] = relationship(  # noqa: F821, UP037
+        lambda: __import__("users.models", fromlist=["User"]).User,
+        back_populates="posts",
+    )

@@ -114,105 +114,130 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
         return cls
 
 
+def _classes_named(registry: Any, name: str) -> list[type]:
+    """Return mapped classes with this name, most recently registered last."""
+    entry = getattr(registry, "_class_registry", {}).get(name)
+    if entry is None:
+        return []
+    if isinstance(entry, type):
+        return [entry]
+    found: list[type] = []
+    for item in entry:
+        cls = item if isinstance(item, type) else item()
+        if isinstance(cls, type):
+            found.append(cls)
+    return found
+
+
+def _resolve_target(model_class: type, target: str | type) -> type | None:
+    """Pick the target class for a ForeignKey.
+
+    Tests and apps often reuse short names like ``User``. A bare string is
+    ambiguous once more than one class shares that name, so prefer a class in
+    the same module, then the most recently registered match.
+    """
+    if not isinstance(target, str):
+        return target
+    matches = _classes_named(model_class.registry, target)
+    if not matches:
+        return None
+    same_module = [cls for cls in matches if cls.__module__ == model_class.__module__]
+    return (same_module or matches)[-1]
+
+
+def _rel_attr_name(field_name: str) -> str:
+    if field_name.endswith("_id"):
+        return field_name[:-3]
+    return field_name + "_rel"
+
+
+def _install_relationship(
+    model_class: type, field_name: str, field: Any, target: type
+) -> None:
+    """Attach a FK constraint and relationship attributes for one ForeignKey."""
+    from sqlalchemy import ForeignKey as SAForeignKey
+    from sqlalchemy.orm import relationship as sa_relationship
+
+    rel_attr_name = _rel_attr_name(field_name)
+    col = model_class.__table__.c.get(field_name)
+    if col is None:
+        return
+
+    if not col.foreign_keys:
+        fk = SAForeignKey(
+            f"{target.__tablename__}.{field.to_field}",
+            ondelete=field.on_delete,
+        )
+        col.append_foreign_key(fk)
+
+    rel_kwargs: dict[str, Any] = {"lazy": "select", "foreign_keys": [col]}
+    if field.related_name:
+        rel_kwargs["back_populates"] = field.related_name
+        if field.related_name not in target.__dict__:
+            reverse_kwargs: dict[str, Any] = {
+                "lazy": "select",
+                "foreign_keys": [col],
+                "back_populates": rel_attr_name,
+            }
+            if field.on_delete == "CASCADE":
+                reverse_kwargs["cascade"] = "all, delete-orphan"
+            setattr(
+                target,
+                field.related_name,
+                sa_relationship(model_class, **reverse_kwargs),
+            )
+
+    setattr(model_class, rel_attr_name, sa_relationship(target, **rel_kwargs))
+    field.relationship_name = rel_attr_name
+
+
+_pending_fks: list[tuple[type, str, Any]] = []
+_fk_hook_installed = False
+
+
+def _flush_pending_relationships() -> None:
+    """Resolve string FK targets once every model class has been created."""
+    still_pending: list[tuple[type, str, Any]] = []
+    pending = list(_pending_fks)
+    _pending_fks.clear()
+    for model_class, field_name, field in pending:
+        target = _resolve_target(model_class, field.to)
+        if target is None:
+            still_pending.append((model_class, field_name, field))
+            continue
+        _install_relationship(model_class, field_name, field, target)
+    _pending_fks.extend(still_pending)
+
+
 def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
     """Create FK constraints and relationship attributes for ForeignKey fields.
 
-    For a field like `author_id = ForeignKey("Author")`, this creates:
-    - FK constraint on author_id column (deferred until target table exists)
-    - `author`: A relationship to the Author model
-    - reverse: `posts` on Author (if related_name="posts")
+    For a field like ``author_id = ForeignKey("Author")``, this creates:
+    - a foreign key on ``author_id``
+    - ``author``: a relationship to the Author model
+    - ``posts`` on Author when ``related_name="posts"``
     """
-    from sqlalchemy import ForeignKey as SAForeignKey, event
-    from sqlalchemy.orm import backref, relationship as sa_relationship
+    from sqlalchemy import event
 
     from fastframe.models.fields import ForeignKey
 
+    global _fk_hook_installed
+
     if not hasattr(model_class, "__table__"):
-        return  # Table not yet created
+        return
+
+    if not _fk_hook_installed:
+        event.listen(Model, "before_configured", _flush_pending_relationships)
+        _fk_hook_installed = True
 
     for field_name, field in fields.items():
         if not isinstance(field, ForeignKey):
             continue
-
-        # Determine relationship attribute name
-        # author_id → author, user_id → user
-        if field_name.endswith("_id"):
-            rel_attr_name = field_name[:-3]
-        else:
-            rel_attr_name = field_name + "_rel"
-
-        # Get target model name
-        if isinstance(field.to, str):
-            target_model_name = field.to
-        else:
-            target_model_name = field.to.__name__
-
-        # Add FK constraint to column
-        # We need to resolve the target model to get its table name
-        col = model_class.__table__.c.get(field_name)
-        if col is not None:
-            # Try to find target model in registry
-            target_table_name = None
-            if hasattr(model_class, "registry") and model_class.registry:
-                for mapper in model_class.registry.mappers:
-                    if mapper.class_.__name__ == target_model_name:
-                        target_table_name = mapper.local_table.name
-                        break
-            
-            if target_table_name:
-                # Target found, add FK immediately
-                fk_ref = f"{target_table_name}.{field.to_field}"
-                fk = SAForeignKey(fk_ref, ondelete=field.on_delete)
-                col.foreign_keys.add(fk)
-                fk._set_parent(col)
-            else:
-                # Target not found yet, defer FK creation
-                # Store FK info for later resolution
-                def add_deferred_fk(mapper_registry, model_cls=model_class, col_obj=col, 
-                                   target_name=target_model_name, fk_field=field):
-                    """Add FK constraint after all mappers are configured."""
-                    # Find target table
-                    for m in mapper_registry.mappers:
-                        if m.class_.__name__ == target_name:
-                            tbl_name = m.local_table.name
-                            fk_ref = f"{tbl_name}.{fk_field.to_field}"
-                            if not col_obj.foreign_keys:  # Only add if not already present
-                                fk = SAForeignKey(fk_ref, ondelete=fk_field.on_delete)
-                                col_obj.foreign_keys.add(fk)
-                                fk._set_parent(col_obj)
-                            break
-                
-                # Register event to add FK after mapper configuration
-                if hasattr(model_class, "registry"):
-                    event.listen(
-                        model_class.registry,
-                        "after_configured",
-                        add_deferred_fk,
-                        once=True
-                    )
-
-        # Create the relationship
-        rel_kwargs = {
-            "lazy": "select",
-        }
-
-        if field.related_name:
-            # Use backref to automatically create reverse relationship
-            backref_kwargs = {
-                "lazy": "select",
-            }
-            if field.on_delete == "CASCADE":
-                backref_kwargs["cascade"] = "all, delete-orphan"
-            
-            rel_kwargs["backref"] = backref(field.related_name, **backref_kwargs)
-
-        rel = sa_relationship(target_model_name, **rel_kwargs)
-
-        # Set the relationship attribute on the model
-        setattr(model_class, rel_attr_name, rel)
-
-        # Store relationship name in field metadata for later use
-        field.relationship_name = rel_attr_name
+        target = _resolve_target(model_class, field.to)
+        if target is None:
+            _pending_fks.append((model_class, field_name, field))
+            continue
+        _install_relationship(model_class, field_name, field, target)
 
 
 class Model(DeclarativeBase, metaclass=ModelMeta):
@@ -299,10 +324,14 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
             if field_name in exclude:
                 continue
 
-            # Skip auto-incrementing primary keys (they're generated)
-            from fastframe.models.fields import AutoField, BigAutoField
+            # Skip values the database or save() fills in.
+            from fastframe.models.fields import AutoField, BigAutoField, DateTimeField
 
             if isinstance(field, (AutoField, BigAutoField)):
+                continue
+            if isinstance(field, DateTimeField) and (
+                field.auto_now or field.auto_now_add
+            ):
                 continue
 
             try:

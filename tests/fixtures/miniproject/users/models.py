@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from fastframe.models import Model
@@ -11,4 +13,7 @@ class User(Model):
     is_active: Mapped[bool] = mapped_column(default=True)
 
     # Relationship to posts
-    posts: Mapped[list["Post"]] = relationship("Post", back_populates="author")  # type: ignore[name-defined] # noqa: F821, UP037
+    posts: Mapped[list["Post"]] = relationship(  # noqa: F821, UP037
+        lambda: __import__("posts.models", fromlist=["Post"]).Post,
+        back_populates="author",
+    )
