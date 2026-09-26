@@ -1,0 +1,39 @@
+docs/ADMIN_SECURITY_WARNING.md
+  s_8de26d66febf8a::t_05306fe7378f4c 24-26
+examples/blog_app/README.md
+  s_8de26d66febf8a::t_58293162bafc87 44,46
+docs/admin-setup.md
+  s_8de26d66febf8a::t_a1a66c79c41d6e 203
+  s_8de26d66febf8a::t_ca17874a49368b 224
+  s_8de26d66febf8a::t_25d458bfcec080 108-109,114-115,122
+  s_8de26d66febf8a::t_64f7d88161cfc4 55-56
+examples/blog_app/app.py
+  s_8de26d66febf8a::t_2a7196eb9e23e9 70
+  s_8de26d66febf8a::t_07a82c24de0f8d 9-10
+docs/settings.md
+  s_8de26d66febf8a::t_df49ff9ec334a5 24
+src/fastframe/admin/site.py
+  s_8de26d66febf8a::t_86983f59928a89 4
+CHANGELOG.md
+  s_8de26d66febf8a::t_b262f3040176a8 10-21
+src/fastframe/admin/__init__.py
+  s_8de26d66febf8a::t_053d40875e968a 8
+src/fastframe/admin/views.py
+  s_8de26d66febf8a::t_fa7e30b19de142 1,3-7,18,142,213,215,218-219,231
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "f5c2f18ae9f2f3e5a156b9c762f6e6719fb10af4",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
