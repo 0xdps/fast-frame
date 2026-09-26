@@ -10,13 +10,15 @@ DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/admin_custom.db"
 DEFAULT_AUTO_FIELD = "AutoField"
 AUTH_USER_MODEL = "auth.User"
 
-ENABLE_ADMIN = True
 ADMIN_MODE = "custom"
 ADMIN_SITE_TITLE = "Custom Admin"
 
 ENABLE_OPENAPI = True
 OPENAPI_TITLE = "Custom Admin API"
 
-INSTALLED_APPS = []
+INSTALLED_APPS = [
+    "fastframe.contrib.auth",  # admin login uses the default User model
+    "fastframe.admin",
+]
 SECRET_KEY = "dev-secret-key-change-in-production"
 DEBUG = True

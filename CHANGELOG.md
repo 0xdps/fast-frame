@@ -11,6 +11,85 @@ new features bump the minor version (`0.1.0` → `0.2.0`).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-26
+
+Two threads: make the framework's own "batteries" (admin, general auth,
+the generic REST API) genuinely opt-in like any other app, and grow the
+ORM's day-to-day convenience surface without turning it into a second
+query-algebra.
+
+### Added
+
+**App registry for batteries — `INSTALLED_APPS` replaces `ENABLE_*`**
+
+- `AppConfig.get_routers()`: a new, optional hook returning routers built
+  at mount time (e.g. from settings), collected by
+  `AppsRegistry.get_routers()` in `INSTALLED_APPS` order and mounted by
+  `get_asgi_application()` alongside the existing `urls.py` → `router`
+  convention. `AppsRegistry.is_installed(name)` for checking membership
+  directly. See [docs/app-contract.md](docs/app-contract.md#router-discovery).
+- `fastframe.admin`, `fastframe.contrib.auth`, and `fastframe.api` each
+  ship an `AppConfig` (`AdminConfig`, `AuthConfig`, `RestApiConfig`) and
+  are now mounted purely by being listed in `INSTALLED_APPS` — the same
+  as any other app. Nothing about admin/auth/the REST API is imported or
+  routed unless the corresponding entry is present.
+- `get_asgi_application()` is now the single, canonical application
+  factory: it applies `MIDDLEWARE`/CORS/security headers and mounts
+  every installed app's routers (in addition to what it already did —
+  `ROOT_URLCONF` routers, DB session middleware, exception handlers).
+  `create_app()` is now a thin, **deprecated** alias for it.
+- A freshly generated project (`fastframe startproject`) does not
+  install admin, general auth, or the REST API by default — previously
+  admin and general auth defaulted to *on* (opt-out, not opt-in).
+
+**Richer ORM — still a thin layer over SQLAlchemy, not a second query
+algebra ([docs/orm-features.md](docs/orm-features.md))**
+
+- `F()` field-reference expressions are wired up end-to-end (previously
+  present as a class but non-functional): `.filter(karma__gt=F("num_posts"))`
+  compares two columns in SQL; `obj.field = F("field") + 1; obj.save()`
+  issues a single atomic `UPDATE ... SET field = field + 1`, safe under
+  concurrent writers. `+`, `-`, `*`, `/` supported, mixable with plain
+  numbers. `Q()` objects and Django-style field lookups (`__gte`,
+  `__icontains`, `__in`, `__isnull`, …) already worked and are now
+  documented.
+- `select_related()` / `prefetch_related()`: eager loading for
+  ForeignKey/reverse-FK/many-to-many relationships (`joinedload`/
+  `selectinload` under the hood), the direct answer to the classic N+1
+  query trap. Supports Django-style `__` nesting
+  (`select_related("author__profile")`).
+- `bulk_create(objects, batch_size=None)` / `bulk_update(objects, fields,
+  batch_size=None)` on the manager; `QuerySet.update(**kwargs)` /
+  `.delete()` for single-statement bulk writes over every row matching
+  the current filter, without loading objects into Python.
+- `get_or_create(defaults=None, **kwargs)` / `update_or_create(defaults=None,
+  **kwargs)`, Django-style, returning `(instance, created)`.
+- `values(*fields)` / `values_list(*fields, flat=False)`: dict/tuple/
+  scalar projections that skip full model instantiation.
+- `only(*fields)` / `defer(*fields)`: partial column loading (`load_only`/
+  `defer`) while still returning full model instances.
+- `atomic()` (`fastframe.db` and `fastframe.models`): a context manager
+  wrapping a SAVEPOINT around the current session; nestable, rolls back
+  only its own block on error.
+
+### Fixed
+
+- Migrations: per-app migration directory discovery now skips dotted,
+  framework-provided app names (e.g. `fastframe.contrib.auth`) instead of
+  attempting to create a literal, invalid directory named that at the
+  project root.
+- `bulk_update()` and the F-expression save path both guard against
+  SQLAlchemy autoflush firing before their explicit statement runs
+  (`session.no_autoflush` / `session.expire()`), which could otherwise
+  silently persist unrelated in-memory changes or choke on an
+  unresolved `F()` placeholder.
+
+### Removed
+
+- `ENABLE_ADMIN`, `ENABLE_AUTH_API`, `ENABLE_REST_API` settings — replaced
+  entirely by `INSTALLED_APPS` membership. `create_app(include_admin=...)`'s
+  unused kwarg is also gone (it had zero real usages).
+
 ## [0.1.0] - 2026-09-26
 
 First public release. Proves the core FastFrame development loop

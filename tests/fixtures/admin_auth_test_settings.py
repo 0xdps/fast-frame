@@ -8,7 +8,6 @@ AUTH_USER_MODEL = "auth.User"
 DEFAULT_AUTO_FIELD = "AutoField"
 
 # Admin — auth is always required (no setting to disable it)
-ENABLE_ADMIN = True
 ENABLE_ADMIN_DOCS = True
 ADMIN_MODE = "static"
 ADMIN_SITE_TITLE = "Test Admin"
@@ -22,6 +21,7 @@ SWAGGER_UI_URL = "/docs"
 # Apps
 INSTALLED_APPS = [
     "fastframe.contrib.auth",
+    "fastframe.admin",
 ]
 
 # Security

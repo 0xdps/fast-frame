@@ -85,9 +85,10 @@ compromised cookie. There's no cost to calling it defensively (e.g. in a
 ## General-purpose session auth (outside `/admin`)
 
 `POST /api/auth/login`, `POST /api/auth/logout`, and `GET /api/auth/me`
-(mounted automatically by `create_app()` when `ENABLE_AUTH_API` is `True`,
-the default) give any app route the same signed-cookie login the admin
-uses — without requiring `can_access_admin`. It's the *same* cookie
+(mounted automatically by `get_asgi_application()`/`create_app()` when
+`"fastframe.contrib.auth"` is in `INSTALLED_APPS`) give any app route the
+same signed-cookie login the admin uses — without requiring
+`can_access_admin`. It's the *same* cookie
 (`ff_admin_session`), so a user who's logged into `/admin` is already
 logged in for these routes too, and vice versa.
 
@@ -127,8 +128,11 @@ anonymous vs. logged-in users instead of requiring login outright.
 Login attempts on `/api/auth/login` (and `/api/admin/login`, and
 `/api/auth/token`) are rate-limited — see [settings.md](settings.md#rate-limiting).
 
-Set `ENABLE_AUTH_API = False` to omit these routes entirely (e.g. if a
-project wants only its own auth, or only the admin's).
+Leave `"fastframe.contrib.auth"` out of `INSTALLED_APPS` to omit these
+routes entirely (e.g. if a project wants only its own auth). Note this
+also disables the built-in `User`/`Group` models — a custom
+`AUTH_USER_MODEL` app doesn't need this entry for its own model, only for
+these general-purpose routes.
 
 ## Referencing the active user model
 

@@ -3,9 +3,11 @@ from __future__ import annotations
 import importlib
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from fastapi import APIRouter
+
     from fastframe.core.checks import CheckMessage
 
 
@@ -40,6 +42,26 @@ class AppConfig:
         """
         return []
 
+    def get_routers(self) -> list[APIRouter]:
+        """Return FastAPI routers this app wants mounted, if any.
+
+        Called by ``get_asgi_application()``/``create_app()`` for every
+        installed app, in ``INSTALLED_APPS`` order, *after* every app's
+        ``ready()`` has already run. This is how being listed in
+        ``INSTALLED_APPS`` — and nothing else — turns a router on: the
+        router-building code (and anything it imports) only runs for apps
+        that are actually installed, the same way ``models.py`` is only
+        imported for installed apps (see ``fastframe.db.init.import_app_models``).
+
+        The base implementation returns nothing — plain apps that only
+        want the existing ``urls.py`` → ``router`` convention (aggregated
+        via a project's ``ROOT_URLCONF``) don't need to override this.
+        Override it when an app (typically a framework-provided one, e.g.
+        ``fastframe.admin``) needs to build its router(s) programmatically
+        from settings rather than exposing a static module-level `router`.
+        """
+        return []
+
     def __init_subclass__(cls, **kwargs: object) -> None:
         super().__init_subclass__(**kwargs)
         if not cls.name:
@@ -52,6 +74,24 @@ class AppConfig:
 class AppsRegistry:
     settings: ModuleType
     app_configs: list[AppConfig] = field(default_factory=list)
+
+    def is_installed(self, app_name: str) -> bool:
+        """Whether ``app_name`` is present in ``INSTALLED_APPS`` (by name).
+
+        This is the mechanism for making a feature "not forced": code
+        that lazily imports/mounts something should check this instead of
+        a dedicated ``ENABLE_*`` boolean, so the feature genuinely isn't
+        imported unless the project opted in by listing it as an app —
+        the same way any other app's models/routers are opt-in.
+        """
+        return any(config.name == app_name for config in self.app_configs)
+
+    def get_routers(self) -> list[Any]:
+        """Collect every installed app's ``get_routers()``, in order."""
+        routers: list[Any] = []
+        for config in self.app_configs:
+            routers.extend(config.get_routers())
+        return routers
 
 
 def _app_config_from_module(app_name: str) -> AppConfig:

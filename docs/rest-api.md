@@ -12,20 +12,29 @@ than only `can_access_admin` users.
 
 ```python
 # settings.py
-ENABLE_REST_API = True
+INSTALLED_APPS = [
+    "fastframe.contrib.auth",  # required: this API authenticates via Token
+    "fastframe.api",
+    "myapp",
+]
 ```
+
+That's it — `get_asgi_application()`/`create_app()` mounts this API's
+routers automatically for any project with `"fastframe.api"` installed.
+For manual wiring (a project not using either factory), mount it
+yourself instead:
 
 ```python
 # app.py
+from fastapi import FastAPI
 from fastframe.api import include_rest_api
 
-app = create_app()
-include_rest_api(app)  # create_app() also does this automatically when
-                        # ENABLE_REST_API is set, before it returns
+app = FastAPI()
+include_rest_api(app)
 ```
 
-Off by default — registering a model for admin doesn't expose it here
-until you opt in.
+Not installed by default — registering a model for admin doesn't expose
+it here until you opt in.
 
 ## Obtaining a token
 
@@ -110,10 +119,10 @@ resolution.
 
 **Consequence to be aware of:** because this reuses the admin registry,
 any model registered for the admin becomes reachable from the REST API too
-once you enable it — including `AuditLog` (read-only, but readable by any
-active user, not just admins). Don't enable `ENABLE_REST_API` on a project
-where that's not acceptable without first tightening `has_view_permission`
-on sensitive models.
+once you install it — including `AuditLog` (read-only, but readable by any
+active user, not just admins). Don't add `"fastframe.api"` to
+`INSTALLED_APPS` on a project where that's not acceptable without first
+tightening `has_view_permission` on sensitive models.
 
 ## Audit log
 

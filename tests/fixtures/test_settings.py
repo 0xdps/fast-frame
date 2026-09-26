@@ -16,13 +16,14 @@ AUTH_USER_MODEL = "auth.User"
 DEFAULT_AUTO_FIELD = "AutoField"
 
 # Admin settings
-ENABLE_ADMIN = True
 ENABLE_ADMIN_DOCS = True
 ADMIN_MODE = "static"
 
-# Apps
+# Apps — admin + general auth API on by default here, matching the old
+# ENABLE_ADMIN=True/ENABLE_AUTH_API=True defaults this fixture relied on.
 INSTALLED_APPS = [
-    "auth",  # For the default user model
+    "fastframe.contrib.auth",  # default user model + general /api/auth/*
+    "fastframe.admin",
 ]
 
 # Secret key for tests

@@ -30,9 +30,9 @@ FastFrame is modular internally: a small **core** plus **components** that parti
 | Migrations | Developer workflow | Alembic (convention-driven, not user-configured for standard projects) |
 | Shell | Bootstrapped REPL | stdlib Python; configurable imports |
 | Testing | Discover and run tests | pytest integration |
-| Admin | CRUD UI + REST API, session auth | `fastframe.admin` — on by default (`ENABLE_ADMIN`), see [admin-setup.md](admin-setup.md) |
-| Auth & permissions | User model, session/token auth, `Group`/permission strings | `fastframe.contrib.auth` — on by default (`ENABLE_AUTH_API`), see [auth.md](auth.md), [permissions.md](permissions.md) |
-| REST API | Generic token-authenticated CRUD, non-admin routes | `fastframe.api` — **opt-in** (`ENABLE_REST_API`), see [rest-api.md](rest-api.md) |
+| Admin | CRUD UI + REST API, session auth | `fastframe.admin` — opt-in, add to `INSTALLED_APPS`, see [admin-setup.md](admin-setup.md) |
+| Auth & permissions | User model, session/token auth, `Group`/permission strings | `fastframe.contrib.auth` — opt-in, add to `INSTALLED_APPS`, see [auth.md](auth.md), [permissions.md](permissions.md) |
+| REST API | Generic token-authenticated CRUD, non-admin routes | `fastframe.api` — opt-in, add to `INSTALLED_APPS`, see [rest-api.md](rest-api.md) |
 
 ## HTTP layer
 
@@ -42,29 +42,54 @@ FastFrame is modular internally: a small **core** plus **components** that parti
 
 Models are SQLAlchemy models with a **thin manager** (`filter`, `get`, `save`, …). Complex operations use SQLAlchemy explicitly.
 
-## Shipped components (not core, but on by default)
+## Shipped components ("batteries" — not core, opt-in like any other app)
 
-Admin and auth attach via the same app/lifecycle model as everything
-else, but ship in `fastframe` itself (not a separate package) and
-default to **on** — `ENABLE_ADMIN` and `ENABLE_AUTH_API` are both `True`
-unless a project opts out. The compiled admin UI assets are
-force-included in every built wheel regardless of whether a project
-enables admin (`pyproject.toml`'s `[tool.hatch.build.targets.wheel.force-include]`).
-This is a deliberate, known departure from "batteries included, not
-forced" for these two — worth revisiting if it starts happening for
-every future component below too.
+Admin, auth, and the generic REST API attach via the *exact same*
+app-registry mechanism as a project's own apps: they ship inside
+`fastframe` itself (not a separate package), but nothing about them
+runs — no import, no router, no side effect — unless a project lists
+them in `INSTALLED_APPS`:
+
+```python
+INSTALLED_APPS = [
+    "fastframe.contrib.auth",  # User/Group models + /api/auth/*
+    "fastframe.admin",         # /admin UI + /api/admin/*
+    "fastframe.api",           # token-authenticated /api/v1/*
+    "myapp",
+]
+```
+
+Each exposes an `AppConfig` (`ready()` for import-time side effects,
+`get_routers()` for the routers it wants mounted — see
+[app-contract.md](app-contract.md)), resolved the same way as any other
+`INSTALLED_APPS` entry. A freshly generated project (`fastframe
+startproject`) does **not** include any of them by default — you add
+what you want, the same way you'd add any other app. This closes a
+previous, deliberate-but-unwanted departure from "batteries included,
+not forced": earlier versions mounted admin/auth via dedicated
+`ENABLE_ADMIN`/`ENABLE_AUTH_API` settings that defaulted to `True`
+(opt-out, not opt-in) inside an undocumented second app factory. That
+mechanism is gone; `INSTALLED_APPS` membership is now the *only* switch.
 
 - Admin (`fastframe.admin`)
 - Authentication / authorization (`fastframe.contrib.auth`)
-- Generic REST API (`fastframe.api`) — genuinely opt-in (`ENABLE_REST_API`, default `False`)
-- Audit log (`fastframe.admin.audit`) — follows admin/REST API's on-by-default posture
+- Generic REST API (`fastframe.api`)
+- Audit log (`fastframe.admin.audit`) — registered as a side effect of installing admin or the REST API, whichever runs first
+
+Note: the compiled admin UI static assets are still force-included in
+every built wheel regardless of whether a project installs
+`fastframe.admin` (`pyproject.toml`'s
+`[tool.hatch.build.targets.wheel.force-include]`) — a separate, smaller
+packaging-size concern from the *runtime* opt-in fixed above, not yet
+addressed.
 
 ## Future optional components
 
-Not yet built. Unlike the above, these should be **opt-in from the
-start** — not imported, not mounted, unless a project explicitly enables
-them — to avoid `create_app()` slowly becoming the monolith the
-[design principles](design-principles.md) warn against:
+Not yet built. These follow the same `INSTALLED_APPS` + `AppConfig`
+pattern as the components above — not imported, not mounted, unless a
+project explicitly installs them — to avoid the application factory
+slowly becoming the monolith the [design principles](design-principles.md)
+warn against:
 
 - Templates (e.g. Jinja2) and static/media files — next up, see [roadmap.md](roadmap.md)
 - Background tasks
@@ -78,21 +103,21 @@ them — to avoid `create_app()` slowly becoming the monolith the
 
 ```text
 Core
-├── API integration (FastAPI app factory: create_app())
-├── Configuration (settings module, ENABLE_* flags)
-├── Routing discovery (installed-app routers)
-├── CLI (fastframe + manage.py)
-└── Lifecycle (bootstrap(), AppConfig.ready()/checks()/shutdown())
+├── API integration (application factory: get_asgi_application())
+├── Configuration (settings module, INSTALLED_APPS)
+├── App registry (AppConfig.ready()/get_routers()/checks()/shutdown())
+├── Routing discovery (installed-app routers + ROOT_URLCONF)
+└── CLI (fastframe + manage.py)
 
-Shipped, on by default (ENABLE_ADMIN / ENABLE_AUTH_API default True)
+Shipped, opt-in via INSTALLED_APPS (not installed by default)
+├── Admin (fastframe.admin)
+├── Auth & permissions (fastframe.contrib.auth)
+└── Generic REST API (fastframe.api)
+
+Always available (not gated by INSTALLED_APPS)
 ├── Models / ORM helpers
 ├── Migrations
-├── Shell
-├── Admin
-└── Auth & permissions
-
-Shipped, opt-in (default False)
-└── Generic REST API (ENABLE_REST_API)
+└── Shell
 
 Future, opt-in from the start (not yet built)
 ├── Templates
@@ -103,12 +128,12 @@ Future, opt-in from the start (not yet built)
 └── Storage
 ```
 
-Enabling/disabling a component is a settings flag
-(`ENABLE_ADMIN`/`ENABLE_AUTH_API`/`ENABLE_REST_API`), checked in
-`create_app()` before that component's router is even imported — not a
-full plugin registry. Every future component should follow the "opt-in,
-not imported unless enabled" pattern of `ENABLE_REST_API`, not the
-on-by-default pattern of admin/auth.
+Enabling/disabling any of these components — shipped or future — is
+exactly the same mechanism: add or remove its dotted path in
+`INSTALLED_APPS`. Nothing about a component's code runs otherwise (see
+[app-contract.md](app-contract.md) for the `AppConfig.get_routers()`
+hook this relies on) — a real app registry, not a set of settings
+flags checked ad hoc inside the application factory.
 
 ## Generated project layout (target)
 

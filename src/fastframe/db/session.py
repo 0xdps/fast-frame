@@ -74,6 +74,31 @@ def get_session() -> Generator[Session, None, None]:
         _session_ctx.reset(token)
 
 
+@contextmanager
+def atomic() -> Iterator[Session]:
+    """Group a block of ORM operations into one all-or-nothing unit,
+    without needing a whole new session/request.
+
+    Wraps a SAVEPOINT (``session.begin_nested()``) around the *current*
+    session — the same one your request/shell/``session_scope()`` is
+    already using via ``get_current_session()``. If the block raises,
+    everything written inside it is rolled back and the exception
+    propagates; the outer session/transaction is untouched and can keep
+    going. Safe to nest — each level gets its own SAVEPOINT.
+
+    Example::
+
+        with atomic():
+            account_a.balance = F("balance") - amount
+            account_a.save()
+            account_b.balance = F("balance") + amount
+            account_b.save()
+    """
+    session = get_current_session()
+    with session.begin_nested():
+        yield session
+
+
 def reset_session_factory() -> None:
     global _session_factory
     _session_factory = None

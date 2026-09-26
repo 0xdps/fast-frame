@@ -21,18 +21,17 @@ from fastapi.responses import HTMLResponse
 ADMIN_DIR = pathlib.Path(__file__).parent
 
 
-def _admin_settings() -> tuple[bool, str, str]:
-    """Return (enabled, mode, url prefix) from settings, with safe defaults."""
+def _admin_settings() -> tuple[str, str]:
+    """Return (mode, url prefix) from settings, with safe defaults."""
     try:
         from fastframe.conf import settings
 
         return (
-            bool(getattr(settings, "ENABLE_ADMIN", True)),
             str(getattr(settings, "ADMIN_MODE", "static")),
             str(getattr(settings, "ADMIN_PREFIX", "/admin")),
         )
     except (ImportError, AttributeError):
-        return True, "static", "/admin"
+        return "static", "/admin"
 
 
 def _admin_api_prefix() -> str:
@@ -209,12 +208,12 @@ def get_admin_router() -> APIRouter:
     * ``static`` (default) — the compiled admin shipped with FastFrame
     * ``custom`` — ``admin-ui/dist`` produced by ``startadmin`` + ``npm run build``
 
-    Any other/unrecognized value falls back to ``static``. When
-    ``ENABLE_ADMIN`` is false, the router has no routes.
+    Any other/unrecognized value falls back to ``static``. Whether this
+    is reachable at all is controlled by whether ``"fastframe.admin"`` is
+    in ``INSTALLED_APPS`` (see :class:`fastframe.admin.apps.AdminConfig`),
+    not a setting here.
     """
-    enable_admin, admin_mode, prefix = _admin_settings()
-    if not enable_admin:
-        return APIRouter(prefix=prefix, tags=["admin"], include_in_schema=False)
+    admin_mode, prefix = _admin_settings()
 
     if admin_mode == "custom":
         dist = pathlib.Path.cwd() / "admin-ui" / "dist"

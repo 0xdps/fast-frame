@@ -36,7 +36,13 @@ Exact names will match implementation; breaking renames require CHANGELOG + ADR.
 
 ## Application factory
 
-- `get_asgi_application()` — returns ASGI callable for production servers.
+- `get_asgi_application()` — returns ASGI callable for production servers. Applies `MIDDLEWARE`/CORS/security headers, mounts every installed app's routers (see "Apps and routing" below), then `ROOT_URLCONF`'s routers.
+- `create_app()` (`fastframe.core.app`) — deprecated thin alias for `get_asgi_application()`. Kept for backward compatibility; new code should call `get_asgi_application()` directly.
+
+## Apps and routing (v0.2)
+
+- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api` (and any project app) are only imported/routed when listed here. There is no separate `ENABLE_*` setting for turning one of these on.
+- `AppConfig.get_routers()` — optional hook returning `list[APIRouter]`, built at mount time (e.g. from settings) rather than a static module-level `router`. Collected, in `INSTALLED_APPS` order, by `AppsRegistry.get_routers()` and mounted by `get_asgi_application()` alongside the `urls.py` → `router` convention. See [app-contract.md](app-contract.md#router-discovery).
 
 ## Database
 
@@ -50,6 +56,32 @@ Exact names will match implementation; breaking renames require CHANGELOG + ADR.
 - `Model.objects` — `all`, `filter`, `exclude`, `order_by`, `get`, `first`, `exists`, `count`, `create`; instance `save`, `delete`.
 - `QuerySet` — lazy, chainable (`filter().order_by().limit().offset()`), list-like (`for`, `len`, `[i]`); returned by `all`/`filter`/`exclude`/`order_by`.
 - `DoesNotExist`, `MultipleObjectsReturned` — manager lookup errors; auto-converted to HTTP 404/500 by `get_asgi_application()`'s exception handlers.
+
+### ORM conveniences (v0.2)
+
+Full docs and examples: [orm-features.md](orm-features.md).
+
+- `Q`, `F` (`fastframe.models`) — boolean composition (`&`/`|`/`~`) and
+  atomic field-reference expressions (`+`/`-`/`*`/`/`), usable in
+  `.filter()`/`.exclude()` and (for `F`) instance/queryset `.save()`/
+  `.update()`.
+- Field lookups on `.filter()`/`.exclude()` kwargs: `exact`, `iexact`,
+  `contains`, `icontains`, `gt`, `gte`, `lt`, `lte`, `in`, `isnull`,
+  `startswith`/`istartswith`, `endswith`/`iendswith`.
+- `Model.objects.select_related(*fields)` / `.prefetch_related(*fields)`
+  — eager loading for ForeignKey/reverse-FK/M2M, avoids N+1.
+- `Model.objects.only(*fields)` / `.defer(*fields)` — partial column
+  loading; still returns full model instances.
+- `Model.objects.values(*fields)` / `.values_list(*fields, flat=False)`
+  — dict/tuple/scalar projections without model instantiation.
+- `Model.objects.bulk_create(objects, batch_size=None)` /
+  `.bulk_update(objects, fields, batch_size=None)`.
+- `QuerySet.update(**kwargs)` / `.delete()` — single bulk SQL statement
+  over every row matching the current filter.
+- `Model.objects.get_or_create(defaults=None, **kwargs)` /
+  `.update_or_create(defaults=None, **kwargs)` — returns `(obj, created)`.
+- `atomic()` (`fastframe.db` and `fastframe.models`) — context manager;
+  SAVEPOINT around the current session, nestable.
 
 ## Checks and lifecycle (v0.2)
 

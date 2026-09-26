@@ -73,21 +73,22 @@ def _admin_session():
 
 
 def get_admin_api_router() -> APIRouter:
-    """Create the admin REST API router (cookie-session authenticated)."""
+    """Create the admin REST API router (cookie-session authenticated).
+
+    Whether this is reachable at all is controlled by whether
+    ``"fastframe.admin"`` is in ``INSTALLED_APPS`` (see
+    :class:`fastframe.admin.apps.AdminConfig`) — not a setting here.
+    ``ENABLE_ADMIN_DOCS`` only controls OpenAPI schema visibility for an
+    already-enabled admin.
+    """
     try:
         from fastframe.conf import settings
 
-        enable_admin = getattr(settings, "ENABLE_ADMIN", True)
         enable_admin_docs = getattr(settings, "ENABLE_ADMIN_DOCS", True)
         admin_api_prefix = getattr(settings, "ADMIN_API_PREFIX", "/api/admin")
     except (ImportError, AttributeError):
-        enable_admin = True
         enable_admin_docs = True
         admin_api_prefix = "/api/admin"
-
-    if not enable_admin:
-        # Return empty router if admin is disabled
-        return APIRouter(prefix=admin_api_prefix, tags=["admin-api"])
 
     return _build_crud_router(
         prefix=admin_api_prefix,

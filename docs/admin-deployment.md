@@ -1,11 +1,15 @@
 # Admin deployment
 
-Three choices, selected in settings. The REST API (`ADMIN_API_PREFIX`,
-default `/api/admin`) is the same in every mode. `ENABLE_ADMIN = False`
-mounts neither the UI nor the API.
+Admin is mounted at all only when `"fastframe.admin"` is in
+`INSTALLED_APPS` (see [admin-setup.md](admin-setup.md),
+[app-contract.md](app-contract.md)). Once installed, three UI-mode
+choices are selected in settings via `ADMIN_MODE`. The REST API
+(`ADMIN_API_PREFIX`, default `/api/admin`) is the same in every mode.
 
-`create_app()` applies the choice. You can also mount the pieces yourself
-with `include_admin(app)` or the individual routers.
+`get_asgi_application()`/`create_app()` applies the choice for any
+installed admin. You can also mount the pieces yourself with
+`include_admin(app)` or the individual routers, without going through
+`INSTALLED_APPS` at all (see `examples/blog_app`).
 
 ## Static admin (default)
 
@@ -16,9 +20,9 @@ ship in `fastframe/admin/static`. No Node.js install is required.
 import os
 os.environ.setdefault("FASTFRAME_SETTINGS_MODULE", "config.settings")
 
-from fastframe.core.app import create_app
+from fastframe.http.asgi import get_asgi_application
 
-app = create_app()
+app = get_asgi_application()
 ```
 
 Open `/admin/`. Resource URLs use a hash (`/admin/#/user`) because React Admin's default router is a hash router, which works when the UI is mounted under `ADMIN_PREFIX`. Working copy: `examples/admin_simple/`.
@@ -52,13 +56,11 @@ Dev (`npm run dev`) stays at `/` and calls `http://127.0.0.1:8000/api/admin`.
 
 ## No admin
 
-```python
-ENABLE_ADMIN = False
-```
-
-`create_app()` leaves admin routes out of the app and out of OpenAPI.
-Set `ENABLE_ADMIN_DOCS = False` when the admin stays mounted but should not
-appear in Swagger.
+Leave `"fastframe.admin"` out of `INSTALLED_APPS` (the default for a
+freshly generated project). Nothing about the admin is imported or
+mounted, and its routes are absent from OpenAPI. Set
+`ENABLE_ADMIN_DOCS = False` when the admin stays *installed* but should
+not appear in Swagger.
 
 ## OpenAPI
 
