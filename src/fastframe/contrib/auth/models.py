@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastframe.models import Model, fields
+
 from .hashers import check_password, make_password
 
 

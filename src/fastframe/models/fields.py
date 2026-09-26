@@ -479,12 +479,12 @@ class UUIDField(Field):
         try:
             from uuid_utils import uuid7
             return uuid7
-        except ImportError:
+        except ImportError as e:
             raise ImportError(
                 "UUID v7 requires Python 3.14+ or the 'uuid-utils' package.\n"
                 "Install with: pip install uuid-utils\n"
                 "Or upgrade to Python 3.14+"
-            )
+            ) from e
 
     def get_sqlalchemy_type(self) -> Any:
         return UUID(as_uuid=True)
@@ -554,7 +554,8 @@ class ForeignKey(Field):
         
         if on_delete not in valid_options:
             raise ValueError(
-                f"on_delete must be CASCADE, SET NULL, RESTRICT, SET DEFAULT, or NO ACTION, got {on_delete}"
+                "on_delete must be CASCADE, SET NULL, RESTRICT, SET DEFAULT, "
+                f"or NO ACTION, got {on_delete}"
             )
         
         # Normalize to SQLAlchemy's expected format
