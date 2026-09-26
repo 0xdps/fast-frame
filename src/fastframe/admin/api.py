@@ -1,25 +1,39 @@
-"""Admin REST API — JSON endpoints for CRUD on registered models.
+"""Generic CRUD REST API — the shared engine behind both the admin API and
+the token-authenticated REST API (:mod:`fastframe.api`).
 
-Designed for React Admin / Refine style SPAs, but usable by any HTTP client.
+``_build_crud_router`` is the one implementation of "list/get/create/update
+/delete every registered model with pagination, search, sorting, filters,
+and validation." Both surfaces reuse the *same* ``admin_site`` registry —
+whatever you register with ``admin_site.register(Model, ModelAdmin)`` is
+reachable from both — but are gated by different auth dependencies:
 
-Endpoints:
-    GET    /api/admin/schema                      All registered models + field schemas
-    GET    /api/admin/{resource}                  List (paging, sort, search, filters)
-    GET    /api/admin/{resource}/{id}             Retrieve one
-    POST   /api/admin/{resource}                  Create (422 on validation error)
-    PUT    /api/admin/{resource}/{id}             Update (422 on validation error)
-    DELETE /api/admin/{resource}/{id}             Delete one
-    DELETE /api/admin/{resource}?ids=a&ids=b      Bulk delete
-    GET    /api/admin/{resource}/choices/{field}  Options for a ForeignKey dropdown
+* Admin API (``get_admin_api_router``): cookie session, requires
+  ``can_access_admin`` (see :mod:`fastframe.admin.auth`).
+* Generic REST API (``fastframe.api.get_rest_api_router``): bearer token,
+  any active user (see :mod:`fastframe.api.auth`).
+
+Endpoints (relative to whichever prefix the router is mounted at):
+    GET    /schema                      All registered models + field schemas
+    GET    /{resource}                  List (paging, sort, search, filters)
+    GET    /{resource}/{id}             Retrieve one
+    POST   /{resource}                  Create (422 on validation error)
+    PUT    /{resource}/{id}             Update (422 on validation error)
+    DELETE /{resource}/{id}             Delete one
+    DELETE /{resource}?ids=a&ids=b      Bulk delete
+    GET    /{resource}/choices/{field}  Options for a ForeignKey dropdown
 
 Response shapes (React Admin compatible):
     list:   {"data": [...], "total": N, "page": 1, "perPage": 25}
     single: {"data": {...}}
     errors: 422 {"detail": "...", "errors": {"field": "message"}}
+
+Every create/update/delete is recorded in the audit log (see
+:mod:`fastframe.admin.audit`) regardless of which surface triggered it.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
@@ -40,7 +54,7 @@ from fastframe.models.exceptions import DoesNotExist, ValidationError
 
 
 def _admin_session():
-    """Session dependency for admin API endpoints.
+    """Session dependency for CRUD API endpoints.
 
     Unlike get_session(), this avoids ContextVar token reset, which breaks
     when endpoint exceptions cause dependency teardown in a different anyio
@@ -59,29 +73,58 @@ def _admin_session():
 
 
 def get_admin_api_router() -> APIRouter:
-    """Create the admin REST API router."""
+    """Create the admin REST API router (cookie-session authenticated)."""
     try:
         from fastframe.conf import settings
-        enable_admin = getattr(settings, 'ENABLE_ADMIN', True)
-        enable_admin_docs = getattr(settings, 'ENABLE_ADMIN_DOCS', True)
-        admin_api_prefix = getattr(settings, 'ADMIN_API_PREFIX', '/api/admin')
+
+        enable_admin = getattr(settings, "ENABLE_ADMIN", True)
+        enable_admin_docs = getattr(settings, "ENABLE_ADMIN_DOCS", True)
+        admin_api_prefix = getattr(settings, "ADMIN_API_PREFIX", "/api/admin")
     except (ImportError, AttributeError):
         enable_admin = True
         enable_admin_docs = True
-        admin_api_prefix = '/api/admin'
-    
+        admin_api_prefix = "/api/admin"
+
     if not enable_admin:
         # Return empty router if admin is disabled
         return APIRouter(prefix=admin_api_prefix, tags=["admin-api"])
-    
-    # Create router with conditional OpenAPI inclusion. All routes below
-    # require an authenticated admin session (see fastframe.admin.auth) —
-    # login/logout/me live on a separate, unprotected router.
-    router = APIRouter(
-        prefix=admin_api_prefix, 
+
+    return _build_crud_router(
+        prefix=admin_api_prefix,
         tags=["admin-api"],
         include_in_schema=enable_admin_docs,
-        dependencies=[Depends(require_admin_user)],
+        auth_dependency=require_admin_user,
+        source="admin",
+    )
+
+
+def _build_crud_router(
+    *,
+    prefix: str,
+    tags: list[str],
+    include_in_schema: bool,
+    auth_dependency: Callable[..., Any],
+    source: str,
+) -> APIRouter:
+    """Build a full CRUD router over ``admin_site``'s registry.
+
+    Args:
+        prefix: URL prefix to mount at (e.g. ``/api/admin`` or ``/api/v1``).
+        tags: OpenAPI tags for these routes.
+        include_in_schema: Whether to show these routes in OpenAPI.
+        auth_dependency: FastAPI dependency callable. Must return the
+            authenticated user (or raise ``HTTPException`` on failure) —
+            the return value is used for audit-log attribution.
+        source: Short label recorded on audit-log entries (e.g. ``"admin"``
+            or ``"api"``) so you can tell which surface made a change.
+    """
+    # All routes below require authentication — login/logout/me (admin) or
+    # token obtain/revoke (REST API) live on separate, unprotected routers.
+    router = APIRouter(
+        prefix=prefix,
+        tags=tags,
+        include_in_schema=include_in_schema,
+        dependencies=[Depends(auth_dependency)],
     )
 
     # ------------------------------------------------------------------
@@ -97,7 +140,9 @@ def get_admin_api_router() -> APIRouter:
         """
         registry = admin_site.get_registry()
         return {
-            "models": [model_schema(model, model_admin) for model, model_admin in registry.items()]
+            "models": [
+                model_schema(model, model_admin) for model, model_admin in registry.items()
+            ]
         }
 
     # ------------------------------------------------------------------
@@ -229,6 +274,7 @@ def get_admin_api_router() -> APIRouter:
         resource: str,
         request: Request,
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Create a record. Returns 422 with per-field errors on validation failure."""
         _session_ctx.set(session)
@@ -254,6 +300,15 @@ def get_admin_api_router() -> APIRouter:
                 detail=_integrity_error_detail("Integrity error (duplicate or invalid reference)"),
             ) from e
 
+        _audit(
+            session,
+            user=current_user,
+            action="create",
+            model=model,
+            instance=instance,
+            changes={"fields": serialize_instance(instance, include_relations=False)},
+            source=source,
+        )
         return {"data": serialize_instance(instance)}
 
     # ------------------------------------------------------------------
@@ -266,6 +321,7 @@ def get_admin_api_router() -> APIRouter:
         record_id: str,
         request: Request,
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Update a record (partial updates allowed)."""
         _session_ctx.set(session)
@@ -275,6 +331,7 @@ def get_admin_api_router() -> APIRouter:
 
         payload = await _json_body(request)
         instance = _get_instance(model, record_id)
+        before = serialize_instance(instance, include_relations=False)
 
         try:
             cleaned = deserialize_payload(model, payload, partial=True)
@@ -293,7 +350,22 @@ def get_admin_api_router() -> APIRouter:
                 detail=_integrity_error_detail("Integrity error (duplicate or invalid reference)"),
             ) from e
 
-        return {"data": serialize_instance(instance)}
+        after = serialize_instance(instance, include_relations=False)
+        diff = {
+            field_name: {"old": before.get(field_name), "new": after.get(field_name)}
+            for field_name in cleaned
+            if before.get(field_name) != after.get(field_name)
+        }
+        _audit(
+            session,
+            user=current_user,
+            action="update",
+            model=model,
+            instance=instance,
+            changes=diff,
+            source=source,
+        )
+        return {"data": after}
 
     # ------------------------------------------------------------------
     # Delete (single + bulk)
@@ -304,6 +376,7 @@ def get_admin_api_router() -> APIRouter:
         resource: str,
         record_id: str,
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Delete a single record."""
         _session_ctx.set(session)
@@ -312,6 +385,7 @@ def get_admin_api_router() -> APIRouter:
             raise HTTPException(status_code=403, detail="Permission denied")
         instance = _get_instance(model, record_id)
         data = serialize_instance(instance)
+        repr_before_delete = str(instance)[:255]
 
         try:
             session.delete(instance)
@@ -325,6 +399,18 @@ def get_admin_api_router() -> APIRouter:
                 ),
             ) from e
 
+        _audit(
+            session,
+            user=current_user,
+            action="delete",
+            model=model,
+            instance=None,
+            model_name=model.__name__,
+            object_id=str(data.get("id", "")),
+            object_repr=repr_before_delete,
+            changes={"fields": data},
+            source=source,
+        )
         return {"data": data}
 
     @router.delete("/{resource}")
@@ -332,6 +418,7 @@ def get_admin_api_router() -> APIRouter:
         resource: str,
         ids: list[str] = Query(...),
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Bulk delete: DELETE /api/admin/post?ids=1&ids=2"""
         _session_ctx.set(session)
@@ -344,8 +431,22 @@ def get_admin_api_router() -> APIRouter:
         try:
             for raw_id in ids:
                 instance = _get_instance(model, raw_id)
+                data = serialize_instance(instance)
+                repr_before_delete = str(instance)[:255]
                 deleted.append(serialize_value(getattr(instance, pk_name)))
                 session.delete(instance)
+                _audit(
+                    session,
+                    user=current_user,
+                    action="delete",
+                    model=model,
+                    instance=None,
+                    model_name=model.__name__,
+                    object_id=str(data.get("id", "")),
+                    object_repr=repr_before_delete,
+                    changes={"fields": data},
+                    source=source,
+                )
             session.flush()
         except IntegrityError as e:
             session.rollback()
@@ -361,13 +462,47 @@ def get_admin_api_router() -> APIRouter:
     return router
 
 
-
 def _validation_error_detail(e: ValidationError) -> dict:
     return {"message": "Validation failed", "errors": e.errors or {"__all__": str(e)}}
 
 
 def _integrity_error_detail(message: str) -> dict:
     return {"message": message, "errors": {}}
+
+
+def _audit(
+    session: Any,
+    *,
+    user: Any,
+    action: str,
+    model: type,
+    instance: Any,
+    changes: dict[str, Any],
+    source: str,
+    model_name: str | None = None,
+    object_id: str | None = None,
+    object_repr: str | None = None,
+) -> None:
+    """Write an audit-log entry. Best-effort — never raises into the request.
+
+    Prefer passing ``instance`` (for create/update, where it's still valid
+    after flush); pass explicit ``model_name``/``object_id``/``object_repr``
+    for delete, where the instance is gone by the time we log it.
+    """
+    from fastframe.admin.audit import record_audit
+
+    record_audit(
+        session,
+        user=user,
+        action=action,
+        model_name=model_name or model.__name__,
+        object_id=object_id
+        if object_id is not None
+        else str(getattr(instance, get_pk_name(model), "") or ""),
+        object_repr=object_repr if object_repr is not None else str(instance)[:255],
+        changes=changes,
+        source=source,
+    )
 
 
 # ----------------------------------------------------------------------

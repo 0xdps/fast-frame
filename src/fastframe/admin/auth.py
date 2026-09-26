@@ -7,9 +7,9 @@ Adds Django-like ``login_required`` protection to the admin:
 * ``GET  /api/admin/me``     — return the current admin user (or 401)
 
 All other admin API routes require a valid session belonging to a user with
-``can_access_admin`` (see :mod:`fastframe.contrib.auth.models`). Set
-``ADMIN_REQUIRE_AUTH = False`` in settings to disable this (development only
-— see ``docs/ADMIN_SECURITY_WARNING.md``).
+``can_access_admin`` (see :mod:`fastframe.contrib.auth.models`). This is not
+optional — there is no setting to disable it (see
+``docs/ADMIN_SECURITY_WARNING.md``).
 """
 
 from __future__ import annotations
@@ -21,17 +21,14 @@ from fastapi import APIRouter, HTTPException, Request, Response
 SESSION_COOKIE_NAME = "ff_admin_session"
 
 
-def _admin_auth_settings() -> tuple[bool, bool]:
-    """Return (require_auth, debug) from settings, with safe defaults."""
+def _debug_setting() -> bool:
+    """Return DEBUG from settings, with a safe default."""
     try:
         from fastframe.conf import settings
 
-        return (
-            bool(getattr(settings, "ADMIN_REQUIRE_AUTH", True)),
-            bool(getattr(settings, "DEBUG", True)),
-        )
+        return bool(getattr(settings, "DEBUG", True))
     except (ImportError, AttributeError):
-        return True, True
+        return True
 
 
 def _snapshot_user(user: Any) -> Any:
@@ -94,14 +91,12 @@ def get_current_admin_user(request: Request) -> Any | None:
 def require_admin_user(request: Request) -> Any:
     """FastAPI dependency: enforce admin authentication + authorization.
 
+    Always enforced — admin has no "no auth" mode.
+
     Raises:
         HTTPException(401): No valid session (not logged in).
         HTTPException(403): Logged in, but lacks ``can_access_admin``.
     """
-    require_auth, _ = _admin_auth_settings()
-    if not require_auth:
-        return None
-
     user = get_current_admin_user(request)
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication required")
@@ -127,7 +122,6 @@ def _set_session_cookie(response: Response, user_id: Any) -> None:
     from fastframe.admin.serializers import serialize_value
     from fastframe.contrib.auth.session import DEFAULT_MAX_AGE, create_session_token
 
-    _, debug = _admin_auth_settings()
     token = create_session_token({"user_id": serialize_value(user_id)})
     response.set_cookie(
         key=SESSION_COOKIE_NAME,
@@ -135,7 +129,7 @@ def _set_session_cookie(response: Response, user_id: Any) -> None:
         max_age=DEFAULT_MAX_AGE,
         httponly=True,
         samesite="lax",
-        secure=not debug,
+        secure=not _debug_setting(),
         path="/",
     )
 

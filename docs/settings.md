@@ -27,6 +27,20 @@ variable is set.
 | `ADMIN_SITE_TITLE` | `"FastFrame Admin"` | Title used by project code and docs. |
 | `ADMIN_SITE_HEADER` | `"Administration"` | Header label. |
 
+Admin authentication is always required — there is no setting to disable
+it. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md).
+
+## REST API
+
+Opt-in, token-authenticated CRUD over the same models registered with
+`admin_site` — see [rest-api.md](rest-api.md).
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `ENABLE_REST_API` | `False` | Mount `/api/auth/token` and the CRUD API. Off by default, unlike admin. |
+| `ENABLE_REST_API_DOCS` | `True` | Include REST API operations in the OpenAPI schema. |
+| `API_PREFIX` | `"/api/v1"` | CRUD API prefix (token auth lives at `/api/auth/token` regardless). |
+
 ## OpenAPI
 
 | Setting | Default | Meaning |

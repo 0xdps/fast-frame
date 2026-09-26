@@ -28,8 +28,22 @@ def admin_app():
 
 @pytest.fixture
 def client(admin_app):
-    """Create test client."""
+    """Create test client, logged in as an admin user."""
+    from fastframe.db.engine import get_engine
+    from fastframe.db.session import session_scope
+
+    Model.metadata.create_all(bind=get_engine())
+    with session_scope():
+        for user in list(User.objects.all()):
+            user.delete()
+        user = User(username="admin", email="admin@example.com", password="")
+        user.set_password("s3cret-pass")
+        user.can_access_admin = True
+        user.save()
+
     with TestClient(admin_app) as c:
+        resp = c.post("/api/admin/login", json={"username": "admin", "password": "s3cret-pass"})
+        assert resp.status_code == 200
         yield c
 
 
@@ -54,13 +68,16 @@ def test_admin_api_resources_list(client):
 
 
 def _prepare_auth_tables() -> None:
+    """Clean up test users, but keep the logged-in "admin" account intact
+    (see the ``client`` fixture) so the session cookie stays valid."""
     from fastframe.db.engine import get_engine
     from fastframe.db.session import session_scope
 
     Model.metadata.create_all(bind=get_engine())
     with session_scope():
         for user in list(User.objects.all()):
-            user.delete()
+            if user.username != "admin":
+                user.delete()
 
 
 def test_admin_api_list_users(client):

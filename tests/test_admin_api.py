@@ -9,8 +9,10 @@ import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from fastframe.admin import ModelAdmin, get_admin_api_router
+from fastframe.admin import ModelAdmin, get_admin_api_router, get_admin_auth_router
+from fastframe.admin.audit import AuditLog
 from fastframe.admin.site import AdminSite
+from fastframe.contrib.auth.models import User
 from fastframe.db.session import session_scope
 from fastframe.models import Model, fields
 
@@ -68,8 +70,20 @@ test_site.register(ApiBook, ApiBookAdmin)
 
 @pytest.fixture
 def client(miniproject_env, monkeypatch):
-    """TestClient with admin API mounted, isolated AdminSite, clean tables."""
+    """TestClient with admin API mounted, isolated AdminSite, clean tables.
+
+    Admin auth is always required, so this logs in an admin user before
+    returning the client — the session cookie then rides along on every
+    request made with it (see fastframe.admin.auth).
+    """
     monkeypatch.setattr("fastframe.admin.api.admin_site", test_site)
+
+    # This test builds a bare FastAPI() app directly rather than going
+    # through create_app()/include_admin(), so register the audit log
+    # model ourselves before create_all() (mirrors what include_admin() does).
+    from fastframe.admin import ensure_audit_log_registered
+
+    ensure_audit_log_registered()
 
     # Create tables for our module-level models (miniproject only migrates its own)
     from fastframe.db.engine import get_engine
@@ -78,6 +92,7 @@ def client(miniproject_env, monkeypatch):
     Model.metadata.create_all(bind=engine)
 
     app = FastAPI()
+    app.include_router(get_admin_auth_router())
     app.include_router(get_admin_api_router())
 
     # Clean tables before each test
@@ -86,8 +101,21 @@ def client(miniproject_env, monkeypatch):
             obj.delete()
         for obj in list(ApiAuthor.objects.all()):
             obj.delete()
+        for entry in list(AuditLog.objects.all()):
+            entry.delete()
+        for user in list(User.objects.all()):
+            user.delete()
+        admin_user = User(username="admin", email="admin@example.com", password="")
+        admin_user.set_password("s3cret-pass")
+        admin_user.can_access_admin = True
+        admin_user.save()
 
-    return TestClient(app)
+    test_client = TestClient(app)
+    login = test_client.post(
+        "/api/admin/login", json={"username": "admin", "password": "s3cret-pass"}
+    )
+    assert login.status_code == 200
+    return test_client
 
 
 @pytest.fixture
@@ -296,3 +324,59 @@ def test_bulk_delete(client, seeded):
 
     resp = client.get("/api/admin/apibook")
     assert resp.json()["total"] == 2
+
+
+# ----------------------------------------------------------------------
+# Audit log (shared by the admin API and the token-authenticated REST API
+# — see tests/test_rest_api.py for the token-auth side of this)
+# ----------------------------------------------------------------------
+
+
+def test_create_writes_audit_log_attributed_to_admin_user(client):
+    resp = client.post(
+        "/api/admin/apiauthor", json={"name": "Dana", "email": "dana@example.com"}
+    )
+    author_id = resp.json()["data"]["id"]
+
+    with session_scope():
+        entry = AuditLog.objects.get(action="create", model_name="ApiAuthor")
+        assert entry.username == "admin"
+        assert entry.source == "admin"
+        assert entry.object_id == str(author_id)
+        assert entry.changes["fields"]["name"] == "Dana"
+
+
+def test_update_writes_audit_log_diff_only_changed_fields(client, seeded):
+    with session_scope():
+        book_id = ApiBook.objects.filter(title="Book 0").first().id
+
+    client.put(f"/api/admin/apibook/{book_id}", json={"pages": 777})
+
+    with session_scope():
+        entry = AuditLog.objects.get(action="update", model_name="ApiBook")
+        assert entry.changes["pages"] == {"old": 100, "new": 777}
+        assert "title" not in entry.changes
+
+
+def test_delete_writes_audit_log_with_pre_delete_snapshot(client, seeded):
+    with session_scope():
+        book_id = ApiBook.objects.filter(title="Book 0").first().id
+
+    client.delete(f"/api/admin/apibook/{book_id}")
+
+    with session_scope():
+        entry = AuditLog.objects.get(action="delete", model_name="ApiBook")
+        assert entry.object_id == str(book_id)
+        assert entry.changes["fields"]["title"] == "Book 0"
+
+
+def test_bulk_delete_writes_one_audit_entry_per_object(client, seeded):
+    with session_scope():
+        ids = [b.id for b in ApiBook.objects.all()[:2]]
+
+    query = "&".join(f"ids={i}" for i in ids)
+    client.delete(f"/api/admin/apibook?{query}")
+
+    with session_scope():
+        entries = list(AuditLog.objects.filter(action="delete", model_name="ApiBook"))
+        assert {e.object_id for e in entries} == {str(i) for i in ids}
