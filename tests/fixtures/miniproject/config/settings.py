@@ -24,3 +24,7 @@ SHELL_IMPORTS = [
     "from fastframe.db.session import session_scope",
 ]
 SHELL_STARTUP = "config/shell_startup.py"
+
+# This fixture project is used for general integration tests (CLI, admin
+# API wiring, etc.), not admin auth — see test_admin_auth.py for that.
+ADMIN_REQUIRE_AUTH = False

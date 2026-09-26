@@ -1,126 +1,68 @@
-# ⚠️ Admin Security Warning
+# ⚠️ Admin Security Notes
 
-**FastFrame v0.3.0 - Admin Preview Release**
+**FastFrame v0.3.1 - Admin Authentication**
 
 ---
 
-## 🔴 CRITICAL: Admin is Development-Only in v0.3.0
+## ✅ UPDATE (v0.3.1): Session Authentication Is Now Built In
 
-The FastFrame admin system in v0.3.0 **does not include authentication or authorization**. 
+As of v0.3.1, the admin API and UI require a logged-in `User` with
+`can_access_admin = True` by default. This closes the critical gap flagged
+in v0.3.0 (see "v0.3.0 History" below).
 
-### What This Means
+### How it works
 
-✅ **Safe for development:**
-- Running on `localhost`
-- Behind VPN or firewall
-- Internal networks only
+- `POST /api/admin/login` — verify `{"username", "password"}`, set a signed,
+  `httponly` session cookie (`ff_admin_session`, HMAC-SHA256 over
+  `SECRET_KEY`, 14-day expiry).
+- `POST /api/admin/logout` — clear the session cookie.
+- `GET /api/admin/me` — return the current admin user, or `401` if not
+  logged in.
+- Every other `/api/admin/*` route requires that cookie and rejects requests
+  with `401` (not logged in) or `403` (logged in, but `can_access_admin` is
+  `False`).
+- The bundled admin UI (`ADMIN_MODE = "static"`, the default) serves a
+  minimal login page instead of the SPA shell until a valid session exists;
+  the SSR (`ADMIN_MODE = "ssr"`) views do the same.
 
-❌ **NOT SAFE for production:**
-- Public internet access
-- Shared hosting
-- Cloud deployments without security groups
-- Any untrusted network
+### Granting admin access to a user
+
+```python
+from fastframe.contrib.auth.models import User
+from fastframe.db.session import session_scope
+
+with session_scope():
+    user = User(username="admin", email="admin@example.com", password="")
+    user.set_password("choose-a-strong-password")
+    user.can_access_admin = True  # required to log into /admin
+    user.save()
+```
+
+### Opting out (development only)
+
+```python
+# settings.py
+ADMIN_REQUIRE_AUTH = False  # ⚠️ disables the login requirement entirely
+```
+
+Only do this on `localhost`/trusted networks — with it off, admin behaves
+exactly like v0.3.0 (no authentication at all). See "Current Security Gaps"
+below for what's still not covered even with auth enabled.
 
 ---
 
 ## Current Security Gaps
 
+Authentication is now handled. These are still open:
+
 | Feature | Status | Risk |
 |---------|--------|------|
-| **Authentication** | ❌ Not implemented | CRITICAL |
-| **Authorization** | ❌ Not implemented | CRITICAL |
-| **CSRF Protection** | ❌ Not implemented | HIGH |
-| **Rate Limiting** | ❌ Not implemented | MEDIUM |
+| **Authentication** | ✅ Implemented (v0.3.1) | — |
+| **Authorization (role/permission)** | ⚠️ Coarse only (`can_access_admin`, `is_superuser`) | MEDIUM |
+| **Per-model/field permissions** | ❌ Not implemented (`has_*_permission` are static class attrs, not per-request) | MEDIUM |
+| **CSRF Protection** | ❌ Not implemented (mitigated: cookie is `SameSite=Lax`) | MEDIUM |
+| **Rate Limiting on `/login`** | ❌ Not implemented (brute-force is possible) | MEDIUM |
 | **Audit Logging** | ❌ Not implemented | LOW |
-
----
-
-## Immediate Actions
-
-### If You're Using v0.3.0 Admin:
-
-**Option 1: Development Only (Recommended)**
-```python
-# settings.py
-import os
-
-# Only enable admin in development
-DEBUG = os.getenv("DEBUG", "False") == "True"
-ENABLE_ADMIN = DEBUG  # Admin only when DEBUG=True
-
-# In production
-# DEBUG=False ENABLE_ADMIN=False
-```
-
-**Option 2: Firewall Protection**
-- Use firewall rules to block `/admin` and `/api/admin` from public access
-- Only allow access from VPN IPs
-- Use AWS Security Groups, GCP Firewall Rules, etc.
-
-**Option 3: Disable Admin Entirely**
-```python
-# settings.py
-ENABLE_ADMIN = False
-```
-
-**Option 4: Wait for v0.3.1**
-- v0.3.1 will add authentication
-- Planned release: 2-3 weeks after v0.3.0
-
----
-
-## What's Coming in v0.3.1
-
-### Authentication System
-- ✅ Session-based authentication
-- ✅ Login/logout endpoints
-- ✅ User.can_access_admin checks
-- ✅ Permission validation on all admin endpoints
-- ✅ Automatic redirect to login page
-
-### Authorization
-- ✅ Model-level permissions (view, add, change, delete)
-- ✅ Field-level permissions
-- ✅ Custom permission checks via `has_permission()`
-- ✅ Integration with `User.permissions` JSON field
-
----
-
-## FAQ
-
-### Q: Can I add authentication myself in v0.3.0?
-**A:** Yes! You can add FastAPI dependencies to admin routes:
-
-```python
-from fastapi import Depends, HTTPException
-from fastframe.admin import get_admin_api_router
-
-async def require_admin(request: Request):
-    # Your auth logic here
-    user = await get_current_user(request)
-    if not user or not user.can_access_admin:
-        raise HTTPException(403, "Admin access required")
-    return user
-
-# Add dependency to admin router
-router = get_admin_api_router()
-router.dependencies.append(Depends(require_admin))
-```
-
-### Q: What if someone accesses my dev admin?
-**A:** They can:
-- View all model data
-- Create/edit/delete any records
-- Access user information
-
-### Q: Is the React Admin UI secure?
-**A:** The UI itself is fine, but it makes API calls without authentication. Anyone who can access the UI can use the API.
-
-### Q: Should I use admin in production at all?
-**A:** **Not in v0.3.0**. Wait for v0.3.1 with authentication, or implement your own auth layer.
-
-### Q: What about read-only access?
-**A:** Even read-only access exposes data. All endpoints (GET, POST, PUT, DELETE) are unprotected in v0.3.0.
 
 ---
 
@@ -128,12 +70,37 @@ router.dependencies.append(Depends(require_admin))
 
 Before deploying with admin enabled, ensure:
 
-- [ ] `ENABLE_ADMIN=False` in production, OR
-- [ ] Admin only accessible via VPN/internal network, OR
-- [ ] Firewall blocks `/admin` and `/api/admin` from public, OR
-- [ ] Custom authentication added as shown above
+- [ ] `SECRET_KEY` is a long, random, unique value (never the dev default) —
+      the session cookie's signature depends entirely on it.
+- [ ] `DEBUG = False` in production, so session cookies are sent `Secure`
+      (HTTPS-only).
+- [ ] Only trusted users have `can_access_admin = True`.
+- [ ] `ADMIN_REQUIRE_AUTH` is **not** set to `False` in production.
+- [ ] Consider fronting `/admin` and `/api/admin` with a firewall/VPN as
+      defense-in-depth, since fine-grained permissions aren't implemented yet.
 
-**Default is `ENABLE_ADMIN=True`** - you must explicitly disable or secure it!
+---
+
+## FAQ
+
+### Q: Can I still add my own auth logic on top of this?
+**A:** Yes. `require_admin_user` (in `fastframe.admin.auth`) is a normal
+FastAPI dependency — replace or extend it, or add further dependencies to
+the router returned by `get_admin_api_router()`.
+
+### Q: What if a user's session cookie leaks?
+**A:** Treat it like any session token — it grants admin access for up to 14
+days or until logout. Rotate `SECRET_KEY` to invalidate all sessions
+immediately (this also logs out every admin user).
+
+### Q: Is the React Admin UI secure?
+**A:** The bundled UI now gates behind login (see "How it works" above), but
+it has no permission-aware widgets yet — any user who can log in and has
+`can_access_admin` sees the same UI regardless of role.
+
+### Q: What about fine-grained permissions (per-model, per-field)?
+**A:** Not yet — `ModelAdmin.has_add_permission` etc. are still static
+booleans, not per-request checks. Planned for v0.3.2 (see roadmap).
 
 ---
 
@@ -142,11 +109,21 @@ Before deploying with admin enabled, ensure:
 | Version | Feature | Status |
 |---------|---------|--------|
 | **v0.3.0** | Admin CRUD (no auth) | ✅ Released |
-| **v0.3.1** | Authentication | 🚧 In progress |
-| **v0.3.2** | Fine-grained permissions | 📋 Planned |
+| **v0.3.1** | Session authentication (login/logout/me) | ✅ Released |
+| **v0.3.2** | Fine-grained, per-request permissions | 📋 Planned |
 | **v0.4.0** | CSRF protection | 📋 Planned |
 | **v0.4.0** | Rate limiting | 📋 Planned |
 | **v0.5.0** | Audit logging | 📋 Planned |
+
+---
+
+## v0.3.0 History (for context)
+
+In v0.3.0, the admin system shipped with **no authentication or
+authorization at all** — every `/api/admin/*` route was open to anyone who
+could reach it. That gap is what v0.3.1's session authentication (above)
+closes. If you're still running v0.3.0, upgrade or apply the workarounds
+that were documented at the time (disable admin, or firewall it off).
 
 ---
 
@@ -169,6 +146,7 @@ If you discover a security issue in FastFrame:
 
 ---
 
-**Remember: FastFrame v0.3.0 admin is a preview release for development use only.**
+**FastFrame v0.3.1 admin requires login by default. Fine-grained permissions
+are still on the roadmap — see the Security Roadmap above.**
 
-*Updated: 2026-09-23*
+*Updated: 2026-09-26*

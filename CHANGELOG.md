@@ -7,6 +7,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-26
+
+Admin release. Adds a Django-style declarative field API, automatic
+relationship generation (`ForeignKey` and `ManyToManyField`), and a full
+admin system — REST API + bundled React UI — protected by session-based
+authentication by default.
+
+### Added
+
+- **Declarative fields** (`fastframe.models.fields`): `CharField`, `TextField`,
+  `IntegerField`, `BigIntegerField`, `SmallIntegerField`, `BooleanField`,
+  `FloatField`, `DateField`, `DateTimeField` (`auto_now`/`auto_now_add`),
+  `DecimalField`, `EmailField`, `URLField`, `UUIDField` (UUID v7 by default),
+  `JSONField`, `AutoField`/`BigAutoField`, replacing raw `mapped_column()`
+  boilerplate. `Model.full_clean()` validates every field and calls
+  `clean()` for model-level validation.
+- **`ForeignKey` auto-relationships**: `author = fields.ForeignKey("User",
+  on_delete="CASCADE", related_name="posts")` now automatically creates the
+  FK constraint, the forward `relationship()` (`post.author`), and the
+  reverse `relationship()` (`user.posts`) — no manual SQLAlchemy
+  `relationship()`/`backref()` needed. String targets are resolved against
+  the SQLAlchemy class registry with module-affinity disambiguation, and
+  resolved lazily (via a `before_configured` event) so forward references
+  across apps/modules work regardless of import order.
+- **`ManyToManyField`**: `tags = fields.ManyToManyField("Tag",
+  related_name="posts")` auto-creates a hidden join table (plain SQLAlchemy
+  Core `Table`, migration-friendly) and Django-style collection helpers via
+  `RelatedList` — `post.tags.add(t1, t2)`, `.remove(t)`, `.clear()`,
+  `.set([...])`, `.all()`. Supports `to="self"` for self-referential M2M
+  (e.g. "friends") and a `db_table=` override. Custom "through" models
+  (extra columns on the join table) are not yet supported.
+- **Admin system** (`fastframe.admin`): Django-like `ModelAdmin`/`admin_site`
+  registry; a REST API (`GET/POST/PUT/DELETE /api/admin/{resource}`,
+  `/api/admin/schema`, `/api/admin/{resource}/choices/{field}`) in React
+  Admin's response envelope; a bundled React admin UI
+  (`ADMIN_MODE = "static"`, the default) plus an SSR/Jinja2 fallback
+  (`ADMIN_MODE = "ssr"`) and a `startadmin` scaffold for a customizable UI
+  (`ADMIN_MODE = "custom"`).
+- **Admin authentication** (`fastframe.admin.auth`): `POST /api/admin/login`
+  / `POST /api/admin/logout` / `GET /api/admin/me`, backed by a signed,
+  `httponly` session cookie (HMAC-SHA256 over `SECRET_KEY`, no extra
+  dependency). All other `/api/admin/*` routes require a logged-in `User`
+  with `can_access_admin = True` (`401`/`403` otherwise), gated by the new
+  `ADMIN_REQUIRE_AUTH` setting (default `True`; set `False` for the old,
+  unauthenticated dev-only behavior). The bundled UI and SSR views serve a
+  minimal login page until a valid session exists.
+- **Built-in `User` model** (`fastframe.contrib.auth`): UUID v7 (or
+  `AutoField`, per `DEFAULT_AUTO_FIELD`) primary key, `username`/`email`
+  (unique), PBKDF2-SHA256 password hashing (`set_password`/
+  `check_password`), `is_active`, a flexible `user_data` JSON field backing
+  `can_access_admin`/`is_superuser`/`permissions`/`preferences`, and
+  `AUTH_USER_MODEL` for swapping in a custom user model.
+  `fastframe.contrib.auth.authenticate(username, password)` and
+  `get_user_model()` mirror Django's helpers of the same name.
+
+### Changed
+
+- `__version__` / package version bumped to `0.3.0`.
+
+### Docs
+
+- `docs/ADMIN_SECURITY_WARNING.md` rewritten for v0.3.0: documents the new
+  authentication flow, what's still not covered (per-model/field
+  permissions, CSRF, rate limiting, audit logging), and a deployment
+  checklist.
+- `docs/AUDIT_2026_09_23.md`, `docs/ACTION_PLAN_V0.3.md`,
+  `docs/RELATIONSHIP_AUTO_GEN_COMPLETE.md`, `docs/ADMIN_COMPLETION_SUMMARY.md`
+  record the audit, plan, and completion notes behind this release.
+
 ## [0.2.0] - 2026-09-22
 
 Developer-experience release. Closes out every item under `docs/roadmap.md`'s

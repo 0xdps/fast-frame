@@ -134,11 +134,27 @@ author = fields.ForeignKey("User", on_delete="CASCADE", related_name="posts")
 - `related_name`: reverse relationship name
 - `to_field`: defaults to `"id"`
 
-**ManyToManyField** (Deferred to v0.3.1+)
+**ManyToManyField** (Implemented v0.3.0)
 ```python
-tags = fields.ManyToManyField("Tag", through="PostTag")
-# Complex - requires join table, needs more design
+tags = fields.ManyToManyField("Tag", related_name="posts")
+# Auto-creates join table "posts_tags" (or db_table=...) on Model.metadata
+# + relationship() on both sides, using RelatedList for Django-style helpers:
+post.tags.add(tag1, tag2)
+post.tags.remove(tag1)
+post.tags.clear()
+post.tags.set([tag2])
+post.tags.all()          # -> [Tag, ...]
+tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
 ```
+- `related_name`: reverse accessor name (defaults to `"{model}_set"`)
+- `db_table`: override the auto-generated join table name
+- `to="self"`: self-referential M2M (e.g. `friends`)
+- Custom `through=` models (extra columns on the join table) are **not**
+  supported yet — deferred to a later release alongside the association
+  object pattern.
+- Admin: serialized as a list of related PKs; not yet editable via the main
+  create/update payload (use the ORM methods above, or a future dedicated
+  endpoint).
 
 ### Optional/Advanced Fields (v0.3.1+)
 

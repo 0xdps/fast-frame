@@ -5,6 +5,8 @@ Provides list, detail, create, update, and delete views for registered models.
 
 from __future__ import annotations
 
+import json
+
 # Templates directory
 import pathlib
 from typing import Any
@@ -34,8 +36,117 @@ def _admin_settings() -> tuple[bool, str, str]:
         return True, "static", "/admin"
 
 
+def _admin_auth_settings() -> tuple[bool, str]:
+    """Return (require_auth, api_prefix) from settings, with safe defaults."""
+    try:
+        from fastframe.conf import settings
+
+        return (
+            bool(getattr(settings, "ADMIN_REQUIRE_AUTH", True)),
+            str(getattr(settings, "ADMIN_API_PREFIX", "/api/admin")),
+        )
+    except (ImportError, AttributeError):
+        return True, "/api/admin"
+
+
+_LOGIN_PAGE_TEMPLATE = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>FastFrame Admin — Sign in</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:22rem;margin:6rem auto;padding:0 1rem;color:#172033}
+h1{font-size:1.25rem}
+label{display:block;margin-top:.75rem;font-size:.875rem;color:#475569}
+input{width:100%;padding:.5rem;margin-top:.25rem;border:1px solid #cbd5e1;
+border-radius:6px;box-sizing:border-box}
+button{margin-top:1.25rem;width:100%;padding:.6rem;border:0;border-radius:6px;
+background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+button:disabled{opacity:.6;cursor:default}
+#error{color:#dc2626;font-size:.875rem;margin-top:.75rem;display:none}
+</style></head>
+<body>
+<h1>FastFrame Admin</h1>
+<form id="login-form">
+  <label>Username
+    <input type="text" name="username" autocomplete="username" required>
+  </label>
+  <label>Password
+    <input type="password" name="password" autocomplete="current-password" required>
+  </label>
+  <div id="error"></div>
+  <button type="submit">Sign in</button>
+</form>
+<script>
+const API_LOGIN_URL = __API_LOGIN_URL__;
+const form = document.getElementById('login-form');
+const errorEl = document.getElementById('error');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorEl.style.display = 'none';
+  const btn = form.querySelector('button');
+  btn.disabled = true;
+  try {
+    const res = await fetch(API_LOGIN_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include',
+      body: JSON.stringify({
+        username: form.username.value,
+        password: form.password.value,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      errorEl.textContent = (body.detail && body.detail.message)
+        || body.detail || 'Invalid username or password';
+      errorEl.style.display = 'block';
+      btn.disabled = false;
+      return;
+    }
+    window.location.reload();
+  } catch (err) {
+    errorEl.textContent = 'Network error \u2014 please try again';
+    errorEl.style.display = 'block';
+    btn.disabled = false;
+  }
+});
+</script>
+</body></html>"""
+
+
+def _login_page_html(api_prefix: str) -> str:
+    """Render a minimal, dependency-free login page for the admin UI.
+
+    Posts credentials to ``{api_prefix}/login`` and reloads on success so the
+    server can serve the real admin content once the session cookie is set.
+    """
+    login_url = json.dumps(f"{api_prefix}/login")
+    return _LOGIN_PAGE_TEMPLATE.replace("__API_LOGIN_URL__", login_url)
+
+
+def _admin_login_redirect(request: Request) -> HTMLResponse | None:
+    """Return a login page response if the request isn't authenticated.
+
+    Returns None when authentication is disabled or the request already
+    carries a valid admin session, meaning the real view should proceed.
+    """
+    require_auth, api_prefix = _admin_auth_settings()
+    if not require_auth:
+        return None
+
+    from fastframe.admin.auth import get_current_admin_user
+
+    if get_current_admin_user(request) is not None:
+        return None
+    return HTMLResponse(_login_page_html(api_prefix))
+
+
 def _built_admin_router(directory: pathlib.Path, prefix: str) -> APIRouter:
-    """Serve a built SPA (index.html + hashed assets) under ``prefix``."""
+    """Serve a built SPA (index.html + hashed assets) under ``prefix``.
+
+    Unauthenticated requests get a minimal login page instead of the SPA
+    shell, since the SPA itself has no built-in login flow (see
+    ``docs/ADMIN_SECURITY_WARNING.md``). Once the session cookie is set via
+    ``/api/admin/login``, a page reload serves the real assets.
+    """
     from fastapi.responses import FileResponse
 
     root = directory.resolve()
@@ -56,7 +167,10 @@ def _built_admin_router(directory: pathlib.Path, prefix: str) -> APIRouter:
     @router.get("")
     @router.get("/")
     @router.get("/{full_path:path}")
-    async def serve_built_admin(full_path: str = "") -> FileResponse:
+    async def serve_built_admin(request: Request, full_path: str = "") -> Any:
+        login_page = _admin_login_redirect(request)
+        if login_page is not None:
+            return login_page
         return FileResponse(_file_for(full_path))
 
     return router
@@ -130,6 +244,10 @@ def get_admin_router() -> APIRouter:
         Returns:
             Rendered HTML template.
         """
+        login_page = _admin_login_redirect(request)
+        if login_page is not None:
+            return login_page
+
         registry = admin_site.get_registry()
         
         # Group models by app
@@ -179,6 +297,10 @@ def get_admin_router() -> APIRouter:
         Raises:
             HTTPException: If model not found or not registered.
         """
+        login_page = _admin_login_redirect(request)
+        if login_page is not None:
+            return login_page
+
         # Find the model
         model = _find_model(app_label, model_name)
         model_admin = admin_site.get_model_admin(model)
@@ -257,6 +379,10 @@ def get_admin_router() -> APIRouter:
         Returns:
             Rendered HTML template with form.
         """
+        login_page = _admin_login_redirect(request)
+        if login_page is not None:
+            return login_page
+
         model = _find_model(app_label, model_name)
         model_admin = admin_site.get_model_admin(model)
         
@@ -294,6 +420,10 @@ def get_admin_router() -> APIRouter:
         Returns:
             Rendered HTML template with form.
         """
+        login_page = _admin_login_redirect(request)
+        if login_page is not None:
+            return login_page
+
         model = _find_model(app_label, model_name)
         model_admin = admin_site.get_model_admin(model)
         

@@ -19,6 +19,9 @@ DEFAULT_AUTO_FIELD = "AutoField"
 ENABLE_ADMIN = True
 ENABLE_ADMIN_DOCS = True
 ADMIN_MODE = "static"
+# This settings module covers general app-wiring tests, not admin auth —
+# see test_admin_auth.py for login/logout/session coverage.
+ADMIN_REQUIRE_AUTH = False
 
 # Apps
 INSTALLED_APPS = [

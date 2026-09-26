@@ -61,6 +61,17 @@ def serialize_instance(instance: Model, *, include_relations: bool = True) -> di
     for field_name, field in model_fields.items():
         if getattr(field, "write_only", False):
             continue
+
+        if isinstance(field, f.ManyToManyField):
+            # Serialize as a list of related-object PKs (React Admin's
+            # reference-array convention), not the raw ORM collection.
+            related_objs = getattr(instance, field_name, None) or []
+            data[field_name] = [
+                serialize_value(getattr(obj, get_pk_name(type(obj)), None))
+                for obj in related_objs
+            ]
+            continue
+
         value = getattr(instance, field_name, None)
         data[field_name] = serialize_value(value)
 
@@ -175,6 +186,12 @@ def deserialize_payload(
         if not partial and isinstance(field, (f.AutoField, f.BigAutoField)):
             continue
 
+        # M2M relations aren't settable through the main payload yet — use
+        # RelatedList (instance.<field>.add/remove/set) or a future dedicated
+        # endpoint. See docs/MANY_TO_MANY.md.
+        if isinstance(field, f.ManyToManyField):
+            continue
+
         try:
             cleaned[key] = deserialize_value(field, raw_value)
         except ValidationError as e:
@@ -208,6 +225,11 @@ def model_schema(model: type[Model], model_admin: Any = None) -> dict[str, Any]:
         if isinstance(field, f.ForeignKey):
             schema["reference"] = field.to if isinstance(field.to, str) else field.to.__name__
             schema["relationshipName"] = field.relationship_name
+        if isinstance(field, f.ManyToManyField):
+            schema["reference"] = field.to if isinstance(field.to, str) else field.to.__name__
+            schema["relationshipName"] = field.relationship_name
+            schema["many"] = True
+            schema["editable"] = False  # not settable via the main payload yet
         if isinstance(field, f.DecimalField):
             schema["maxDigits"] = field.max_digits
             schema["decimalPlaces"] = field.decimal_places

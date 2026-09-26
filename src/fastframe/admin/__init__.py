@@ -32,6 +32,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastframe.admin.api import get_admin_api_router
+from fastframe.admin.auth import get_admin_auth_router
 from fastframe.admin.site import AdminSite, ModelAdmin, admin_site
 from fastframe.admin.views import get_admin_router
 
@@ -41,6 +42,7 @@ __all__ = [
     "admin_site",
     "get_admin_router",
     "get_admin_api_router",
+    "get_admin_auth_router",
     "include_admin",
 ]
 
@@ -67,11 +69,17 @@ def include_admin(app: Any) -> None:
     """Mount the admin API and UI when ``ENABLE_ADMIN`` is true.
 
     Does nothing when admin is disabled, so OpenAPI stays free of admin routes.
+
+    The auth router (login/logout/me) is mounted *before* the CRUD router so
+    its literal paths (``/login``, ``/logout``, ``/me``) win over the CRUD
+    router's ``/{resource}`` catch-all when FastAPI matches routes in
+    registration order.
     """
     from fastframe.conf import settings
 
     if not getattr(settings, "ENABLE_ADMIN", True):
         return
     _import_user_admin()
+    app.include_router(get_admin_auth_router())
     app.include_router(get_admin_api_router())
     app.include_router(get_admin_router())

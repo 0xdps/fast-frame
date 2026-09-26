@@ -25,6 +25,7 @@ from typing import Any
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.exc import IntegrityError
 
+from fastframe.admin.auth import require_admin_user
 from fastframe.admin.serializers import (
     deserialize_payload,
     get_pk_name,
@@ -73,11 +74,14 @@ def get_admin_api_router() -> APIRouter:
         # Return empty router if admin is disabled
         return APIRouter(prefix=admin_api_prefix, tags=["admin-api"])
     
-    # Create router with conditional OpenAPI inclusion
+    # Create router with conditional OpenAPI inclusion. All routes below
+    # require an authenticated admin session (see fastframe.admin.auth) —
+    # login/logout/me live on a separate, unprotected router.
     router = APIRouter(
         prefix=admin_api_prefix, 
         tags=["admin-api"],
-        include_in_schema=enable_admin_docs
+        include_in_schema=enable_admin_docs,
+        dependencies=[Depends(require_admin_user)],
     )
 
     # ------------------------------------------------------------------
@@ -131,8 +135,12 @@ def get_admin_api_router() -> APIRouter:
 
         total = qs.count()
 
-        # Sorting
-        if sortField and sortField in model._meta["fields"]:
+        # Sorting (M2M fields aren't real columns, so they can't be sorted on)
+        from fastframe.models.fields import ManyToManyField
+
+        sort_field_obj = model._meta["fields"].get(sortField) if sortField else None
+        sortable = sort_field_obj is not None and not isinstance(sort_field_obj, ManyToManyField)
+        if sortField and sortable:
             qs = qs.order_by(f"-{sortField}" if sortOrder.upper() == "DESC" else sortField)
         else:
             for ordering_field in model_admin.get_ordering():

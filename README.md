@@ -8,7 +8,9 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**v0.2 released.** v0.1's core development loop — `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin models with a chainable `QuerySet`, and Alembic migrations — is implemented and validated end-to-end against a real app (see [`examples/todo_app`](examples/todo_app)). v0.2 adds developer-experience polish on top: a real `check`/`check --database` framework, `showmigrations`/`dbshell`, app lifecycle hooks (`AppConfig.checks()`/`shutdown()`), `.env` support, a pagination dependency, and test utilities (`fastframe.testing.override_settings`). See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md), and [docs/roadmap.md](docs/roadmap.md).
+**v0.3 released.** v0.1's core development loop — `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin models with a chainable `QuerySet`, and Alembic migrations — is implemented and validated end-to-end against a real app (see [`examples/todo_app`](examples/todo_app)). v0.2 added developer-experience polish: a real `check`/`check --database` framework, `showmigrations`/`dbshell`, app lifecycle hooks (`AppConfig.checks()`/`shutdown()`), `.env` support, a pagination dependency, and test utilities (`fastframe.testing.override_settings`).
+
+v0.3 adds a Django-style admin: declarative `fields.*` (with automatic `ForeignKey`/`ManyToManyField` relationship generation — no manual `relationship()` calls needed), a REST admin API + bundled React admin UI with **session-based login/logout** (`can_access_admin`-gated by default, see [docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md)), and a built-in `User` model with password hashing. See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md), and [docs/roadmap.md](docs/roadmap.md).
 
 ## What FastFrame is (and is not)
 
@@ -17,8 +19,9 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 | `manage.py`-style project workflow | Django-style views or URL dispatch |
 | Apps, settings, and extension hooks | A full QuerySet / ORM algebra |
 | Thin model helpers (`filter`, `get`, `save`, …) | Hiding SQLAlchemy for complex queries |
-| Migrations (Alembic, convention-driven) | Admin, auth, templates, static files (later) |
+| Migrations (Alembic, convention-driven) | Templates, static files (later) |
 | Shell, runserver, test integration | Replacing FastAPI routing or Pydantic |
+| Admin (CRUD UI + REST API, session auth) | Fine-grained/per-model permissions (later) |
 
 HTTP stays **FastAPI**. Hard data access stays **SQLAlchemy**. FastFrame owns **lifecycle, conventions, and the daily loop**.
 
