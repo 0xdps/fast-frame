@@ -1,0 +1,21 @@
+docs/README.md
+  s_8de26d66febf8a::t_9828c3395428b1 21-24
+CHANGELOG.md
+  s_8de26d66febf8a::t_1ca354299120f8 21-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "b1d4915f48b6be0ffab19cbfa573a78d7ad72d2a",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
