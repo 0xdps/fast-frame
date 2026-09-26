@@ -1,0 +1,167 @@
+src/fastframe/core/apps.py
+  s_8de26d66febf8a::t_aed9cd8896cb73 6,9-10
+  s_8de26d66febf8a::t_bc2d9644709e67 45-64
+  s_8de26d66febf8a::t_45298ef97a93f8 78-95
+src/fastframe/contrib/auth/views.py
+  s_8de26d66febf8a::t_fe76b7c3db7db2 14-16
+tests/fixtures/admin_auth_test_settings.py
+  s_8de26d66febf8a::t_4fd24bdec37c37 24
+src/fastframe/models/__init__.py
+  s_8de26d66febf8a::t_6e38250b76fc3e 1,18
+examples/admin_custom/config/settings.py
+  s_8de26d66febf8a::t_5880276331fc76 19-22
+src/fastframe/api/__init__.py
+  s_8de26d66febf8a::t_b205a18ea6d0f7 3-5,13,15-17
+  s_8de26d66febf8a::t_0a3f100bdf6772 50,52-56
+src/fastframe/admin/apps.py
+  s_8de26d66febf8a::t_449daec0e12ba1 1-42
+tests/fixtures/admin_disabled_settings.py
+  s_8de26d66febf8a::t_938bd3ba29eeed 1,9
+src/fastframe/core/app.py
+  s_8de26d66febf8a::t_5b8d4d72c8adc9 26
+  s_8de26d66febf8a::t_7c232d9618006a 1-9,18-19,21-24,28
+examples/custom_user/config/settings.py
+  s_8de26d66febf8a::t_ddc994144b869d 15
+tests/fixtures/admin_test_settings.py
+  s_8de26d66febf8a::t_836b56d20f90f9 24
+src/fastframe/models/query.py
+  s_8de26d66febf8a::t_708601d3a2f12f 61
+  s_8de26d66febf8a::t_e353ed69e50d51 170-181
+  s_8de26d66febf8a::t_efceca2b895752 227
+docs/settings.md
+  s_8de26d66febf8a::t_4337fb5a3cce99 116
+  s_8de26d66febf8a::t_ca4bed40d453e1 12,15-36,56
+examples/admin_custom/app.py
+  s_8de26d66febf8a::t_1f0faaf731679c 17,20
+examples/custom_user/app.py
+  s_8de26d66febf8a::t_1d98f375653387 9,12
+CHANGELOG.md
+  s_8de26d66febf8a::t_5ab8e70ec7610c 14-92
+pyproject.toml
+  s_8de26d66febf8a::t_ffea142df090d7 3
+examples/admin_simple/config/settings.py
+  s_8de26d66febf8a::t_64040d12950bd5 19-22
+README.md
+  s_8de26d66febf8a::t_cd2129f6dbcd33 91
+  s_8de26d66febf8a::t_cc075ab82338ed 21-32,35-40
+  s_8de26d66febf8a::t_8c56db1b148ad9 51-52,55
+  s_8de26d66febf8a::t_203c0fe68ba680 41
+src/fastframe/models/base.py
+  s_8de26d66febf8a::t_208a2067e35d44 532-539,545,548-557,561-576,584-590
+  s_8de26d66febf8a::t_a537525b09a6d7 577-583
+  s_8de26d66febf8a::t_8c6d37c9c7a384 591
+docs/architecture.md
+  s_8de26d66febf8a::t_1a0804c499570d 33-35
+  s_8de26d66febf8a::t_150cf41a4876a0 45-60,62-72,76-84,88-92
+  s_8de26d66febf8a::t_d701933ba8e998 106-117,120,131-136
+src/fastframe/migrations/paths.py
+  s_8de26d66febf8a::t_fa98c0e6b87963 50-58
+src/fastframe/admin/__init__.py
+  s_8de26d66febf8a::t_005044e1c48c4c 84,86-92
+docs/roadmap.md
+  s_8de26d66febf8a::t_08b49b6d261aab 80-116
+  s_8de26d66febf8a::t_dcf0692fdaf09a 19
+tests/fixtures/openapi_off_settings.py
+  s_8de26d66febf8a::t_e2c1a7400a3fc4 1
+src/fastframe/db/session.py
+  s_8de26d66febf8a::t_f4b69eb4be0d56 77-101
+docs/ADMIN_SECURITY_WARNING.md
+  s_8de26d66febf8a::t_2f2415565b0a24 137-141
+  s_8de26d66febf8a::t_bfd9cd7f5af60e 158-162
+docs/app-contract.md
+  s_8de26d66febf8a::t_b12a2b4a149156 77-82
+  s_8de26d66febf8a::t_91faf24545cafc 63-67
+docs/orm-features.md
+  s_8de26d66febf8a::t_a002019dd461db 1-276
+src/fastframe/contrib/auth/apps.py
+  s_8de26d66febf8a::t_5e808743dfdd21 1-42
+src/fastframe/db/__init__.py
+  s_8de26d66febf8a::t_abea175dd4b3e1 1,3
+src/fastframe/admin/views.py
+  s_8de26d66febf8a::t_41cee83edec094 24-25,34
+  s_8de26d66febf8a::t_6abac1541b093e 211-214,216
+src/fastframe/http/asgi.py
+  s_8de26d66febf8a::t_f5e8c80fdfced4 11,21,43,53,64,74,77-84,94,104,122,128,132,143
+  s_8de26d66febf8a::t_b7630df6b494ce 18-20,22-26,44-52,54-55,57-63,65-73,75,85-93,95-101,106-109,115-121,123-127,129-131,133-142,144-148
+  s_8de26d66febf8a::t_d67843f2e7ff5f 76
+tests/test_orm_enhancements.py
+  s_8de26d66febf8a::t_86cae3116c04d8 147-174,181-182,190-211
+  s_8de26d66febf8a::t_aa0467461674f5 248,254-255
+  s_8de26d66febf8a::t_75ba7c1f76a866 312-367
+  s_8de26d66febf8a::t_e9c79758a32fb7 13-14,29-45,53-71
+  s_8de26d66febf8a::t_7ff247af4f2bee 15-16
+  s_8de26d66febf8a::t_52eab41b2c2287 1-12,17-28,46-52,72-146
+  s_8de26d66febf8a::t_d00d1fc20083d3 212-247,249-253,256-311
+  s_8de26d66febf8a::t_c52dffae4bfd3a 368-421,423-435
+  s_8de26d66febf8a::t_940cff26dea84c 175-180,183-189
+  s_8de26d66febf8a::t_ebb886e9781b80 422
+  s_8de26d66febf8a::t_27774182ebf650 436-471
+  s_8de26d66febf8a::t_ad878179e9ecc6 472-522
+examples/admin_simple/README.md
+  s_8de26d66febf8a::t_5fb6842f3372f2 14-17
+src/fastframe/models/manager.py
+  s_8de26d66febf8a::t_578c29981cc858 230-232
+  s_8de26d66febf8a::t_f833e93bd568bb 452-486
+  s_8de26d66febf8a::t_bdf48a1267dfac 61,72,83,97-98,101
+  s_8de26d66febf8a::t_1c87f8ed6c885d 14-24,28-31
+  s_8de26d66febf8a::t_7563153deba14c 164-197
+  s_8de26d66febf8a::t_d1b8c1976b1373 448,487-539,546-562,576
+  s_8de26d66febf8a::t_d67b205d6397f5 25-27
+  s_8de26d66febf8a::t_4188796b629ad4 210-229,233-255
+  s_8de26d66febf8a::t_bcb3a28272715c 540-545
+  s_8de26d66febf8a::t_e3576085e9e771 449-451
+  s_8de26d66febf8a::t_f5cdb6e9c09a4b 563-575
+  s_8de26d66febf8a::t_6a22ccb372853b 322-377
+  s_8de26d66febf8a::t_8a700dc4d237c9 120-163
+  s_8de26d66febf8a::t_05428dfe1ab97d 418-425
+  s_8de26d66febf8a::t_49d0ff15d84f88 256-279
+  s_8de26d66febf8a::t_23b4a2d4dfc0a9 410-417
+  s_8de26d66febf8a::t_85aa0272018c72 402-409
+docs/admin-deployment.md
+  s_8de26d66febf8a::t_555b689b1fbc89 59-63
+  s_8de26d66febf8a::t_3b4c015ee9b44d 23,25
+  s_8de26d66febf8a::t_9525a34093e364 3-7,9-12
+src/fastframe/admin/api.py
+  s_8de26d66febf8a::t_73d981dd0ebcbe 76-83
+src/fastframe/conf/global_settings.py
+  s_8de26d66febf8a::t_4727bea7bed1d5 18-19
+  s_8de26d66febf8a::t_12dbfc84c9e1d9 30-31
+  s_8de26d66febf8a::t_6f1426e7fd12b5 43-45
+docs/auth.md
+  s_8de26d66febf8a::t_0614dfd19371bf 88-91
+  s_8de26d66febf8a::t_4236ad28dda5bf 131-135
+docs/rest-api.md
+  s_8de26d66febf8a::t_eb64bddc390b9b 122-125
+  s_8de26d66febf8a::t_74ad738154de35 15-19,22-26,29,32-33,36-37
+tests/fixtures/test_settings.py
+  s_8de26d66febf8a::t_a7fcd0e6136e05 22-23,25-26
+examples/simple_auth_example/config/settings.py
+  s_8de26d66febf8a::t_751b3431d12c32 19-21,28
+examples/admin_simple/app.py
+  s_8de26d66febf8a::t_91f6e6c0104c73 13,16
+docs/public-api-v0.1.md
+  s_8de26d66febf8a::t_e845db34c064a8 60-85
+  s_8de26d66febf8a::t_eed7d79827e679 39-45
+src/fastframe/api/apps.py
+  s_8de26d66febf8a::t_0898bf7b942d72 1-33
+examples/blog_app/config/settings.py
+  s_8de26d66febf8a::t_1f4d6164e0ef4e 20-22
+docs/admin-setup.md
+  s_8de26d66febf8a::t_bb578d07707376 51-53,55-72
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "3f25700a56f69cc70c279a1966abe2dd39976111",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
