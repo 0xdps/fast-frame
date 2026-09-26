@@ -8,20 +8,42 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**v0.3 released.** v0.1's core development loop — `fastframe startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin models with a chainable `QuerySet`, and Alembic migrations — is implemented and validated end-to-end against a real app (see [`examples/todo_app`](examples/todo_app)). v0.2 added developer-experience polish: a real `check`/`check --database` framework, `showmigrations`/`dbshell`, app lifecycle hooks (`AppConfig.checks()`/`shutdown()`), `.env` support, a pagination dependency, and test utilities (`fastframe.testing.override_settings`).
+**v0.1.0 released.** The core development loop — `fastframe startproject`,
+`manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin
+models with a chainable `QuerySet`, and Alembic migrations — is
+implemented and validated end-to-end against a real app (see
+[`examples/todo_app`](examples/todo_app)), alongside developer-experience
+tooling (`check`/`check --database`, `showmigrations`, `dbshell`, app
+lifecycle hooks, `.env` support, test utilities).
 
-v0.3 adds a Django-style admin: declarative `fields.*` (with automatic `ForeignKey`/`ManyToManyField` relationship generation — no manual `relationship()` calls needed), a REST admin API + bundled React admin UI with **session-based login/logout** (`can_access_admin`-gated by default, see [docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md)), and a built-in `User` model with password hashing. See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md), and [docs/roadmap.md](docs/roadmap.md).
+On top of that: a Django-style admin (declarative `fields.*` with
+automatic `ForeignKey`/`ManyToManyField` relationship generation, a REST
+admin API, and a bundled React admin UI); a generic, opt-in,
+token-authenticated REST API over the same registered models; an audit
+log; and a built-in `User` model with **session-based login/logout**
+(`can_access_admin`-gated for the admin by default), **opt-in per-model
+permissions** (`Group`, permission strings — see
+[docs/permissions.md](docs/permissions.md)), **general-purpose session
+auth for non-admin routes**, rate limiting on login/token endpoints,
+session revocation, and CORS/security headers. Current security posture
+and open gaps (CSRF, per-object permissions): see
+[docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md).
+
+See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md),
+and [docs/roadmap.md](docs/roadmap.md) for what's next (templates/static
+files, then additional batteries).
 
 ## What FastFrame is (and is not)
 
 | FastFrame provides | FastFrame does not (initially) |
 | --- | --- |
 | `manage.py`-style project workflow | Django-style views or URL dispatch |
-| Apps, settings, and extension hooks | A full QuerySet / ORM algebra |
+| Apps, settings, and extension hooks | A full QuerySet / ORM algebra (no `Q()`/`F()`, no `annotate()`) |
 | Thin model helpers (`filter`, `get`, `save`, …) | Hiding SQLAlchemy for complex queries |
-| Migrations (Alembic, convention-driven) | Templates, static files (later) |
+| Migrations (Alembic, convention-driven) | Templates, static files (next up — see [roadmap](docs/roadmap.md)) |
 | Shell, runserver, test integration | Replacing FastAPI routing or Pydantic |
-| Admin (CRUD UI + REST API, session auth) | Fine-grained/per-model permissions (later) |
+| Admin (CRUD UI + REST API, session auth) | CSRF tokens beyond `SameSite=Lax`, per-object permissions |
+| Opt-in, per-model permissions (`ModelAdmin.enforce_permissions`) | `ManyToManyField(through=...)` (deferred) |
 
 HTTP stays **FastAPI**. Hard data access stays **SQLAlchemy**. FastFrame owns **lifecycle, conventions, and the daily loop**.
 
@@ -53,7 +75,7 @@ Inside a generated project, `manage.py` is the familiar entry point (similar to 
 | [Design principles](docs/design-principles.md) | How we make tradeoffs |
 | [Architecture](docs/architecture.md) | Components and dependencies |
 | [MVP v0.1](docs/mvp-v0.1.md) | First release scope and success criteria |
-| [Roadmap](docs/roadmap.md) | v0.2+ direction |
+| [Roadmap](docs/roadmap.md) | Direction beyond the first release |
 | [Non-goals](docs/non-goals.md) | What we explicitly drop or defer |
 | [App contract](docs/app-contract.md) | Installed apps and extension points |
 | [Session lifecycle](docs/session-lifecycle.md) | DB session rules |
