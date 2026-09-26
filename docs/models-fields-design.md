@@ -1,8 +1,9 @@
-# Model Fields Design (v0.3)
+# Model Fields Design
 
-**Status:** Design doc for implementation
+**Status:** Implemented (v0.3.0). Kept as a design reference for the
+`fields.*` API and its SQLAlchemy mapping — not a to-do list.
 
-FastFrame v0.3 introduces Django-style declarative field syntax to replace the current SQLAlchemy `mapped_column()` boilerplate.
+FastFrame v0.3 introduced Django-style declarative field syntax to replace the previous SQLAlchemy `mapped_column()` boilerplate.
 
 ## Current Problem
 
@@ -156,13 +157,14 @@ tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
   create/update payload (use the ORM methods above, or a future dedicated
   endpoint).
 
-### Optional/Advanced Fields (v0.3.1+)
+### Additional fields (implemented)
 
-**EmailField** - CharField with validation
-**URLField** - CharField with validation  
-**UUIDField** - UUID primary keys
+**EmailField** - `CharField` with email validation
+**URLField** - `CharField` with URL validation
+**UUIDField** - UUID primary/foreign keys
 **JSONField** - Native JSON/JSONB
-**FileField / ImageField** - Deferred until storage layer (v0.6+)
+
+**FileField / ImageField** - Deferred until the storage layer exists (v0.6+, see [roadmap.md](roadmap.md))
 
 ---
 
@@ -416,12 +418,10 @@ class BookAdmin(ModelAdmin):
 
 ---
 
-## Next Steps
+## Remaining work
 
-1. Implement base `Field` class + `ModelMeta` metaclass
-2. Implement core field types (Char, Text, Integer, Boolean, DateTime, Decimal)
-3. Test migration generation (should be identical to `mapped_column()`)
-4. Update project templates to use new syntax
-5. Document escape hatch (when to use `mapped_column()` directly)
-6. Implement `ForeignKey` (more complex due to relationships)
-7. Admin forms use field metadata (v0.3 later)
+Everything above shipped in v0.3.0. What's still open:
+
+- `ManyToManyField(through=...)` — custom columns on the join table (v0.4, see [roadmap.md](roadmap.md))
+- `FileField` / `ImageField` — blocked on a storage layer (v0.6+)
+- Admin forms are metadata-driven already, but per-field admin permissions are still static, not per-request (v0.4)
