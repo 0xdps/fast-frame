@@ -2,7 +2,10 @@
 
 ## Status
 
-Accepted
+Superseded by [ADR 0008](0008-rest-api-react-admin.md). The SSR/Jinja2
+admin code path was removed entirely in v0.3.0 (no `ADMIN_MODE = "ssr"`);
+the admin is React-only. Kept for historical context on why SSR was tried
+first.
 
 ## Context
 

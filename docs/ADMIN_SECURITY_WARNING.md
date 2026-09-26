@@ -1,14 +1,13 @@
 # ⚠️ Admin Security Notes
 
-**FastFrame v0.3.1 - Admin Authentication**
+**Current as of FastFrame v0.3.0**
 
 ---
 
-## ✅ UPDATE (v0.3.1): Session Authentication Is Now Built In
+## ✅ Session Authentication Is Built In
 
-As of v0.3.1, the admin API and UI require a logged-in `User` with
-`can_access_admin = True` by default. This closes the critical gap flagged
-in v0.3.0 (see "v0.3.0 History" below).
+The admin API and UI require a logged-in `User` with `can_access_admin =
+True` by default.
 
 ### How it works
 
@@ -45,9 +44,9 @@ with session_scope():
 ADMIN_REQUIRE_AUTH = False  # ⚠️ disables the login requirement entirely
 ```
 
-Only do this on `localhost`/trusted networks — with it off, admin behaves
-exactly like v0.3.0 (no authentication at all). See "Current Security Gaps"
-below for what's still not covered even with auth enabled.
+Only do this on `localhost`/trusted networks — with it off, the admin has
+**no authentication at all**. See "Current Security Gaps" below for what's
+still not covered even with auth enabled.
 
 ---
 
@@ -57,7 +56,7 @@ Authentication is now handled. These are still open:
 
 | Feature | Status | Risk |
 |---------|--------|------|
-| **Authentication** | ✅ Implemented (v0.3.1) | — |
+| **Authentication** | ✅ Implemented (v0.3.0) | — |
 | **Authorization (role/permission)** | ⚠️ Coarse only (`can_access_admin`, `is_superuser`) | MEDIUM |
 | **Per-model/field permissions** | ❌ Not implemented (`has_*_permission` are static class attrs, not per-request) | MEDIUM |
 | **CSRF Protection** | ❌ Not implemented (mitigated: cookie is `SameSite=Lax`) | MEDIUM |
@@ -100,7 +99,7 @@ it has no permission-aware widgets yet — any user who can log in and has
 
 ### Q: What about fine-grained permissions (per-model, per-field)?
 **A:** Not yet — `ModelAdmin.has_add_permission` etc. are still static
-booleans, not per-request checks. Planned for v0.3.2 (see roadmap).
+booleans, not per-request checks. Planned for v0.4 (see roadmap).
 
 ---
 
@@ -108,22 +107,14 @@ booleans, not per-request checks. Planned for v0.3.2 (see roadmap).
 
 | Version | Feature | Status |
 |---------|---------|--------|
-| **v0.3.0** | Admin CRUD (no auth) | ✅ Released |
-| **v0.3.1** | Session authentication (login/logout/me) | ✅ Released |
-| **v0.3.2** | Fine-grained, per-request permissions | 📋 Planned |
-| **v0.4.0** | CSRF protection | 📋 Planned |
-| **v0.4.0** | Rate limiting | 📋 Planned |
-| **v0.5.0** | Audit logging | 📋 Planned |
+| **v0.3.0** | Admin CRUD + session authentication (login/logout/me) | ✅ Released |
+| **v0.4** | Fine-grained, per-request permissions | 📋 Planned |
+| **v0.4** | CSRF protection | 📋 Planned |
+| **v0.4** | Rate limiting on `/login` | 📋 Planned |
+| **v0.4** | Audit logging | 📋 Planned |
 
----
-
-## v0.3.0 History (for context)
-
-In v0.3.0, the admin system shipped with **no authentication or
-authorization at all** — every `/api/admin/*` route was open to anyone who
-could reach it. That gap is what v0.3.1's session authentication (above)
-closes. If you're still running v0.3.0, upgrade or apply the workarounds
-that were documented at the time (disable admin, or firewall it off).
+See [docs/roadmap.md](roadmap.md#v04--harden-auth--authorization) for the
+full v0.4 plan.
 
 ---
 
@@ -141,12 +132,12 @@ If you discover a security issue in FastFrame:
 ## Learn More
 
 - [Admin Setup Guide](admin-setup.md)
-- [Authentication Roadmap](roadmap.md#v04--authentication-and-authorization)
+- [Roadmap](roadmap.md#v04--harden-auth--authorization)
 - [Contributing Security Features](../CONTRIBUTING.md)
 
 ---
 
-**FastFrame v0.3.1 admin requires login by default. Fine-grained permissions
+**FastFrame v0.3.0 admin requires login by default. Fine-grained permissions
 are still on the roadmap — see the Security Roadmap above.**
 
 *Updated: 2026-09-26*
