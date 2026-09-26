@@ -21,9 +21,9 @@ in v0.3.0 (see "v0.3.0 History" below).
 - Every other `/api/admin/*` route requires that cookie and rejects requests
   with `401` (not logged in) or `403` (logged in, but `can_access_admin` is
   `False`).
-- The bundled admin UI (`ADMIN_MODE = "static"`, the default) serves a
-  minimal login page instead of the SPA shell until a valid session exists;
-  the SSR (`ADMIN_MODE = "ssr"`) views do the same.
+- The bundled admin UI (`ADMIN_MODE = "static"`, the default, or `"custom"`
+  for a project-built React app) serves a minimal login page instead of the
+  SPA shell until a valid session exists.
 
 ### Granting admin access to a user
 

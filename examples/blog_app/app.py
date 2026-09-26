@@ -6,8 +6,8 @@ Run with:
     uvicorn app:app --reload
 
 Then visit:
-    http://localhost:8000/admin/       (SSR admin, optional)
-    http://localhost:8000/api/admin/   (REST API for React admin)
+    http://localhost:8000/admin/       (bundled React admin, optional — see Option 1 below)
+    http://localhost:8000/api/admin/   (REST API used by the React admin)
     http://localhost:8000/             (Serves React admin if built, optional)
 """
 
@@ -67,7 +67,7 @@ async def startup():
 # Admin setup (all optional)
 # ------------------------------------------------------------------
 
-# Option 1: Include SSR admin at /admin/ (legacy, optional)
+# Option 1: Include the bundled React admin UI at /admin/ (optional)
 # app.include_router(get_admin_router())
 
 # Option 2: Include REST API at /api/admin/ for React admin

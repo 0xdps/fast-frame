@@ -52,7 +52,8 @@ Choose one or more of the deployment options below.
 
 ## Deployment Options
 
-FastFrame gives you three ways to deploy the admin:
+The admin UI is React-only (there is no server-rendered admin) — FastFrame
+gives you two ways to serve it:
 
 ### Option 1: REST API Only (Recommended)
 
@@ -104,35 +105,21 @@ if admin_ui_dist.exists():
 
 Visit http://localhost:8000/admin
 
-### Option 2: Server-Side Rendered Admin (Legacy)
-
-Include the SSR admin at `/admin/`:
-
-```python
-from fastframe.admin import get_admin_router
-
-app.include_router(get_admin_router())
-```
-
-Visit http://localhost:8000/admin/
-
-**Note**: The SSR admin is legacy and only supports list/detail views. Use the REST API + React admin for create/edit/delete.
-
-### Option 3: Both SSR and REST API
-
-You can include both if you want:
+Or use `get_admin_router()` directly — it serves the same pre-built React
+bundle FastFrame ships with (no separate build step needed):
 
 ```python
 from fastframe.admin import get_admin_api_router, get_admin_router
 
-# SSR admin at /admin/
+# React admin UI at /admin/ (serves the bundled build, or admin-ui/dist
+# if ADMIN_MODE = "custom")
 app.include_router(get_admin_router())
 
 # REST API at /api/admin/
 app.include_router(get_admin_api_router())
 ```
 
-### Option 4: No Admin
+### Option 2: No Admin
 
 Simply don't include any admin routers. Your models and business logic work fine without the admin.
 
@@ -213,7 +200,7 @@ See `examples/blog_app/` for a complete working example with:
 - Models with relationships
 - Custom admin classes
 - React admin UI
-- All three deployment options demonstrated
+- Both deployment options demonstrated
 
 ## CORS for Development
 
@@ -234,6 +221,6 @@ app.add_middleware(
 ## Next Steps
 
 1. **React Admin UI**: Copy `examples/blog_app/admin-ui/` to your project and customize the theme
-2. **Permissions**: Add authentication and role-based access control
+2. **Authentication**: Login is required by default (`ADMIN_REQUIRE_AUTH`) — see [docs/ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md) for how it works and its current limits (no fine-grained permissions yet)
 3. **Actions**: Add bulk actions and custom endpoints
 4. **Customization**: Override React admin components for your brand

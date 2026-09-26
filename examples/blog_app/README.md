@@ -41,13 +41,9 @@ blog_app/
 **Option 1: REST API + React Admin (Current)**
 - API at `/api/admin/`
 - React dev server at http://localhost:5173 (development)
-- Or build and serve from `/admin` (production)
+- Or build and serve from `/admin` (production) — uncomment `get_admin_router()` in `app.py`
 
-**Option 2: SSR Admin (Legacy, optional)**
-- Uncomment `get_admin_router()` in `app.py`
-- Server-rendered at `/admin/`
-
-**Option 3: No Admin**
+**Option 2: No Admin**
 - Comment out all admin routers
 - Models work fine without admin
 

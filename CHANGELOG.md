@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+- **SSR admin mode** (`ADMIN_MODE = "ssr"`): the Jinja2-templated,
+  server-rendered admin views (`admin_index`, `model_list`, `model_add`,
+  `model_detail`) and their templates have been removed. The admin UI is now
+  React-only — `ADMIN_MODE` only selects which React build to serve
+  (`"static"`, the bundled default, or `"custom"`, a project-built one via
+  `manage.py startadmin`). Any other/unrecognized `ADMIN_MODE` value now
+  falls back to `"static"` instead of erroring or serving SSR. The `jinja2`
+  dependency was dropped as a result — nothing in `fastframe` imports it
+  anymore.
+
 ## [0.3.0] - 2026-09-26
 
 Admin release. Adds a Django-style declarative field API, automatic

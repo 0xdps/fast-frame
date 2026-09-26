@@ -21,7 +21,7 @@ variable is set.
 | --- | --- | --- |
 | `ENABLE_ADMIN` | `True` | Mount the admin UI and API. `False` omits both, including from OpenAPI. |
 | `ENABLE_ADMIN_DOCS` | `True` | Include admin API operations in the OpenAPI schema. |
-| `ADMIN_MODE` | `"static"` | `"static"` serves the compiled UI shipped with FastFrame. `"custom"` serves `admin-ui/dist`. `"ssr"` is the server-rendered fallback. |
+| `ADMIN_MODE` | `"static"` | `"static"` serves the compiled React UI shipped with FastFrame. `"custom"` serves `admin-ui/dist` (built via `manage.py startadmin`). The admin UI is React-only — there is no server-rendered mode. |
 | `ADMIN_PREFIX` | `"/admin"` | UI URL prefix. |
 | `ADMIN_API_PREFIX` | `"/api/admin"` | REST API prefix. |
 | `ADMIN_SITE_TITLE` | `"FastFrame Admin"` | Title used by project code and docs. |
