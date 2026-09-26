@@ -1,0 +1,24 @@
+src/fastframe/models/fields.py
+  s_8de26d66febf8a::t_0eeea9e59c0c4b 557-558
+  s_8de26d66febf8a::t_e0221d2395abfa 482,487
+src/fastframe/contrib/auth/models.py
+  s_8de26d66febf8a::t_de00a75ca038af 8
+src/fastframe/contrib/auth/__init__.py
+  s_8de26d66febf8a::t_525e7bfc459628 39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "84c606fed3d7edd972e4a690dfefb4d66006df37",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
