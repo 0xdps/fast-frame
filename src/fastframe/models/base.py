@@ -529,15 +529,65 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
 
         Args:
             validate: If True, calls full_clean() before saving.
+
+        If any attribute currently holds an ``F()``/``FExpression`` value
+        (e.g. ``user.karma = F("karma") + 1``), it's applied as a single
+        atomic ``UPDATE ... SET karma = karma + 1 WHERE id = ...`` —  not a
+        read-modify-write race — and the in-memory instance is refreshed
+        from the database afterward. Only the F-valued attribute(s) are
+        included in that statement; save any other plain attribute changes
+        on this instance separately (before or after setting the F value).
         """
         if validate:
             self.full_clean()
 
         from fastframe.db.session import get_current_session
+        from fastframe.models.query import F, FExpression
 
         session = get_current_session()
+
+        f_fields = {
+            name: value
+            for name, value in vars(self).items()
+            if isinstance(value, (F, FExpression))
+        }
+        if f_fields:
+            self._save_f_expressions(session, f_fields)
+            return
+
         session.add(self)
         session.flush()
+
+    def _save_f_expressions(self, session: Any, f_fields: dict[str, Any]) -> None:
+        """Apply F()/FExpression-valued attributes as one atomic UPDATE."""
+        from sqlalchemy import inspect as sa_inspect
+        from sqlalchemy import update as sa_update
+
+        model_class = type(self)
+        pk_columns = list(sa_inspect(model_class).primary_key)
+        pk_values = {col.name: getattr(self, col.name) for col in pk_columns}
+        if any(value is None for value in pk_values.values()):
+            raise ValueError(
+                f"Cannot save() F()/FExpression fields on an unsaved "
+                f"{model_class.__name__} instance — save it with concrete "
+                "values first, then set the F() value and save() again."
+            )
+
+        resolved = {name: value.resolve(model_class) for name, value in f_fields.items()}
+
+        # Discard the placeholder F()/FExpression attribute values before
+        # touching the session again — they aren't real column values, and
+        # any autoflush triggered below would otherwise try (and fail) to
+        # bind them directly as UPDATE parameters.
+        session.expire(self, list(f_fields.keys()))
+
+        stmt = sa_update(model_class)
+        for col in pk_columns:
+            stmt = stmt.where(col == pk_values[col.name])
+        stmt = stmt.values(**resolved)
+
+        session.execute(stmt)
+        session.refresh(self)
 
     def delete(self) -> None:
         from fastframe.db.session import get_current_session

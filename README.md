@@ -18,16 +18,26 @@ lifecycle hooks, `.env` support, test utilities).
 
 On top of that: a Django-style admin (declarative `fields.*` with
 automatic `ForeignKey`/`ManyToManyField` relationship generation, a REST
-admin API, and a bundled React admin UI); a generic, opt-in,
-token-authenticated REST API over the same registered models; an audit
-log; and a built-in `User` model with **session-based login/logout**
-(`can_access_admin`-gated for the admin by default), **opt-in per-model
-permissions** (`Group`, permission strings — see
-[docs/permissions.md](docs/permissions.md)), **general-purpose session
-auth for non-admin routes**, rate limiting on login/token endpoints,
-session revocation, and CORS/security headers. Current security posture
-and open gaps (CSRF, per-object permissions): see
+admin API, and a bundled React admin UI); a generic, token-authenticated
+REST API over the same registered models; an audit log; and a built-in
+`User` model with **session-based login/logout** (`can_access_admin`-gated
+for the admin by default), **opt-in per-model permissions** (`Group`,
+permission strings — see [docs/permissions.md](docs/permissions.md)),
+**general-purpose session auth for non-admin routes**, rate limiting on
+login/token endpoints, session revocation, and CORS/security headers.
+All three of these — admin, general auth, and the REST API — are
+**batteries you opt into via `INSTALLED_APPS`**, mounted the same way any
+other app is (see [docs/app-contract.md](docs/app-contract.md)); a
+freshly generated project doesn't install any of them by default. Current
+security posture and open gaps (CSRF, per-object permissions): see
 [docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md).
+
+The ORM stays a thin layer over SQLAlchemy, but covers the day-to-day 90%
+of CRUD workflows: `Q()`/`F()` and Django-style field lookups,
+`select_related()`/`prefetch_related()` eager loading, bulk
+create/update/delete, `get_or_create()`/`update_or_create()`,
+`values()`/`values_list()`, `only()`/`defer()`, and an `atomic()`
+transaction helper — see [docs/orm-features.md](docs/orm-features.md).
 
 See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md),
 and [docs/roadmap.md](docs/roadmap.md) for what's next (templates/static
@@ -38,11 +48,11 @@ files, then additional batteries).
 | FastFrame provides | FastFrame does not (initially) |
 | --- | --- |
 | `manage.py`-style project workflow | Django-style views or URL dispatch |
-| Apps, settings, and extension hooks | A full QuerySet / ORM algebra (no `Q()`/`F()`, no `annotate()`) |
-| Thin model helpers (`filter`, `get`, `save`, …) | Hiding SQLAlchemy for complex queries |
+| Apps, settings, and extension hooks | A full query-algebra ORM (no `annotate()`, no subquery/window functions) |
+| Rich-enough model helpers: `filter`/`Q`/`F`, eager loading, bulk ops, `values()`, `atomic()`, … (see [docs/orm-features.md](docs/orm-features.md)) | Hiding SQLAlchemy for complex queries — it's always one import away |
 | Migrations (Alembic, convention-driven) | Templates, static files (next up — see [roadmap](docs/roadmap.md)) |
 | Shell, runserver, test integration | Replacing FastAPI routing or Pydantic |
-| Admin (CRUD UI + REST API, session auth) | CSRF tokens beyond `SameSite=Lax`, per-object permissions |
+| Admin, general auth, REST API — opt-in via `INSTALLED_APPS` | CSRF tokens beyond `SameSite=Lax`, per-object permissions |
 | Opt-in, per-model permissions (`ModelAdmin.enforce_permissions`) | `ManyToManyField(through=...)` (deferred) |
 
 HTTP stays **FastAPI**. Hard data access stays **SQLAlchemy**. FastFrame owns **lifecycle, conventions, and the daily loop**.
@@ -78,6 +88,7 @@ Inside a generated project, `manage.py` is the familiar entry point (similar to 
 | [Roadmap](docs/roadmap.md) | Direction beyond the first release |
 | [Non-goals](docs/non-goals.md) | What we explicitly drop or defer |
 | [App contract](docs/app-contract.md) | Installed apps and extension points |
+| [ORM features](docs/orm-features.md) | `Q`/`F`, eager loading, bulk ops, `values()`, `atomic()`, … |
 | [Session lifecycle](docs/session-lifecycle.md) | DB session rules |
 | [Public API](docs/public-api-v0.1.md) | Stable surface (v0.1 + v0.2) |
 | [Shell](docs/shell.md) | Stdlib REPL, `SHELL_IMPORTS`, startup script |

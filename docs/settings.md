@@ -9,17 +9,36 @@ Read them with:
 ```python
 from fastframe.conf import settings
 
-settings.ENABLE_ADMIN
+settings.ADMIN_API_PREFIX
 ```
 
-`bootstrap()` and `create_app()` reload this object after the environment
-variable is set.
+`bootstrap()` and `get_asgi_application()` reload this object after the
+environment variable is set.
+
+## Enabling admin, auth, and the REST API
+
+These three ship inside `fastframe` but are **opt-in apps**, not
+always-on settings flags — add their dotted path to `INSTALLED_APPS` to
+turn each on (and nothing more is needed; `get_asgi_application()` mounts
+their routers automatically for whatever's installed):
+
+```python
+INSTALLED_APPS = [
+    "fastframe.contrib.auth",  # User/Group models + general session auth
+    "fastframe.admin",         # admin UI + API (requires the line above)
+    "fastframe.api",           # token-authenticated generic REST API
+    "myapp",
+]
+```
+
+A freshly generated project's `INSTALLED_APPS` doesn't include any of
+these by default — add what you want. The settings below configure an
+*already-installed* app; they don't turn it on by themselves.
 
 ## Admin
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `ENABLE_ADMIN` | `True` | Mount the admin UI and API. `False` omits both, including from OpenAPI. |
 | `ENABLE_ADMIN_DOCS` | `True` | Include admin API operations in the OpenAPI schema. |
 | `ADMIN_MODE` | `"static"` | `"static"` serves the compiled React UI shipped with FastFrame. `"custom"` serves `admin-ui/dist` (built via `manage.py startadmin`). The admin UI is React-only — there is no server-rendered mode. |
 | `ADMIN_PREFIX` | `"/admin"` | UI URL prefix. |
@@ -34,12 +53,11 @@ permission enforcement (`ModelAdmin.enforce_permissions`) is opt-in — see
 
 ## REST API
 
-Opt-in, token-authenticated CRUD over the same models registered with
+Token-authenticated CRUD over the same models registered with
 `admin_site` — see [rest-api.md](rest-api.md).
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `ENABLE_REST_API` | `False` | Mount `/api/auth/token` and the CRUD API. Off by default, unlike admin. |
 | `ENABLE_REST_API_DOCS` | `True` | Include REST API operations in the OpenAPI schema. |
 | `API_PREFIX` | `"/api/v1"` | CRUD API prefix (token auth lives at `/api/auth/token` regardless). |
 | `API_TOKEN_DEFAULT_EXPIRY_DAYS` | `None` | Default lifetime for new tokens, in days. `None` = tokens never expire unless `expires_in_days` (or the `expiresInDays` field on `POST /api/auth/token`) is passed explicitly. |
@@ -52,7 +70,6 @@ Session-cookie login for any app route, independent of `can_access_admin`
 
 | Setting | Default | Meaning |
 | --- | --- | --- |
-| `ENABLE_AUTH_API` | `True` | Mount `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`. |
 | `PASSWORD_MIN_LENGTH` | `8` | Minimum length enforced by `User.set_password()` (skip with `validate=False`). |
 
 ## Rate limiting
@@ -96,7 +113,7 @@ login resets the counter for that identifier (username + client IP).
 | `OPENAPI_VERSION` | `"1.0.0"` | Schema version. |
 | `OPENAPI_DESCRIPTION` | `"API Documentation"` | Schema description. |
 
-`create_app()` applies these. Keyword arguments passed to `create_app()`
+`get_asgi_application()` applies these. Keyword arguments passed to it
 override them.
 
 ## Auth and primary keys

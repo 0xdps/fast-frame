@@ -16,6 +16,7 @@ the minor version.
 | Phase 2 | Developer experience polish | ✅ Shipped (v0.1.0) |
 | Phase 3 | Admin, relationships, session auth | ✅ Shipped (v0.1.0) |
 | Phase 4 | Harden auth & authorization | ✅ Shipped (v0.1.0) |
+| Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (v0.2.0) |
 | Phase 5 | Templates and static files | 🔜 Next |
 | Phase 6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
 | Phase 7 | Production-ready platform | 📋 Planned |
@@ -75,6 +76,43 @@ Closed most of the gaps called out in [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY
 columns on a join table) and CSRF tokens beyond the existing
 `SameSite=Lax` mitigation — see [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md)
 for the up-to-date list of what's still open.
+
+## Phase 4.5 — App registry for batteries + richer ORM ✅
+
+- **Batteries mount via `INSTALLED_APPS`, not `ENABLE_*` settings**: admin
+  (`fastframe.admin`), general auth (`fastframe.contrib.auth`), and the
+  generic REST API (`fastframe.api`) now expose an `AppConfig` (`ready()`
+  + `get_routers()`) and are mounted purely by being listed in
+  `INSTALLED_APPS` — exactly like adding any other app. The
+  `ENABLE_ADMIN`/`ENABLE_AUTH_API`/`ENABLE_REST_API` settings are gone. A
+  freshly generated project doesn't install any of them by default
+  (previously admin and general auth defaulted to *on*, opt-out rather
+  than opt-in). See [app-contract.md](app-contract.md), [settings.md](settings.md#enabling-admin-auth-and-the-rest-api).
+- **One application factory**: `get_asgi_application()` (previously
+  `ROOT_URLCONF` routers + DB session middleware only) now also applies
+  `MIDDLEWARE`/CORS/security headers and mounts every installed app's
+  routers — everything `create_app()` used to do, plus what
+  `get_asgi_application()` always did. `create_app()` is now a thin,
+  deprecated alias for it.
+- **Richer ORM, still "thin layer + escape hatch to SQLAlchemy," not a
+  second query-algebra**: `F()` field-reference expressions are wired up
+  end-to-end (`.filter(karma__gt=F("num_posts"))`, atomic
+  `user.karma = F("karma") + 1; user.save()` — previously present as
+  classes but non-functional); `select_related()`/`prefetch_related()`
+  eager loading (the direct answer to the classic N+1 query trap);
+  `bulk_create()`/`bulk_update()` and queryset-level `.update()`/
+  `.delete()`; `get_or_create()`/`update_or_create()`; `values()`/
+  `values_list()` projections that skip full model instantiation;
+  `only()`/`defer()` partial column loading; an `atomic()`
+  transaction/SAVEPOINT helper. `Q()` objects and Django-style field
+  lookups (`__gte`, `__icontains`, …) already worked and are now
+  documented. Deliberately **not** added, and not planned:
+  `annotate()`/subquery composition/window functions — see
+  [orm-features.md](orm-features.md) and [design-principles.md](design-principles.md).
+- **Migrations fix**: per-app migration directory discovery now skips
+  dotted, framework-provided app names (e.g. `fastframe.contrib.auth`)
+  instead of trying to create a literal directory named that at the
+  project root.
 
 ## Phase 5 — Templates and static files 🔜
 

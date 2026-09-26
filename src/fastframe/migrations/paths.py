@@ -47,6 +47,15 @@ def get_version_locations(
     base_dir = get_base_dir(settings_module)
     locations: list[Path] = []
     for app_config in registry.app_configs:
+        if "." in app_config.name:
+            # Dotted names (e.g. "fastframe.contrib.auth") are framework/
+            # library-provided packages, not a flat, project-local app
+            # directory — `base_dir / app_config.name` would otherwise
+            # create a literal, dotted-named directory at the project
+            # root. Their tables are created via Model.metadata.create_all()
+            # like any other bundled model; they don't get their own
+            # per-app versioned migration directory here.
+            continue
         if not _app_has_models(app_config.name):
             continue
         path = base_dir / app_config.name / "migrations" / "versions"

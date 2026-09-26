@@ -1,3 +1,4 @@
+from fastframe.db.session import atomic
 from fastframe.models import fields
 from fastframe.models.base import Model
 from fastframe.models.exceptions import (
@@ -14,6 +15,7 @@ __all__ = [
     "MultipleObjectsReturned",
     "QuerySet",
     "ValidationError",
+    "atomic",
     "fields",
     "Q",
     "F",

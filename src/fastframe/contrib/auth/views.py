@@ -11,8 +11,9 @@ without going through the admin at all — see
 :func:`fastframe.contrib.auth.dependencies.login_required` and
 :func:`~fastframe.contrib.auth.dependencies.permission_required`.
 
-Mounted automatically by :func:`fastframe.core.app.create_app` when
-``ENABLE_AUTH_API`` is true (the default).
+Mounted automatically by ``get_asgi_application()``/``create_app()`` when
+``"fastframe.contrib.auth"`` is in ``INSTALLED_APPS`` — see
+:class:`fastframe.contrib.auth.apps.AuthConfig`.
 """
 
 from __future__ import annotations

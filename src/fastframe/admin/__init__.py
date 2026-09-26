@@ -81,19 +81,21 @@ def ensure_audit_log_registered() -> None:
 
 
 def include_admin(app: Any) -> None:
-    """Mount the admin API and UI when ``ENABLE_ADMIN`` is true.
+    """Mount the admin API and UI onto ``app``, unconditionally.
 
-    Does nothing when admin is disabled, so OpenAPI stays free of admin routes.
+    For manual wiring (as in ``examples/blog_app``) when a project builds
+    its own ``FastAPI()`` instead of going through
+    ``get_asgi_application()``/``create_app()``. Calling this *is* the
+    opt-in — there's no settings flag gating it, the same way manually
+    calling ``app.include_router(get_admin_api_router())`` needs no flag.
+    Projects using ``INSTALLED_APPS`` should add ``"fastframe.admin"``
+    instead of calling this directly — see :class:`fastframe.admin.apps.AdminConfig`.
 
     The auth router (login/logout/me) is mounted *before* the CRUD router so
     its literal paths (``/login``, ``/logout``, ``/me``) win over the CRUD
     router's ``/{resource}`` catch-all when FastAPI matches routes in
     registration order.
     """
-    from fastframe.conf import settings
-
-    if not getattr(settings, "ENABLE_ADMIN", True):
-        return
     _import_user_admin()
     ensure_audit_log_registered()
     app.include_router(get_admin_auth_router())

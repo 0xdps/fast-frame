@@ -134,10 +134,11 @@ update).
 - Login/logout and failed-login attempts are **not** recorded — only
   mutating CRUD actions.
 - **Visible to any active token-holding user, not just admins**: because
-  `AuditLog` is registered like any other model, enabling `ENABLE_REST_API`
-  lets any active user read the full audit log (`GET /api/v1/auditlog`),
-  including other users' actions. Tighten `AuditLogAdmin.has_view_permission`
-  if that's not acceptable for your project.
+  `AuditLog` is registered like any other model, installing `fastframe.api`
+  (the generic REST API) lets any active user read the full audit log
+  (`GET /api/v1/auditlog`), including other users' actions. Tighten
+  `AuditLogAdmin.has_view_permission` if that's not acceptable for your
+  project.
 
 ---
 
@@ -154,10 +155,11 @@ Before deploying with admin enabled, ensure:
       defense-in-depth — per-model permissions exist (opt-in via
       `enforce_permissions`, see [permissions.md](permissions.md)) but
       there's still no per-object (row-level) enforcement.
-- [ ] If `ENABLE_REST_API = True`, remember it's reachable by **any active
-      user** (not just admins) and shares the admin registry — review
-      `has_view_permission`/`enforce_permissions` on sensitive models
-      (including `AuditLog`) before enabling it. See [rest-api.md](rest-api.md).
+- [ ] If `fastframe.api` (the generic REST API) is in `INSTALLED_APPS`,
+      remember it's reachable by **any active user** (not just admins) and
+      shares the admin registry — review `has_view_permission`/
+      `enforce_permissions` on sensitive models (including `AuditLog`)
+      before installing it. See [rest-api.md](rest-api.md).
 - [ ] If serving browser clients from a different origin, set
       `CORS_ALLOWED_ORIGINS` explicitly rather than leaving it disabled —
       and never combine `CORS_ALLOW_CREDENTIALS = True` with a wildcard

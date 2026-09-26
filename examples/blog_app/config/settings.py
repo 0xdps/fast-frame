@@ -17,7 +17,9 @@ DEFAULT_AUTO_FIELD = "UUIDField"  # Use UUID v7 for better performance
 AUTH_USER_MODEL = "users.SimpleUser"
 
 # ===== Admin =====
-ENABLE_ADMIN = True
+# This example wires admin manually in app.py (app.include_router(...)),
+# not via get_asgi_application()/create_app(), so admin isn't gated by
+# INSTALLED_APPS here — see app.py's "Admin setup" section.
 ADMIN_MODE = "static"  # Use pre-built admin, change to "custom" for React admin
 ADMIN_SITE_TITLE = "Blog Admin"
 ADMIN_SITE_HEADER = "Blog Administration"

@@ -15,7 +15,8 @@ UUID_GENERATION = "python"  # "python" | "database"
 AUTH_USER_MODEL = "auth.User"  # Default user model, can be overridden
 
 # ===== Admin =====
-ENABLE_ADMIN = True
+# Whether the admin is mounted at all is controlled by ``INSTALLED_APPS``
+# (add ``"fastframe.admin"``) — not a setting here. See docs/admin-setup.md.
 ENABLE_ADMIN_DOCS = True  # Include admin endpoints in OpenAPI schema
 ADMIN_SITE_TITLE = "FastFrame Admin"
 ADMIN_SITE_HEADER = "Administration"
@@ -26,7 +27,8 @@ ADMIN_MODE = "static"  # "static" (pre-built) or "custom" (user builds)
 # no setting to disable this (see docs/ADMIN_SECURITY_WARNING.md).
 
 # ===== REST API (generic, token-authenticated CRUD) =====
-ENABLE_REST_API = False  # opt-in: off by default, unlike admin
+# Whether this is mounted at all is controlled by ``INSTALLED_APPS`` (add
+# ``"fastframe.api"``) — not a setting here. See docs/rest-api.md.
 ENABLE_REST_API_DOCS = True  # Include REST API endpoints in OpenAPI schema
 API_PREFIX = "/api/v1"
 
@@ -38,8 +40,9 @@ API_TOKEN_DEFAULT_EXPIRY_DAYS: int | None = None
 # ===== General-purpose session auth (outside /admin) =====
 # POST/DELETE /api/auth/login, /api/auth/logout, GET /api/auth/me — a
 # plain login for any active user, independent of can_access_admin. Uses
-# the same signed session cookie mechanism as the admin.
-ENABLE_AUTH_API = True
+# the same signed session cookie mechanism as the admin. Mounted when
+# ``"fastframe.contrib.auth"`` is in ``INSTALLED_APPS`` — not a setting
+# here. See docs/auth.md.
 
 # ===== Password policy =====
 PASSWORD_MIN_LENGTH = 8

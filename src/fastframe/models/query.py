@@ -58,6 +58,7 @@ class Q:
         if self.conditions and not self.children:
             filters = []
             for key, value in self.conditions.items():
+                value = resolve_value(value, model_class)
                 # Parse field lookups like "age__gte"
                 if "__" in key:
                     field_name, lookup = key.rsplit("__", 1)
@@ -166,6 +167,18 @@ class FExpression:
         return f"({self.left} {self.op} {self.right})"
 
 
+def resolve_value(value: Any, model_class: type) -> Any:
+    """Resolve an ``F()``/``FExpression`` value to a SQLAlchemy column
+    expression for the given model; pass any other value through unchanged.
+
+    Used wherever a filter/lookup value might be a field reference instead
+    of a literal, e.g. ``.filter(karma__gt=F("num_posts"))``.
+    """
+    if isinstance(value, (F, FExpression)):
+        return value.resolve(model_class)
+    return value
+
+
 def _apply_lookup(column: ColumnElement[Any], lookup: str, value: Any) -> ColumnElement[bool]:
     """Apply a field lookup to a column.
 
@@ -211,4 +224,4 @@ def _apply_lookup(column: ColumnElement[Any], lookup: str, value: Any) -> Column
         raise ValueError(f"Unknown lookup: {lookup}")
 
 
-__all__ = ["Q", "F"]
+__all__ = ["F", "FExpression", "Q", "resolve_value"]

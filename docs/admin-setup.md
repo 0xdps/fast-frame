@@ -48,9 +48,28 @@ admin_site.register(Article, ArticleAdmin)
 
 ### 3. Include Admin in Your App
 
-Choose one or more of the deployment options below.
+If your project uses `get_asgi_application()`/`create_app()` (the default
+for projects created with `fastframe startproject`), this is all you
+need — add `"fastframe.admin"` to `INSTALLED_APPS`:
 
-## Deployment Options
+```python
+# config/settings.py
+INSTALLED_APPS = [
+    "fastframe.contrib.auth",  # required: admin login uses the User model
+    "fastframe.admin",
+    "myapp",
+]
+```
+
+That's it. Visit `http://localhost:8000/admin/`. Nothing about the admin
+is imported or mounted unless this app is listed — the same as any other
+`INSTALLED_APPS` entry (see [app-contract.md](app-contract.md)).
+
+If you're building your own `FastAPI()` app by hand instead (not going
+through either factory — see `examples/blog_app`), choose one or more of
+the manual deployment options below.
+
+## Manual deployment options
 
 The admin UI is React-only (there is no server-rendered admin) — FastFrame
 gives you two ways to serve it:
