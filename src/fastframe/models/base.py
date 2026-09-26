@@ -81,9 +81,22 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
             auto_id.__set_name__(None, "id")  # type: ignore[arg-type]
             fields["id"] = auto_id
 
-        # Convert fields to SQLAlchemy mapped_column and type annotations
+        # Convert fields to SQLAlchemy mapped_column and type annotations.
+        # ManyToManyField never becomes a column — its relationship is
+        # installed later, after __table__ exists (see _setup_m2m_relationships).
+        from fastframe.models.fields import ManyToManyField
+
         annotations = namespace.setdefault("__annotations__", {})
         for field_name, field in fields.items():
+            if isinstance(field, ManyToManyField):
+                # Remove the placeholder Field instance entirely so the later
+                # setattr() in _install_m2m_relationship isn't "replacing an
+                # existing class-bound attribute" (SQLAlchemy deprecation
+                # warning) — the class simply won't have this attribute
+                # until the relationship is installed after __table__ exists.
+                namespace.pop(field_name, None)
+                annotations.pop(field_name, None)
+                continue
             # Add type annotation (e.g. Mapped[str])
             annotations[field_name] = field.get_type_annotation()
             # Replace Field instance with mapped_column()
@@ -130,12 +143,15 @@ def _classes_named(registry: Any, name: str) -> list[type]:
 
 
 def _resolve_target(model_class: type, target: str | type) -> type | None:
-    """Pick the target class for a ForeignKey.
+    """Pick the target class for a ForeignKey or ManyToManyField.
 
     Tests and apps often reuse short names like ``User``. A bare string is
     ambiguous once more than one class shares that name, so prefer a class in
-    the same module, then the most recently registered match.
+    the same module, then the most recently registered match. ``"self"`` is
+    resolved to ``model_class`` directly (self-referential relationships).
     """
+    if target == "self":
+        return model_class
     if not isinstance(target, str):
         return target
     matches = _classes_named(model_class.registry, target)
@@ -191,12 +207,119 @@ def _install_relationship(
     field.relationship_name = rel_attr_name
 
 
+def _pk_column_name(table: Any) -> str:
+    """Return the first primary key column name on a Core/mapped table."""
+    cols = list(table.primary_key.columns)
+    return cols[0].name if cols else "id"
+
+
+def _m2m_column_names(model_class: type, target: type) -> tuple[str, str, bool]:
+    """Return (left_column_name, right_column_name, is_self_referential).
+
+    Self-referential M2M (``target is model_class``) needs distinct column
+    names on the join table since both sides reference the same table.
+    """
+    self_referential = target.__tablename__ == model_class.__tablename__
+    if self_referential:
+        return f"from_{model_class.__tablename__}_id", f"to_{target.__tablename__}_id", True
+    return f"{model_class.__tablename__}_id", f"{target.__tablename__}_id", False
+
+
+def _m2m_join_table(model_class: type, field_name: str, field: Any, target: type) -> Any:
+    """Get or create the (Core) association Table for a ManyToManyField.
+
+    Idempotent: if a field with the same table name was already installed
+    (e.g. the reverse side triggers setup again), the existing Table is
+    reused rather than raising SQLAlchemy's "table already defined" error.
+    """
+    from sqlalchemy import Column, Table
+    from sqlalchemy import ForeignKey as SAForeignKey
+
+    metadata = model_class.metadata
+    table_name = field.db_table or f"{model_class.__tablename__}_{field_name}"
+
+    existing = metadata.tables.get(table_name)
+    if existing is not None:
+        return existing
+
+    left_name, right_name, _ = _m2m_column_names(model_class, target)
+    left_pk = _pk_column_name(model_class.__table__)
+    right_pk = _pk_column_name(target.__table__)
+
+    return Table(
+        table_name,
+        metadata,
+        Column(
+            left_name,
+            SAForeignKey(f"{model_class.__tablename__}.{left_pk}", ondelete="CASCADE"),
+            primary_key=True,
+        ),
+        Column(
+            right_name,
+            SAForeignKey(f"{target.__tablename__}.{right_pk}", ondelete="CASCADE"),
+            primary_key=True,
+        ),
+    )
+
+
+def _install_m2m_relationship(
+    model_class: type, field_name: str, field: Any, target: type
+) -> None:
+    """Attach the join table and relationship attributes for one ManyToManyField.
+
+    Explicit ``primaryjoin``/``secondaryjoin`` are required (not just for
+    self-referential fields) so SQLAlchemy doesn't need to guess which join
+    table column maps to which side — safer once multiple M2M fields exist
+    between the same pair of models.
+    """
+    from sqlalchemy.orm import relationship as sa_relationship
+
+    from fastframe.models.fields import RelatedList
+
+    join_table = _m2m_join_table(model_class, field_name, field, target)
+    left_name, right_name, _ = _m2m_column_names(model_class, target)
+    reverse_name = field.related_name or f"{model_class.__name__.lower()}_set"
+
+    model_pk = model_class.__table__.c[_pk_column_name(model_class.__table__)]
+    target_pk = target.__table__.c[_pk_column_name(target.__table__)]
+
+    setattr(
+        model_class,
+        field_name,
+        sa_relationship(
+            target,
+            secondary=join_table,
+            primaryjoin=model_pk == join_table.c[left_name],
+            secondaryjoin=target_pk == join_table.c[right_name],
+            back_populates=reverse_name,
+            collection_class=RelatedList,
+            lazy="select",
+        ),
+    )
+    if reverse_name not in target.__dict__:
+        setattr(
+            target,
+            reverse_name,
+            sa_relationship(
+                model_class,
+                secondary=join_table,
+                primaryjoin=target_pk == join_table.c[right_name],
+                secondaryjoin=model_pk == join_table.c[left_name],
+                back_populates=field_name,
+                collection_class=RelatedList,
+                lazy="select",
+            ),
+        )
+    field.relationship_name = field_name
+
+
 _pending_fks: list[tuple[type, str, Any]] = []
-_fk_hook_installed = False
+_pending_m2m: list[tuple[type, str, Any]] = []
+_relationship_hook_installed = False
 
 
 def _flush_pending_relationships() -> None:
-    """Resolve string FK targets once every model class has been created."""
+    """Resolve string FK/M2M targets once every model class has been created."""
     still_pending: list[tuple[type, str, Any]] = []
     pending = list(_pending_fks)
     _pending_fks.clear()
@@ -208,6 +331,26 @@ def _flush_pending_relationships() -> None:
         _install_relationship(model_class, field_name, field, target)
     _pending_fks.extend(still_pending)
 
+    still_pending_m2m: list[tuple[type, str, Any]] = []
+    pending_m2m = list(_pending_m2m)
+    _pending_m2m.clear()
+    for model_class, field_name, field in pending_m2m:
+        target = _resolve_target(model_class, field.to)
+        if target is None:
+            still_pending_m2m.append((model_class, field_name, field))
+            continue
+        _install_m2m_relationship(model_class, field_name, field, target)
+    _pending_m2m.extend(still_pending_m2m)
+
+
+def _ensure_relationship_hook_installed() -> None:
+    from sqlalchemy import event
+
+    global _relationship_hook_installed
+    if not _relationship_hook_installed:
+        event.listen(Model, "before_configured", _flush_pending_relationships)
+        _relationship_hook_installed = True
+
 
 def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
     """Create FK constraints and relationship attributes for ForeignKey fields.
@@ -217,18 +360,12 @@ def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
     - ``author``: a relationship to the Author model
     - ``posts`` on Author when ``related_name="posts"``
     """
-    from sqlalchemy import event
-
     from fastframe.models.fields import ForeignKey
-
-    global _fk_hook_installed
 
     if not hasattr(model_class, "__table__"):
         return
 
-    if not _fk_hook_installed:
-        event.listen(Model, "before_configured", _flush_pending_relationships)
-        _fk_hook_installed = True
+    _ensure_relationship_hook_installed()
 
     for field_name, field in fields.items():
         if not isinstance(field, ForeignKey):
@@ -238,6 +375,32 @@ def _setup_fk_relationships(model_class: type, fields: dict[str, Any]) -> None:
             _pending_fks.append((model_class, field_name, field))
             continue
         _install_relationship(model_class, field_name, field, target)
+
+
+def _setup_m2m_relationships(model_class: type, fields: dict[str, Any]) -> None:
+    """Create the join table and relationship attributes for ManyToManyField.
+
+    For a field like ``tags = ManyToManyField("Tag", related_name="posts")``,
+    this creates:
+    - a hidden join table (``posts_tags`` by default)
+    - ``tags``: a RelatedList relationship to Tag
+    - ``posts`` on Tag (the ``related_name``)
+    """
+    from fastframe.models.fields import ManyToManyField
+
+    if not hasattr(model_class, "__table__"):
+        return
+
+    _ensure_relationship_hook_installed()
+
+    for field_name, field in fields.items():
+        if not isinstance(field, ManyToManyField):
+            continue
+        target = _resolve_target(model_class, field.to)
+        if target is None:
+            _pending_m2m.append((model_class, field_name, field))
+            continue
+        _install_m2m_relationship(model_class, field_name, field, target)
 
 
 class Model(DeclarativeBase, metaclass=ModelMeta):
@@ -378,7 +541,8 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
         if cls is not Model and getattr(cls, "__tablename__", None):
             cls.objects = Manager(cls)
             
-            # Setup FK relationships now that __table__ exists
+            # Setup FK/M2M relationships now that __table__ exists
             fields_for_fk = getattr(cls, "_fields_for_fk_setup", {})
             if fields_for_fk:
                 _setup_fk_relationships(cls, fields_for_fk)
+                _setup_m2m_relationships(cls, fields_for_fk)

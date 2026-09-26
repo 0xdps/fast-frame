@@ -604,6 +604,115 @@ class ForeignKey(Field):
         return mapped_column(self.get_sqlalchemy_type(), **kwargs)
 
 
+class RelatedList(list):
+    """List-like collection for ManyToManyField relationships.
+
+    A plain SQLAlchemy relationship collection is just a list — this adds a
+    few Django-style convenience methods on top. ``append``/``remove``/
+    ``clear``/``extend`` are inherited from ``list`` (and instrumented by
+    SQLAlchemy for the underlying secondary-table inserts/deletes); ``add``
+    and ``set`` are thin wrappers so the API reads like Django's
+    ``RelatedManager``.
+
+    Example:
+        post.tags.add(tag1, tag2)   # append, skipping duplicates
+        post.tags.set([tag1])       # replace the whole collection
+        post.tags.remove(tag1)      # plain list.remove()
+        post.tags.clear()           # plain list.clear()
+        post.tags.all()             # -> list(post.tags)
+    """
+
+    def add(self, *objs: Any) -> None:
+        """Add one or more related objects, skipping ones already present."""
+        for obj in objs:
+            if obj not in self:
+                self.append(obj)
+
+    def set(self, objs: list[Any]) -> None:
+        """Replace the entire collection with ``objs``."""
+        self.clear()
+        self.extend(objs)
+
+    def all(self) -> list[Any]:
+        """Return a plain list snapshot of the current related objects."""
+        return list(self)
+
+
+class ManyToManyField(Field):
+    """Many-to-many relationship field.
+
+    Auto-creates a hidden join table (a plain SQLAlchemy Core ``Table``, not
+    a Model) plus SQLAlchemy relationships on both sides, using
+    :class:`RelatedList` for Django-style ``.add()``/``.set()`` helpers.
+
+    Example:
+        class Post(Model):
+            tags = fields.ManyToManyField("Tag", related_name="posts")
+
+        post.tags.add(tag1, tag2)
+        post.tags.all()        # -> [Tag, Tag]
+        tag.posts.all()        # -> [Post, ...] (reverse side)
+
+    Note:
+        Custom "through" models (extra columns on the join table) aren't
+        supported yet — only ``related_name`` and ``db_table`` overrides.
+        The admin REST API can display M2M values but doesn't yet support
+        editing them through the main create/update payload; use the ORM
+        methods above or a future dedicated endpoint.
+    """
+
+    def __init__(
+        self,
+        to: str | type,
+        *,
+        related_name: str | None = None,
+        db_table: str | None = None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize ManyToManyField.
+
+        Args:
+            to: Target model (string name, ``"self"`` for self-referential,
+                or a class).
+            related_name: Name for the reverse relationship on the target
+                model. Defaults to ``"{model_name_lower}_set"``.
+            db_table: Name for the auto-created join table. Defaults to
+                ``"{model_tablename}_{field_name}"``.
+            **kwargs: Additional field options (rarely needed for M2M).
+        """
+        self.to = to
+        self.related_name = related_name
+        self.db_table = db_table
+        self.relationship_name: str | None = None  # Set by _install_m2m_relationship
+
+        # M2M fields are never required at the DB/form level.
+        kwargs.setdefault("null", True)
+        kwargs.setdefault("blank", True)
+        super().__init__(**kwargs)
+
+    def get_sqlalchemy_type(self) -> Any:
+        # M2M fields never become a column - see to_sqlalchemy_column().
+        return None
+
+    def get_type_annotation(self) -> type:
+        from typing import Any as AnyType
+
+        return Mapped[AnyType]
+
+    def to_sqlalchemy_column(self) -> Any:
+        """ManyToManyField never becomes a column.
+
+        ModelMeta special-cases ManyToManyField and skips this call; the
+        relationship is installed later, after ``__table__`` exists, by
+        ``fastframe.models.base._setup_m2m_relationships``.
+        """
+        return None
+
+    def validate(self, value: Any) -> None:
+        """M2M collections aren't validated as scalar column values."""
+        return None
+
+
 __all__ = [
     "Field",
     "AutoField",
@@ -623,4 +732,6 @@ __all__ = [
     "UUIDField",
     "JSONField",
     "ForeignKey",
+    "ManyToManyField",
+    "RelatedList",
 ]

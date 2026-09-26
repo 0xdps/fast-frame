@@ -22,6 +22,7 @@ ADMIN_SITE_HEADER = "Administration"
 ADMIN_PREFIX = "/admin"
 ADMIN_API_PREFIX = "/api/admin"
 ADMIN_MODE = "static"  # "static" (pre-built) or "custom" (user builds)
+ADMIN_REQUIRE_AUTH = True  # Require a logged-in User with can_access_admin
 
 # ===== OpenAPI/Swagger =====
 ENABLE_OPENAPI = True
