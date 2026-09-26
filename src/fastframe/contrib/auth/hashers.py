@@ -2,7 +2,6 @@
 
 import hashlib
 import secrets
-from typing import Any
 
 
 def make_password(password: str, salt: str | None = None) -> str:

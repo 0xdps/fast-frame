@@ -36,4 +36,4 @@ def get_user_model() -> type[Model]:
     except (ImportError, AttributeError) as e:
         raise ImportError(
             f"Could not import user model '{settings.AUTH_USER_MODEL}': {e}"
-        )
+        ) from e
