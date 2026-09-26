@@ -1,6 +1,6 @@
 # Model Fields Design
 
-**Status:** Implemented (v0.3.0). Kept as a design reference for the
+**Status:** Implemented (v0.1.0). Kept as a design reference for the
 `fields.*` API and its SQLAlchemy mapping — not a to-do list.
 
 FastFrame v0.3 introduced Django-style declarative field syntax to replace the previous SQLAlchemy `mapped_column()` boilerplate.
@@ -135,7 +135,7 @@ author = fields.ForeignKey("User", on_delete="CASCADE", related_name="posts")
 - `related_name`: reverse relationship name
 - `to_field`: defaults to `"id"`
 
-**ManyToManyField** (Implemented v0.3.0)
+**ManyToManyField** (Implemented v0.1.0)
 ```python
 tags = fields.ManyToManyField("Tag", related_name="posts")
 # Auto-creates join table "posts_tags" (or db_table=...) on Model.metadata
@@ -164,7 +164,7 @@ tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
 **UUIDField** - UUID primary/foreign keys
 **JSONField** - Native JSON/JSONB
 
-**FileField / ImageField** - Deferred until the storage layer exists (v0.6+, see [roadmap.md](roadmap.md))
+**FileField / ImageField** - Deferred until the storage layer exists (Phase 6+, see [roadmap.md](roadmap.md))
 
 ---
 
@@ -420,8 +420,12 @@ class BookAdmin(ModelAdmin):
 
 ## Remaining work
 
-Everything above shipped in v0.3.0. What's still open:
+Everything above shipped in v0.1.0. What's still open:
 
-- `ManyToManyField(through=...)` — custom columns on the join table (v0.4, see [roadmap.md](roadmap.md))
-- `FileField` / `ImageField` — blocked on a storage layer (v0.6+)
-- Admin forms are metadata-driven already, but per-field admin permissions are still static, not per-request (v0.4)
+- `ManyToManyField(through=...)` — custom columns on the join table (deferred, see [roadmap.md](roadmap.md))
+- `FileField` / `ImageField` — blocked on a storage layer (Phase 6+)
+- Per-model permissions are now per-request and opt-in
+  (`ModelAdmin.enforce_permissions`, see [permissions.md](permissions.md)),
+  and `readonly_fields` is enforced on write — but there's still no true
+  per-field permission model (only a binary readonly/editable cut) and no
+  per-object (row-level) permissions.

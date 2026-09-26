@@ -1,6 +1,6 @@
 # ⚠️ Admin Security Notes
 
-**Current as of FastFrame v0.4.0**
+**Current as of FastFrame v0.1.0**
 
 ---
 
@@ -58,17 +58,17 @@ Authentication and authorization are now handled. These are still open:
 
 | Feature | Status | Risk |
 |---------|--------|------|
-| **Authentication** | ✅ Implemented (v0.3.0) | — |
-| **Authorization (role/permission)** | ✅ Implemented (v0.4.0) — opt-in, per-model/per-request via `Group`/permission strings; see [permissions.md](permissions.md) | — |
-| **Per-model/field permissions** | ✅ Implemented (v0.4.0) — `enforce_permissions`, `readonly_fields`/`fields`/`exclude` now actually enforced on write, not just rendering | — |
-| **Session revocation** | ✅ Implemented (v0.4.0) — `user.invalidate_sessions()` server-side "log out everywhere" | — |
-| **Timing-safe login** | ✅ Implemented (v0.4.0) — constant-time hash compare, dummy-hash on unknown/inactive username | — |
-| **Rate Limiting on `/login` / `/api/auth/token`** | ✅ Implemented (v0.4.0) — in-memory sliding window + lockout; see "Rate Limiting" below | — |
-| **CORS / security headers** | ✅ Implemented (v0.4.0) — opt-in `CORS_ALLOWED_ORIGINS`, `SECURE_HEADERS` on by default | — |
+| **Authentication** | ✅ Implemented | — |
+| **Authorization (role/permission)** | ✅ Implemented — opt-in, per-model/per-request via `Group`/permission strings; see [permissions.md](permissions.md) | — |
+| **Per-model/field permissions** | ✅ Implemented — `enforce_permissions`, `readonly_fields`/`fields`/`exclude` now actually enforced on write, not just rendering | — |
+| **Session revocation** | ✅ Implemented — `user.invalidate_sessions()` server-side "log out everywhere" | — |
+| **Timing-safe login** | ✅ Implemented — constant-time hash compare, dummy-hash on unknown/inactive username | — |
+| **Rate Limiting on `/login` / `/api/auth/token`** | ✅ Implemented — in-memory sliding window + lockout; see "Rate Limiting" below | — |
+| **CORS / security headers** | ✅ Implemented — opt-in `CORS_ALLOWED_ORIGINS`, `SECURE_HEADERS` on by default | — |
 | **CSRF Protection** | ⚠️ Mitigated only (cookie is `SameSite=Lax`; no CSRF token) | LOW-MEDIUM |
 | **Per-object (row-level) permissions** | ❌ Not implemented — permissions are per-model only | LOW |
 | **`ManyToManyField(through=...)`** | ❌ Not implemented — deferred, see [roadmap.md](roadmap.md) | — |
-| **Audit Logging** | ✅ Implemented (v0.3.0) — see below | — |
+| **Audit Logging** | ✅ Implemented — see below | — |
 
 ---
 
@@ -103,8 +103,8 @@ sign-out on a suspected compromised session.
 against a dummy hash — even when the username doesn't exist or the
 account is inactive, so a failed login for an unknown username takes
 approximately the same time as a failed login for a real one. This closes
-a username-enumeration-via-timing side channel that existed prior to
-v0.4.0.
+a username-enumeration-via-timing side channel that would otherwise
+exist.
 
 ## Password Policy
 
@@ -186,7 +186,7 @@ it has no permission-aware widgets yet — any user who can log in and has
 `can_access_admin` sees the same UI regardless of role.
 
 ### Q: What about fine-grained permissions (per-model, per-field)?
-**A:** As of v0.4.0: opt in per model with `enforce_permissions = True` to
+**A:** Opt in per model with `enforce_permissions = True` to
 turn `has_*_permission` into per-request checks against Django-style
 permission strings (`Group`, `User.permissions`). `readonly_fields`,
 `fields`, and `exclude` are now actually enforced on write, not just used
@@ -197,21 +197,24 @@ implemented. See [permissions.md](permissions.md).
 
 ## Security Roadmap
 
-| Version | Feature | Status |
-|---------|---------|--------|
-| **v0.3.0** | Admin CRUD + session authentication (login/logout/me) | ✅ Released |
-| **v0.3.0** | Audit logging (admin + REST API) | ✅ Released |
-| **v0.3.0** | Generic token-authenticated REST API | ✅ Released |
-| **v0.4.0** | Fine-grained, per-request permissions (`Group`, permission strings) | ✅ Released |
-| **v0.4.0** | `readonly_fields`/`fields`/`exclude` enforced on write | ✅ Released |
-| **v0.4.0** | General-purpose session auth outside `/admin` | ✅ Released |
-| **v0.4.0** | Server-side session revocation | ✅ Released |
-| **v0.4.0** | Rate limiting on login/token endpoints | ✅ Released |
-| **v0.4.0** | CORS + security headers + `MIDDLEWARE` setting | ✅ Released |
-| **v0.4.0** | Timing-safe authentication, password strength policy, token expiry | ✅ Released |
-| **Future** | CSRF token (beyond `SameSite=Lax` mitigation) | 📋 Planned |
-| **Future** | Per-object (row-level) permissions | 📋 Planned |
-| **Future** | `ManyToManyField(through=...)` | 📋 Planned |
+Everything below marked "Released" shipped together in **v0.1.0**, the
+first tagged release — see [CHANGELOG.md](../CHANGELOG.md).
+
+| Feature | Status |
+|---------|--------|
+| Admin CRUD + session authentication (login/logout/me) | ✅ Released |
+| Audit logging (admin + REST API) | ✅ Released |
+| Generic token-authenticated REST API | ✅ Released |
+| Fine-grained, per-request permissions (`Group`, permission strings) | ✅ Released |
+| `readonly_fields`/`fields`/`exclude` enforced on write | ✅ Released |
+| General-purpose session auth outside `/admin` | ✅ Released |
+| Server-side session revocation | ✅ Released |
+| Rate limiting on login/token endpoints | ✅ Released |
+| CORS + security headers + `MIDDLEWARE` setting | ✅ Released |
+| Timing-safe authentication, password strength policy, token expiry | ✅ Released |
+| CSRF token (beyond `SameSite=Lax` mitigation) | 📋 Planned |
+| Per-object (row-level) permissions | 📋 Planned |
+| `ManyToManyField(through=...)` | 📋 Planned |
 
 See [docs/roadmap.md](roadmap.md) for the full plan.
 
@@ -240,8 +243,8 @@ If you discover a security issue in FastFrame:
 
 ---
 
-**FastFrame v0.4.0 admin requires login by default and now supports
-opt-in, per-request permissions, rate limiting, session revocation, and
+**FastFrame v0.1.0 admin requires login by default and supports opt-in,
+per-request permissions, rate limiting, session revocation, and
 CORS/security headers. CSRF tokens and per-object permissions are still on
 the roadmap — see the Security Roadmap above.**
 
