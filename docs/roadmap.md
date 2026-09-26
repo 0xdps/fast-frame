@@ -1,26 +1,34 @@
 # Roadmap
 
-Direction beyond v0.1. Dates aren't fixed; scope shifts as real usage informs priorities.
+Direction beyond the first release. Dates aren't fixed; scope shifts as
+real usage informs priorities.
 
-| Version | Theme | Status |
+Phases below are development milestones, not package version numbers —
+they don't map 1:1 onto `fastframe`'s actual semver release (see
+[CHANGELOG.md](../CHANGELOG.md)). Everything through **Phase 4** shipped
+together as **v0.1.0**, the first tagged release. From here, releases
+follow standard semver: fixes bump the patch version, new features bump
+the minor version.
+
+| Phase | Theme | Status |
 | --- | --- | --- |
-| v0.1 | Core loop — `startproject` → `manage.py` → migrate → shell | ✅ Shipped |
-| v0.2 | Developer experience polish | ✅ Shipped |
-| v0.3 | Admin, relationships, session auth | ✅ Shipped |
-| v0.4 | Harden auth & authorization | ✅ Shipped |
-| v0.5 | Templates and static files | 🔜 Next |
-| v0.6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
-| v1.0 | Production-ready platform | 📋 Planned |
+| Phase 1 | Core loop — `startproject` → `manage.py` → migrate → shell | ✅ Shipped (v0.1.0) |
+| Phase 2 | Developer experience polish | ✅ Shipped (v0.1.0) |
+| Phase 3 | Admin, relationships, session auth | ✅ Shipped (v0.1.0) |
+| Phase 4 | Harden auth & authorization | ✅ Shipped (v0.1.0) |
+| Phase 5 | Templates and static files | 🔜 Next |
+| Phase 6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
+| Phase 7 | Production-ready platform | 📋 Planned |
 
-## v0.1 — Core loop ✅
+## Phase 1 — Core loop ✅
 
 `startproject`, `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin models with a chainable `QuerySet`, Alembic migrations. Validated end-to-end against a real app (`examples/todo_app`).
 
-## v0.2 — Developer experience ✅
+## Phase 2 — Developer experience ✅
 
 `check` / `check --database`, `showmigrations`, `dbshell`, app lifecycle hooks (`AppConfig.checks()` / `shutdown()`), `.env` support, a pagination dependency, and test utilities (`fastframe.testing.override_settings`).
 
-## v0.3 — Admin, relationships, session auth ✅
+## Phase 3 — Admin, relationships, session auth ✅
 
 - **Declarative fields** (`fields.CharField`, `IntegerField`, `BooleanField`, `DateTimeField`, `DecimalField`, `EmailField`, `URLField`, `UUIDField`, `JSONField`, …) — see [models-fields-design.md](models-fields-design.md).
 - **Auto relationships**: `ForeignKey` and `ManyToManyField` (incl. self-referential) generate their SQLAlchemy `relationship()`/join tables automatically; Django-style `RelatedList` helpers (`.add()`, `.remove()`, `.set()`, `.clear()`, `.all()`).
@@ -29,7 +37,7 @@ Direction beyond v0.1. Dates aren't fixed; scope shifts as real usage informs pr
 - **Generic REST API**: `ENABLE_REST_API` opts in to token-authenticated CRUD (`/api/v1/{resource}`) over the same registered models, for non-browser clients (mobile apps, scripts, integrations).
 - **Audit log**: every create/update/delete through either surface is recorded in `AuditLog` (who, what, when, old→new values), viewable read-only in the admin.
 
-## v0.4 — Harden auth & authorization ✅
+## Phase 4 — Harden auth & authorization ✅
 
 Closed most of the gaps called out in [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md):
 
@@ -68,15 +76,15 @@ columns on a join table) and CSRF tokens beyond the existing
 `SameSite=Lax` mitigation — see [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md)
 for the up-to-date list of what's still open.
 
-## v0.5 — Templates and static files 🔜
+## Phase 5 — Templates and static files 🔜
 
 - Jinja2 templates and discovery for app-defined views (independent of the admin, which stays React-only)
 - Static file handling and `collectstatic` for production
 
-## v0.6+ — Additional batteries 📋
+## Phase 6+ — Additional batteries 📋
 
 Background tasks, email, caching, storage (unlocks `FileField`/`ImageField`), signals/events, custom management commands ecosystem, observability, production checks, deployment helpers.
 
-## v1.0 — Production-ready platform 📋
+## Phase 7 — Production-ready platform 📋
 
 Stable public API, migration story, documentation, and operational commands (`check --deploy`, `migrate`, `collectstatic`) that teams trust for production.

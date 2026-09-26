@@ -74,7 +74,7 @@ A few structures sketched in earlier drafts of this doc were never built and are
 - A standalone `conf/` package — settings loading lives in `core/settings.py`.
 - `fastframe.contrib.*` optional in-repo apps — no contrib apps exist yet.
 - `models/fields.py` ergonomic field helpers — deferred; use SQLAlchemy's `mapped_column()` directly (see [public-api-v0.1.md](public-api-v0.1.md)).
-- Custom management command auto-discovery (`<app>/management/commands/`) — planned for v0.2 (see [app-contract.md](app-contract.md), [roadmap.md](roadmap.md)).
+- Custom management command auto-discovery (`<app>/management/commands/`) — planned (see [app-contract.md](app-contract.md), [roadmap.md](roadmap.md)).
 
 ## Naming
 

@@ -39,7 +39,7 @@ from users import models as users_models  # noqa: F401, E402
 app = FastAPI(
     title="Blog App with Admin",
     description="FastFrame Admin Demo",
-    version="0.3.0",
+    version="0.1.0",
 )
 
 # CORS for the React admin dev server (Vite on :5173)
