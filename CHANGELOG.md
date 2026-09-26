@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   falls back to `"static"` instead of erroring or serving SSR. The `jinja2`
   dependency was dropped as a result — nothing in `fastframe` imports it
   anymore.
+- Removed one-off session/audit/progress markdown files that had
+  accumulated at the repo root and in `docs/` (`SUMMARY.md`,
+  `V03_SUMMARY.md`, `docs/ACHIEVEMENTS_SUMMARY.md`,
+  `docs/ACTION_PLAN_V0.3.md`, `docs/ADMIN_COMPLETION_SUMMARY.md`,
+  `docs/AUDIT_2026_09_23.md`, `docs/IMPLEMENTATION_SUMMARY.md`,
+  `docs/IMPROVEMENTS_CATALOG.md`, `docs/RELATIONSHIP_AUTO_GEN_COMPLETE.md`,
+  `docs/SESSION_FINAL_SUMMARY.md`, `docs/v0.3-progress.md`,
+  `docs/admin-crud-implementation-plan.md`, `docs/blog-app-restructuring.md`)
+  along with `docs/admin-quick-reference.md`, a stale duplicate of
+  `docs/admin-setup.md`. Their content is superseded by this changelog,
+  `README.md`, and the living guides indexed in `docs/README.md`.
 
 ## [0.3.0] - 2026-09-26
 

@@ -18,6 +18,9 @@ Start here:
 14. [Settings](settings.md) — admin, OpenAPI, auth, primary keys
 15. [Auth](auth.md) — user model and `AUTH_USER_MODEL`
 16. [Admin deployment](admin-deployment.md) — static, custom, or none
-17. [Admin customization](admin-customization.md) — React admin source
+17. [Admin setup](admin-setup.md) — walkthrough for adding admin to an app
+18. [Admin customization](admin-customization.md) — React admin source
+19. [Admin security warning](ADMIN_SECURITY_WARNING.md) — auth model and current limits
+20. [Models & fields design](models-fields-design.md) — field types, relationships, `ManyToManyField`
 
 Architecture Decision Records: [../adr/README.md](../adr/README.md)
