@@ -58,10 +58,22 @@ class ModelAdmin:
     actions_on_bottom: bool = False
     
     # Permissions
+    #
+    # These four stay static booleans by default (same for every user) —
+    # exactly the pre-v0.4 behavior, so existing ModelAdmin subclasses don't
+    # change behavior. Set `enforce_permissions = True` below to switch this
+    # model to per-user, per-request checks against permission strings like
+    # "blog.change_post" (own + group permissions — see
+    # fastframe.contrib.auth.permissions) instead. When enforced, a value
+    # of False here still acts as a hard "nobody, ever" override — it's
+    # checked first, before any permission-string lookup.
     has_add_permission: bool = True
     has_change_permission: bool = True
     has_delete_permission: bool = True
     has_view_permission: bool = True
+
+    #: Opt-in per model. See the permissions block above.
+    enforce_permissions: bool = False
     
     # Safety features
     confirmation_required: list[str] = ["delete"]  # Actions requiring confirmation
@@ -178,6 +190,53 @@ class ModelAdmin:
             queryset = queryset.filter(combined_q)
         
         return queryset
+
+    # ------------------------------------------------------------------
+    # Permission resolution
+    # ------------------------------------------------------------------
+
+    def get_has_view_permission(self, user: Any = None) -> bool:
+        """Resolve view permission for ``user`` (a request-scoped snapshot)."""
+        return self._resolve_permission("view", self.has_view_permission, user)
+
+    def get_has_add_permission(self, user: Any = None) -> bool:
+        """Resolve add permission for ``user`` (a request-scoped snapshot)."""
+        return self._resolve_permission("add", self.has_add_permission, user)
+
+    def get_has_change_permission(self, user: Any = None) -> bool:
+        """Resolve change permission for ``user`` (a request-scoped snapshot)."""
+        return self._resolve_permission("change", self.has_change_permission, user)
+
+    def get_has_delete_permission(self, user: Any = None) -> bool:
+        """Resolve delete permission for ``user`` (a request-scoped snapshot)."""
+        return self._resolve_permission("delete", self.has_delete_permission, user)
+
+    def _resolve_permission(self, action: str, static_value: bool, user: Any) -> bool:
+        if not self.enforce_permissions:
+            return static_value
+        if not static_value:
+            return False  # hard override: always denied, regardless of permission strings
+        from fastframe.contrib.auth.permissions import user_has_model_perm
+
+        return user_has_model_perm(user, self.model, action)
+
+    def get_editable_fields(self, cleaned: dict[str, Any], *, partial: bool) -> dict[str, Any]:
+        """Drop keys from ``cleaned`` that this admin's ``fields``/``exclude``/
+        ``readonly_fields`` config says shouldn't be writable.
+
+        Applied on both create and update, for both the admin API and the
+        generic REST API (they share this ``ModelAdmin`` config).
+        """
+        allowed = set(self.fields) if self.fields is not None else None
+        blocked = set(self.exclude) | set(self.readonly_fields)
+
+        # Auto PK is never writable on create either way (handled upstream
+        # in deserialize_payload); nothing extra to do for that here.
+        return {
+            key: value
+            for key, value in cleaned.items()
+            if (allowed is None or key in allowed) and key not in blocked
+        }
 
 
 class AdminSite:

@@ -46,6 +46,12 @@ def authenticate(username: str, password: str) -> Model | None:
     Similar to Django's authenticate(). Looks up the user by username,
     checks the password hash, and rejects inactive users.
 
+    Runs a password hash comparison unconditionally, even when the
+    username doesn't exist (against a fixed dummy hash) — this keeps
+    "unknown username" and "wrong password" roughly the same shape in
+    response time, so an attacker can't use timing to enumerate valid
+    usernames against this endpoint.
+
     Args:
         username: The username to look up.
         password: The plaintext password to verify.
@@ -55,6 +61,8 @@ def authenticate(username: str, password: str) -> Model | None:
     """
     from fastframe.models.exceptions import DoesNotExist, MultipleObjectsReturned
 
+    from .hashers import check_password, make_password
+
     if not username or not password:
         return None
 
@@ -62,9 +70,14 @@ def authenticate(username: str, password: str) -> Model | None:
     try:
         user = user_model.objects.get(username=username)
     except (DoesNotExist, MultipleObjectsReturned):
+        # No such user — still hash `password` against a dummy value of the
+        # same shape, so this branch costs about as much time as the one
+        # below where a real user's hash is checked.
+        check_password(password, make_password("dummy-password-for-timing"))
         return None
 
     if not getattr(user, "is_active", True):
+        check_password(password, make_password("dummy-password-for-timing"))
         return None
     if not user.check_password(password):
         return None

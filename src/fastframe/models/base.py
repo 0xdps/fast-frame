@@ -345,10 +345,20 @@ def _flush_pending_relationships() -> None:
 
 def _ensure_relationship_hook_installed() -> None:
     from sqlalchemy import event
+    from sqlalchemy.orm import Mapper
 
     global _relationship_hook_installed
     if not _relationship_hook_installed:
-        event.listen(Model, "before_configured", _flush_pending_relationships)
+        # Must be the Mapper *class* (a global mapper-configuration event),
+        # not a mapped class like `Model` — `event.listen(Model, ...)` never
+        # fires at all, silently. Every existing FK/M2M test happens to
+        # define its target class *before* the class referencing it, so
+        # `_resolve_target` always succeeded eagerly and this dead listener
+        # went unnoticed; true forward references (target defined *after*
+        # the class using it, e.g. `contrib.auth.models.User.groups ->
+        # Group`) previously left the field pending forever, with no
+        # relationship attribute ever installed.
+        event.listen(Mapper, "before_configured", _flush_pending_relationships)
         _relationship_hook_installed = True
 
 

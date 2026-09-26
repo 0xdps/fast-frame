@@ -494,7 +494,18 @@ class UUIDField(Field):
 
 
 class JSONField(Field):
-    """JSON field (stored as TEXT in SQLite, JSON/JSONB in PostgreSQL/MySQL)."""
+    """JSON field (stored as TEXT in SQLite, JSON/JSONB in PostgreSQL/MySQL).
+
+    When ``default=dict`` or ``default=list``, the column is wrapped with
+    SQLAlchemy's ``sqlalchemy.ext.mutable`` tracking (``MutableDict``/
+    ``MutableList``) — without this, in-place mutations like
+    ``instance.some_json_field["key"] = value`` are invisible to
+    SQLAlchemy's change tracking, so ``instance.save()`` silently emits no
+    UPDATE for that column at all (the *first* save, as part of an INSERT,
+    still writes it correctly — only later in-place mutations are affected).
+    A field with no ``default`` (or a non-dict/list default) is left as a
+    plain, unwrapped JSON column, since the value's shape isn't known.
+    """
 
     def __init__(self, **kwargs: Any) -> None:
         """Initialize JSONField."""
@@ -505,6 +516,14 @@ class JSONField(Field):
         # (JSONB on Postgres, JSON on MySQL, TEXT on SQLite)
         from sqlalchemy import JSON
 
+        if self.default is dict:
+            from sqlalchemy.ext.mutable import MutableDict
+
+            return MutableDict.as_mutable(JSON())
+        if self.default is list:
+            from sqlalchemy.ext.mutable import MutableList
+
+            return MutableList.as_mutable(JSON())
         return JSON
 
     def get_type_annotation(self) -> type:

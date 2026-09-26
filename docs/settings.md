@@ -28,7 +28,9 @@ variable is set.
 | `ADMIN_SITE_HEADER` | `"Administration"` | Header label. |
 
 Admin authentication is always required — there is no setting to disable
-it. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md).
+it. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md). Per-model
+permission enforcement (`ModelAdmin.enforce_permissions`) is opt-in — see
+[permissions.md](permissions.md).
 
 ## REST API
 
@@ -40,6 +42,47 @@ Opt-in, token-authenticated CRUD over the same models registered with
 | `ENABLE_REST_API` | `False` | Mount `/api/auth/token` and the CRUD API. Off by default, unlike admin. |
 | `ENABLE_REST_API_DOCS` | `True` | Include REST API operations in the OpenAPI schema. |
 | `API_PREFIX` | `"/api/v1"` | CRUD API prefix (token auth lives at `/api/auth/token` regardless). |
+| `API_TOKEN_DEFAULT_EXPIRY_DAYS` | `None` | Default lifetime for new tokens, in days. `None` = tokens never expire unless `expires_in_days` (or the `expiresInDays` field on `POST /api/auth/token`) is passed explicitly. |
+
+## General-purpose auth API
+
+Session-cookie login for any app route, independent of `can_access_admin`
+— shares the same cookie as the admin. See
+[auth.md](auth.md#general-purpose-session-auth-outside-admin).
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `ENABLE_AUTH_API` | `True` | Mount `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`. |
+| `PASSWORD_MIN_LENGTH` | `8` | Minimum length enforced by `User.set_password()` (skip with `validate=False`). |
+
+## Rate limiting
+
+In-memory, single-process sliding-window limiter applied to
+`/api/admin/login`, `/api/auth/login`, and `/api/auth/token`. Not shared
+across processes/instances — meant to blunt naive brute-forcing, not as a
+distributed production rate limiter (front a multi-instance deployment
+with a real backend, e.g. Redis, behind a load balancer, for that).
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `RATE_LIMIT_LOGIN_ENABLED` | `True` | Set `False` to disable entirely. |
+| `RATE_LIMIT_LOGIN_MAX_ATTEMPTS` | `5` | Failed attempts allowed per window before lockout. |
+| `RATE_LIMIT_LOGIN_WINDOW_SECONDS` | `60` | Sliding window length. |
+| `RATE_LIMIT_LOGIN_LOCKOUT_SECONDS` | `300` | How long a bucket stays locked out after hitting the max. |
+
+Locked-out requests get `429` with a `Retry-After` header. A successful
+login resets the counter for that identifier (username + client IP).
+
+## CORS and security headers
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `CORS_ALLOWED_ORIGINS` | `[]` | Empty = CORS disabled entirely (no headers added). Non-empty enables Starlette's `CORSMiddleware` with these origins. |
+| `CORS_ALLOW_CREDENTIALS` | `False` | Passed through to `CORSMiddleware`. |
+| `CORS_ALLOW_METHODS` | `["*"]` | Passed through to `CORSMiddleware`. |
+| `CORS_ALLOW_HEADERS` | `["*"]` | Passed through to `CORSMiddleware`. |
+| `SECURE_HEADERS` | `True` | Adds `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` on every response; adds `Strict-Transport-Security` too, but only when `DEBUG = False`. |
+| `MIDDLEWARE` | `[]` | Dotted paths (`"module.ClassName"`) to your own Starlette-compatible middleware, applied in list order. Added before the built-in CORS/security-headers middleware, so those two end up wrapping your custom middleware (CORS outermost). |
 
 ## OpenAPI
 

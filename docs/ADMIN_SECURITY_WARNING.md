@@ -1,6 +1,6 @@
 # ⚠️ Admin Security Notes
 
-**Current as of FastFrame v0.3.0**
+**Current as of FastFrame v0.4.0**
 
 ---
 
@@ -11,9 +11,11 @@ True` by default.
 
 ### How it works
 
-- `POST /api/admin/login` — verify `{"username", "password"}`, set a signed,
-  `httponly` session cookie (`ff_admin_session`, HMAC-SHA256 over
-  `SECRET_KEY`, 14-day expiry).
+- `POST /api/admin/login` — verify `{"username", "password"}` (rate-limited,
+  see "Rate Limiting" below), set a signed, `httponly` session cookie
+  (`ff_admin_session`, HMAC-SHA256 over `SECRET_KEY`, 14-day expiry). The
+  cookie payload includes a `session_version` checked against the user's
+  live value on every request — see "Session Revocation" below.
 - `POST /api/admin/logout` — clear the session cookie.
 - `GET /api/admin/me` — return the current admin user, or `401` if not
   logged in.
@@ -23,6 +25,9 @@ True` by default.
 - The bundled admin UI (`ADMIN_MODE = "static"`, the default, or `"custom"`
   for a project-built React app) serves a minimal login page instead of the
   SPA shell until a valid session exists.
+- The same session cookie now also works for general, non-admin app
+  routes via `POST /api/auth/login` / `/logout` / `GET /api/auth/me` — see
+  [auth.md](auth.md#general-purpose-session-auth-outside-admin).
 
 ### Granting admin access to a user
 
@@ -49,16 +54,64 @@ even with auth enabled.
 
 ## Current Security Gaps
 
-Authentication is now handled. These are still open:
+Authentication and authorization are now handled. These are still open:
 
 | Feature | Status | Risk |
 |---------|--------|------|
 | **Authentication** | ✅ Implemented (v0.3.0) | — |
-| **Authorization (role/permission)** | ⚠️ Coarse only (`can_access_admin`, `is_superuser`) | MEDIUM |
-| **Per-model/field permissions** | ❌ Not implemented (`has_*_permission` are static class attrs, not per-request) | MEDIUM |
-| **CSRF Protection** | ❌ Not implemented (mitigated: cookie is `SameSite=Lax`) | MEDIUM |
-| **Rate Limiting on `/login` / `/api/auth/token`** | ❌ Not implemented (brute-force is possible) | MEDIUM |
+| **Authorization (role/permission)** | ✅ Implemented (v0.4.0) — opt-in, per-model/per-request via `Group`/permission strings; see [permissions.md](permissions.md) | — |
+| **Per-model/field permissions** | ✅ Implemented (v0.4.0) — `enforce_permissions`, `readonly_fields`/`fields`/`exclude` now actually enforced on write, not just rendering | — |
+| **Session revocation** | ✅ Implemented (v0.4.0) — `user.invalidate_sessions()` server-side "log out everywhere" | — |
+| **Timing-safe login** | ✅ Implemented (v0.4.0) — constant-time hash compare, dummy-hash on unknown/inactive username | — |
+| **Rate Limiting on `/login` / `/api/auth/token`** | ✅ Implemented (v0.4.0) — in-memory sliding window + lockout; see "Rate Limiting" below | — |
+| **CORS / security headers** | ✅ Implemented (v0.4.0) — opt-in `CORS_ALLOWED_ORIGINS`, `SECURE_HEADERS` on by default | — |
+| **CSRF Protection** | ⚠️ Mitigated only (cookie is `SameSite=Lax`; no CSRF token) | LOW-MEDIUM |
+| **Per-object (row-level) permissions** | ❌ Not implemented — permissions are per-model only | LOW |
+| **`ManyToManyField(through=...)`** | ❌ Not implemented — deferred, see [roadmap.md](roadmap.md) | — |
 | **Audit Logging** | ✅ Implemented (v0.3.0) — see below | — |
+
+---
+
+## Rate Limiting
+
+`/api/admin/login`, `/api/auth/login`, and `/api/auth/token` are all
+rate-limited: after `RATE_LIMIT_LOGIN_MAX_ATTEMPTS` failed attempts within
+`RATE_LIMIT_LOGIN_WINDOW_SECONDS`, the identifier (username + client IP)
+is locked out for `RATE_LIMIT_LOGIN_LOCKOUT_SECONDS` and gets `429` with a
+`Retry-After` header. A successful login resets the counter.
+
+This is an **in-memory, single-process** limiter
+(`fastframe.core.ratelimit`) — it does not coordinate across multiple app
+instances/workers behind a load balancer. It blunts naive, single-process
+brute-forcing; it is not a substitute for a shared backend (Redis, etc.)
+in a genuinely multi-instance deployment. See
+[settings.md](settings.md#rate-limiting).
+
+## Session Revocation
+
+Session cookies carry a `session_version` alongside the user id. Calling
+`user.invalidate_sessions()` (then `user.save()`) bumps that counter,
+which immediately invalidates every previously issued cookie for that
+user — the next request with an old cookie gets `401`, without needing a
+server-side session table. Useful after a password change, or to force
+sign-out on a suspected compromised session.
+
+## Timing-Safe Authentication
+
+`check_password()` compares hashes with `hmac.compare_digest` instead of
+`==`. `authenticate()` always performs a full password-hash comparison —
+against a dummy hash — even when the username doesn't exist or the
+account is inactive, so a failed login for an unknown username takes
+approximately the same time as a failed login for a real one. This closes
+a username-enumeration-via-timing side channel that existed prior to
+v0.4.0.
+
+## Password Policy
+
+`User.set_password()` now validates strength before hashing:
+`PASSWORD_MIN_LENGTH` (default `8`), and rejects a password equal to the
+username (case-insensitively). Pass `validate=False` to bypass this (e.g.
+for scripted test fixtures).
 
 ---
 
@@ -98,11 +151,20 @@ Before deploying with admin enabled, ensure:
       (HTTPS-only).
 - [ ] Only trusted users have `can_access_admin = True`.
 - [ ] Consider fronting `/admin` and `/api/admin` with a firewall/VPN as
-      defense-in-depth, since fine-grained permissions aren't implemented yet.
+      defense-in-depth — per-model permissions exist (opt-in via
+      `enforce_permissions`, see [permissions.md](permissions.md)) but
+      there's still no per-object (row-level) enforcement.
 - [ ] If `ENABLE_REST_API = True`, remember it's reachable by **any active
       user** (not just admins) and shares the admin registry — review
-      `has_view_permission` on sensitive models (including `AuditLog`)
-      before enabling it. See [rest-api.md](rest-api.md).
+      `has_view_permission`/`enforce_permissions` on sensitive models
+      (including `AuditLog`) before enabling it. See [rest-api.md](rest-api.md).
+- [ ] If serving browser clients from a different origin, set
+      `CORS_ALLOWED_ORIGINS` explicitly rather than leaving it disabled —
+      and never combine `CORS_ALLOW_CREDENTIALS = True` with a wildcard
+      origin.
+- [ ] Leave `SECURE_HEADERS = True` (the default) in production so
+      `Strict-Transport-Security` is sent (it's only added when
+      `DEBUG = False`).
 
 ---
 
@@ -124,8 +186,12 @@ it has no permission-aware widgets yet — any user who can log in and has
 `can_access_admin` sees the same UI regardless of role.
 
 ### Q: What about fine-grained permissions (per-model, per-field)?
-**A:** Not yet — `ModelAdmin.has_add_permission` etc. are still static
-booleans, not per-request checks. Planned for v0.4 (see roadmap).
+**A:** As of v0.4.0: opt in per model with `enforce_permissions = True` to
+turn `has_*_permission` into per-request checks against Django-style
+permission strings (`Group`, `User.permissions`). `readonly_fields`,
+`fields`, and `exclude` are now actually enforced on write, not just used
+for UI rendering. Per-*object* (row-level) permissions are still not
+implemented. See [permissions.md](permissions.md).
 
 ---
 
@@ -134,13 +200,20 @@ booleans, not per-request checks. Planned for v0.4 (see roadmap).
 | Version | Feature | Status |
 |---------|---------|--------|
 | **v0.3.0** | Admin CRUD + session authentication (login/logout/me) | ✅ Released |
-| **v0.4** | Fine-grained, per-request permissions | 📋 Planned |
-| **v0.4** | CSRF protection | 📋 Planned |
-| **v0.4** | Rate limiting on `/login` and `/api/auth/token` | 📋 Planned |
 | **v0.3.0** | Audit logging (admin + REST API) | ✅ Released |
 | **v0.3.0** | Generic token-authenticated REST API | ✅ Released |
+| **v0.4.0** | Fine-grained, per-request permissions (`Group`, permission strings) | ✅ Released |
+| **v0.4.0** | `readonly_fields`/`fields`/`exclude` enforced on write | ✅ Released |
+| **v0.4.0** | General-purpose session auth outside `/admin` | ✅ Released |
+| **v0.4.0** | Server-side session revocation | ✅ Released |
+| **v0.4.0** | Rate limiting on login/token endpoints | ✅ Released |
+| **v0.4.0** | CORS + security headers + `MIDDLEWARE` setting | ✅ Released |
+| **v0.4.0** | Timing-safe authentication, password strength policy, token expiry | ✅ Released |
+| **Future** | CSRF token (beyond `SameSite=Lax` mitigation) | 📋 Planned |
+| **Future** | Per-object (row-level) permissions | 📋 Planned |
+| **Future** | `ManyToManyField(through=...)` | 📋 Planned |
 
-See [docs/roadmap.md](roadmap.md) for the full v0.4 plan.
+See [docs/roadmap.md](roadmap.md) for the full plan.
 
 ---
 
@@ -158,13 +231,18 @@ If you discover a security issue in FastFrame:
 ## Learn More
 
 - [Admin Setup Guide](admin-setup.md)
+- [Permissions](permissions.md)
+- [Auth](auth.md)
 - [REST API](rest-api.md)
+- [Settings](settings.md)
 - [Roadmap](roadmap.md)
 - [Contributing Security Features](../CONTRIBUTING.md)
 
 ---
 
-**FastFrame v0.3.0 admin requires login by default. Fine-grained permissions
-are still on the roadmap — see the Security Roadmap above.**
+**FastFrame v0.4.0 admin requires login by default and now supports
+opt-in, per-request permissions, rate limiting, session revocation, and
+CORS/security headers. CSRF tokens and per-object permissions are still on
+the roadmap — see the Security Roadmap above.**
 
 *Updated: 2026-09-26*

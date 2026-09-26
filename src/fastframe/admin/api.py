@@ -132,7 +132,7 @@ def _build_crud_router(
     # ------------------------------------------------------------------
 
     @router.get("/schema")
-    async def get_schema() -> dict[str, Any]:
+    async def get_schema(current_user: Any = Depends(auth_dependency)) -> dict[str, Any]:
         """Return metadata for every registered model.
 
         The React admin uses this to auto-configure resources, forms,
@@ -141,7 +141,8 @@ def _build_crud_router(
         registry = admin_site.get_registry()
         return {
             "models": [
-                model_schema(model, model_admin) for model, model_admin in registry.items()
+                model_schema(model, model_admin, current_user)
+                for model, model_admin in registry.items()
             ]
         }
 
@@ -159,10 +160,13 @@ def _build_crud_router(
         sortOrder: str = "ASC",
         q: str = "",
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """List records with pagination, sorting, search, and field filters."""
         _session_ctx.set(session)
         model, model_admin = _find_resource(resource)
+        if not model_admin.get_has_view_permission(current_user):
+            raise HTTPException(status_code=403, detail="Permission denied")
 
         qs = model_admin.get_queryset(request)
 
@@ -213,10 +217,13 @@ def _build_crud_router(
         q: str = "",
         limit: int = Query(50, ge=1, le=200),
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Return {value, label} options for a ForeignKey field."""
         _session_ctx.set(session)
-        model, _ = _find_resource(resource)
+        model, model_admin = _find_resource(resource)
+        if not model_admin.get_has_view_permission(current_user):
+            raise HTTPException(status_code=403, detail="Permission denied")
 
         field = model._meta["fields"].get(field_name)
         if field is None or not hasattr(field, "to"):
@@ -256,11 +263,12 @@ def _build_crud_router(
         resource: str,
         record_id: str,
         session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Retrieve a single record."""
         _session_ctx.set(session)
         model, model_admin = _find_resource(resource)
-        if not model_admin.has_view_permission:
+        if not model_admin.get_has_view_permission(current_user):
             raise HTTPException(status_code=403, detail="Permission denied")
         instance = _get_instance(model, record_id)
         return {"data": serialize_instance(instance)}
@@ -279,13 +287,14 @@ def _build_crud_router(
         """Create a record. Returns 422 with per-field errors on validation failure."""
         _session_ctx.set(session)
         model, model_admin = _find_resource(resource)
-        if not model_admin.has_add_permission:
+        if not model_admin.get_has_add_permission(current_user):
             raise HTTPException(status_code=403, detail="Permission denied")
 
         payload = await _json_body(request)
 
         try:
             cleaned = deserialize_payload(model, payload)
+            cleaned = model_admin.get_editable_fields(cleaned, partial=False)
             instance = model(**cleaned)
             instance.full_clean()
             session.add(instance)
@@ -326,7 +335,7 @@ def _build_crud_router(
         """Update a record (partial updates allowed)."""
         _session_ctx.set(session)
         model, model_admin = _find_resource(resource)
-        if not model_admin.has_change_permission:
+        if not model_admin.get_has_change_permission(current_user):
             raise HTTPException(status_code=403, detail="Permission denied")
 
         payload = await _json_body(request)
@@ -335,6 +344,7 @@ def _build_crud_router(
 
         try:
             cleaned = deserialize_payload(model, payload, partial=True)
+            cleaned = model_admin.get_editable_fields(cleaned, partial=True)
             for field_name, value in cleaned.items():
                 setattr(instance, field_name, value)
             instance.full_clean()
@@ -381,7 +391,7 @@ def _build_crud_router(
         """Delete a single record."""
         _session_ctx.set(session)
         model, model_admin = _find_resource(resource)
-        if not model_admin.has_delete_permission:
+        if not model_admin.get_has_delete_permission(current_user):
             raise HTTPException(status_code=403, detail="Permission denied")
         instance = _get_instance(model, record_id)
         data = serialize_instance(instance)
@@ -423,7 +433,7 @@ def _build_crud_router(
         """Bulk delete: DELETE /api/admin/post?ids=1&ids=2"""
         _session_ctx.set(session)
         model, model_admin = _find_resource(resource)
-        if not model_admin.has_delete_permission:
+        if not model_admin.get_has_delete_permission(current_user):
             raise HTTPException(status_code=403, detail="Permission denied")
         pk_name = get_pk_name(model)
         deleted: list[Any] = []

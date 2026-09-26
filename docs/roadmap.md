@@ -7,8 +7,8 @@ Direction beyond v0.1. Dates aren't fixed; scope shifts as real usage informs pr
 | v0.1 | Core loop — `startproject` → `manage.py` → migrate → shell | ✅ Shipped |
 | v0.2 | Developer experience polish | ✅ Shipped |
 | v0.3 | Admin, relationships, session auth | ✅ Shipped |
-| v0.4 | Harden auth & authorization | 🔜 Next |
-| v0.5 | Templates and static files | 📋 Planned |
+| v0.4 | Harden auth & authorization | ✅ Shipped |
+| v0.5 | Templates and static files | 🔜 Next |
 | v0.6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
 | v1.0 | Production-ready platform | 📋 Planned |
 
@@ -29,17 +29,46 @@ Direction beyond v0.1. Dates aren't fixed; scope shifts as real usage informs pr
 - **Generic REST API**: `ENABLE_REST_API` opts in to token-authenticated CRUD (`/api/v1/{resource}`) over the same registered models, for non-browser clients (mobile apps, scripts, integrations).
 - **Audit log**: every create/update/delete through either surface is recorded in `AuditLog` (who, what, when, old→new values), viewable read-only in the admin.
 
-## v0.4 — Harden auth & authorization 🔜
+## v0.4 — Harden auth & authorization ✅
 
-Closing the gaps called out in [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md):
+Closed most of the gaps called out in [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md):
 
-- Fine-grained, per-request permissions (per-model, per-field, per-object) — replacing the static `has_*_permission` booleans on `ModelAdmin`
-- CSRF protection for session cookies
-- Rate limiting on `/api/admin/login` and `/api/auth/token`
-- General-purpose auth/authz usable outside `/admin` — login/session dependencies for regular app routes, groups/roles, FastAPI middleware
-- `ManyToManyField(through=...)` — custom columns on the join table (deferred from v0.3)
+- **Fine-grained, per-request permissions**: Django-style permission strings
+  (`"blog.change_post"`) on a new `Group` model and `User.permissions`/
+  `User.groups`; `ModelAdmin.enforce_permissions` opts a model in to
+  per-request `has_*_permission` checks (default stays static/backward
+  compatible). `readonly_fields`/`fields`/`exclude` are now actually
+  enforced on create/update, not just used for UI rendering. See
+  [permissions.md](permissions.md).
+- **General-purpose auth/authz usable outside `/admin`**: `POST
+  /api/auth/login` / `/logout` / `GET /api/auth/me`, plus
+  `login_required`/`get_current_user`/`permission_required` FastAPI
+  dependencies — all sharing the same signed session cookie as the admin.
+  See [auth.md](auth.md#general-purpose-session-auth-outside-admin).
+- **Rate limiting** on `/api/admin/login`, `/api/auth/login`, and
+  `/api/auth/token` — in-memory sliding window + lockout, swappable
+  backend interface for later. See [settings.md](settings.md#rate-limiting).
+- **Session revocation**: `User.invalidate_sessions()` bumps a
+  `session_version` embedded in the cookie, invalidating every previously
+  issued session for that user without a session table.
+- **Timing-safe authentication**: constant-time password hash comparison;
+  `authenticate()` performs a dummy hash comparison for unknown/inactive
+  usernames to avoid leaking which usernames exist via response timing.
+- **Password strength policy**: `PASSWORD_MIN_LENGTH`, rejects
+  username-as-password, on by default in `User.set_password()`.
+- **Token expiry**: opt-in `API_TOKEN_DEFAULT_EXPIRY_DAYS` / per-token
+  `expires_in_days` for `/api/auth/token`.
+- **`MIDDLEWARE` setting wired up**, plus built-in, opt-in CORS
+  (`CORS_ALLOWED_ORIGINS`) and on-by-default security headers
+  (`SECURE_HEADERS`) — previously `MIDDLEWARE` was declared but never
+  applied by `create_app()`.
 
-## v0.5 — Templates and static files 📋
+**Deferred to a later release:** `ManyToManyField(through=...)` (custom
+columns on a join table) and CSRF tokens beyond the existing
+`SameSite=Lax` mitigation — see [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md)
+for the up-to-date list of what's still open.
+
+## v0.5 — Templates and static files 🔜
 
 - Jinja2 templates and discovery for app-defined views (independent of the admin, which stays React-only)
 - Static file handling and `collectstatic` for production
