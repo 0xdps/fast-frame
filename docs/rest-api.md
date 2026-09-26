@@ -45,6 +45,25 @@ The raw token is shown **exactly once**. Only its SHA-256 hash is stored
 new one. A user can hold multiple tokens (e.g. one per device); creating a
 new one doesn't invalidate the others.
 
+Login attempts on this endpoint are rate-limited — see
+[settings.md](settings.md#rate-limiting).
+
+### Token expiry
+
+Tokens don't expire by default. Set `API_TOKEN_DEFAULT_EXPIRY_DAYS` to
+give every new token a lifetime, or pass `expiresInDays` explicitly per
+request to override it for that one token:
+
+```http
+POST /api/auth/token
+Content-Type: application/json
+
+{"username": "alice", "password": "...", "expiresInDays": 30}
+```
+
+An expired token behaves exactly like a revoked one — `401` on any
+request that presents it.
+
 ## Using it
 
 ```http
@@ -80,10 +99,14 @@ Revokes the token used to make *this* request (404 if it's already gone).
 
 Any active user (`is_active`) may authenticate — there's no `can_access_admin`
 requirement here. Per-model permissions still come from each model's
-`ModelAdmin` (`has_add_permission`, `has_change_permission`,
-`has_delete_permission`, `has_view_permission`), since both surfaces share
-the same registry. There's no per-user/per-object permission model yet —
-see the v0.4 entry in [roadmap.md](roadmap.md).
+`ModelAdmin` — by default the static `has_add_permission`,
+`has_change_permission`, `has_delete_permission`, `has_view_permission`
+booleans (same for every user, unchanged from before), or, if the model
+opts in with `enforce_permissions = True`, per-request checks against
+Django-style permission strings on the current user/their groups. See
+[permissions.md](permissions.md) for the full model. Both surfaces
+(admin and this API) share the same registry and the same permission
+resolution.
 
 **Consequence to be aware of:** because this reuses the admin registry,
 any model registered for the admin becomes reachable from the REST API too

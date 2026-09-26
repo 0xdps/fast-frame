@@ -8,6 +8,20 @@ import pytest
 MINIPROJECT_ROOT = Path(__file__).resolve().parent / "fixtures" / "miniproject"
 
 
+@pytest.fixture(autouse=True)
+def _reset_rate_limiters():
+    """The login rate limiter is a process-global singleton (it has to be,
+    to actually rate-limit across requests) — reset it before every test so
+    one test's failed-login attempts never leak into another's as a bogus
+    429, regardless of run order.
+    """
+    from fastframe.core.ratelimit import reset_rate_limiters
+
+    reset_rate_limiters()
+    yield
+    reset_rate_limiters()
+
+
 @pytest.fixture(scope="session")
 def miniproject_path() -> Path:
     return MINIPROJECT_ROOT

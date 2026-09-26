@@ -40,8 +40,23 @@ class RestWidgetAdmin(ModelAdmin):
     search_fields = ["name"]
 
 
+class LockedWidget(Model):
+    """A model with a server-managed field clients shouldn't be able to set."""
+
+    name = fields.CharField(max_length=100)
+    internal_score = fields.IntegerField(default=0)
+
+    class Meta:
+        db_table = "rest_locked_widgets"
+
+
+class LockedWidgetAdmin(ModelAdmin):
+    readonly_fields = ["internal_score"]
+
+
 test_site = AdminSite(name="test-rest-api")
 test_site.register(RestWidget, RestWidgetAdmin)
+test_site.register(LockedWidget, LockedWidgetAdmin)
 
 
 # ----------------------------------------------------------------------
@@ -65,6 +80,8 @@ def app(miniproject_env, monkeypatch):
 
     with session_scope():
         for obj in list(RestWidget.objects.all()):
+            obj.delete()
+        for obj in list(LockedWidget.objects.all()):
             obj.delete()
         for user in list(User.objects.all()):
             user.delete()
@@ -264,3 +281,106 @@ def test_audit_log_is_read_only_in_admin_config():
     assert AuditLogAdmin.has_add_permission is False
     assert AuditLogAdmin.has_change_permission is False
     assert AuditLogAdmin.has_delete_permission is False
+
+
+# ----------------------------------------------------------------------
+# readonly_fields enforcement (shared between admin API and this one)
+# ----------------------------------------------------------------------
+
+
+def test_readonly_field_ignored_on_create(client):
+    _create_user()
+    headers = _auth_headers(client)
+
+    resp = client.post(
+        "/api/v1/lockedwidget",
+        json={"name": "thing", "internal_score": 999},
+        headers=headers,
+    )
+    assert resp.status_code == 201
+    assert resp.json()["data"]["internal_score"] == 0  # client-supplied value dropped
+
+
+def test_readonly_field_ignored_on_update(client):
+    _create_user()
+    headers = _auth_headers(client)
+
+    widget_id = client.post(
+        "/api/v1/lockedwidget", json={"name": "thing"}, headers=headers
+    ).json()["data"]["id"]
+
+    resp = client.put(
+        f"/api/v1/lockedwidget/{widget_id}",
+        json={"name": "renamed", "internal_score": 999},
+        headers=headers,
+    )
+    assert resp.status_code == 200
+    assert resp.json()["data"]["name"] == "renamed"  # writable field still applies
+    assert resp.json()["data"]["internal_score"] == 0  # readonly field still ignored
+
+
+def test_readonly_field_marked_in_schema(client):
+    _create_user()
+    headers = _auth_headers(client)
+
+    resp = client.get("/api/v1/schema", headers=headers)
+    schema = next(m for m in resp.json()["models"] if m["resource"] == "lockedwidget")
+    score_field = next(f for f in schema["fields"] if f["name"] == "internal_score")
+    assert score_field["readOnly"] is True
+
+
+# ----------------------------------------------------------------------
+# Token expiry
+# ----------------------------------------------------------------------
+
+
+def test_token_never_expires_by_default(client):
+    _create_user()
+    headers = _auth_headers(client)
+    resp = client.get("/api/v1/restwidget", headers=headers)
+    assert resp.status_code == 200
+
+    with session_scope():
+        from fastframe.contrib.auth.tokens import Token
+
+        token = Token.objects.get(user_id=str(User.objects.get(username="alice").id))
+        assert token.expires_at is None
+
+
+def test_token_with_explicit_expiry_days_stored(client):
+    _create_user()
+    resp = client.post(
+        "/api/auth/token",
+        json={"username": "alice", "password": "s3cret-pass", "expiresInDays": 30},
+    )
+    assert resp.status_code == 201
+
+    with session_scope():
+        from fastframe.contrib.auth.tokens import Token
+
+        token = Token.objects.get(user_id=str(User.objects.get(username="alice").id))
+        assert token.expires_at is not None
+
+
+def test_expired_token_is_rejected(client):
+    _create_user()
+    with session_scope():
+        from fastframe.contrib.auth.tokens import create_token
+
+        user = User.objects.get(username="alice")
+        raw = create_token(user, expires_in_days=-1)  # already expired
+
+    resp = client.get("/api/v1/restwidget", headers={"Authorization": f"Bearer {raw}"})
+    assert resp.status_code == 401
+
+
+def test_unexpired_token_with_explicit_days_is_accepted(client):
+    _create_user()
+    with session_scope():
+        from fastframe.contrib.auth.tokens import create_token
+
+        user = User.objects.get(username="alice")
+        raw = create_token(user, expires_in_days=30)
+
+    resp = client.get("/api/v1/restwidget", headers={"Authorization": f"Bearer {raw}"})
+    assert resp.status_code == 200

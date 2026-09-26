@@ -162,6 +162,41 @@ def test_user_name_methods():
     assert user.get_short_name() == "testuser"  # Falls back to username
 
 
+def test_authenticate_hashes_dummy_password_for_unknown_username(monkeypatch):
+    """authenticate() should still do password-hashing work for an unknown
+    username — otherwise "no such user" responds measurably faster than
+    "wrong password for a real user", leaking which usernames exist."""
+    import fastframe.contrib.auth as auth_module
+    import fastframe.contrib.auth.hashers as hashers_module
+
+    calls = []
+    real_check = hashers_module.check_password
+
+    def spy(password, encoded):
+        calls.append(encoded)
+        return real_check(password, encoded)
+
+    monkeypatch.setattr(hashers_module, "check_password", spy)
+
+    with session_scope():
+        result = auth_module.authenticate("no-such-user", "whatever")
+    assert result is None
+    assert len(calls) == 1  # hashed against the dummy value, not skipped
+
+
+def test_authenticate_rejects_inactive_user():
+    import fastframe.contrib.auth as auth_module
+
+    with session_scope():
+        user = User(username="inactive1", email="inactive1@example.com")
+        user.set_password("correct-pass")
+        user.is_active = False
+        user.save()
+
+    with session_scope():
+        assert auth_module.authenticate("inactive1", "correct-pass") is None
+
+
 def test_user_crud_operations():
     """Test creating, reading, updating, and deleting users."""
     with session_scope() as session:
@@ -200,6 +235,58 @@ def test_user_crud_operations():
         # Verify deletion
         deleted_user = session.query(User).filter_by(username="testuser").first()
         assert deleted_user is None
+
+
+def test_set_password_rejects_too_short():
+    from fastframe.models.exceptions import ValidationError
+
+    user = User(username="shortpw", email="short@example.com")
+    with pytest.raises(ValidationError):
+        user.set_password("short")
+
+
+def test_set_password_rejects_matching_username():
+    from fastframe.models.exceptions import ValidationError
+
+    user = User(username="samepass", email="same@example.com")
+    with pytest.raises(ValidationError):
+        user.set_password("SamePass")  # case-insensitive match
+
+
+def test_set_password_validate_false_bypasses_policy():
+    """Escape hatch for seeding intentionally weak fixture passwords."""
+    user = User(username="weak", email="weak@example.com")
+    user.set_password("x", validate=False)
+    assert user.check_password("x") is True
+
+
+def test_check_password_uses_constant_time_compare(monkeypatch):
+    """check_password must go through hmac.compare_digest, not `==`."""
+    import fastframe.contrib.auth.hashers as hashers_module
+
+    calls = []
+    real_compare = hashers_module.hmac.compare_digest
+
+    def spy(a, b):
+        calls.append((a, b))
+        return real_compare(a, b)
+
+    monkeypatch.setattr(hashers_module.hmac, "compare_digest", spy)
+
+    user = User(username="ctuser", email="ct@example.com")
+    user.set_password("mypassword123")
+    user.check_password("mypassword123")
+
+    assert len(calls) == 1
+
+
+def test_session_version_starts_at_zero_and_invalidate_bumps_it():
+    user = User(username="sess", email="sess@example.com")
+    assert user.session_version == 0
+    user.invalidate_sessions()
+    assert user.session_version == 1
+    user.invalidate_sessions()
+    assert user.session_version == 2
 
 
 @patch('fastframe.conf.settings.DEFAULT_AUTO_FIELD', 'UUIDField')

@@ -203,9 +203,16 @@ def deserialize_payload(
     return cleaned
 
 
-def model_schema(model: type[Model], model_admin: Any = None) -> dict[str, Any]:
-    """Build the field schema the React admin needs to render forms/lists."""
+def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) -> dict[str, Any]:
+    """Build the field schema the React admin needs to render forms/lists.
+
+    ``user`` is only consulted for models where ``model_admin.enforce_permissions``
+    is set — pass the current request's user snapshot so the "permissions"
+    block (and any readOnly-by-permission field) reflects who's asking. Safe
+    to omit for models with the (default) static permission booleans.
+    """
     fields_schema: list[dict[str, Any]] = []
+    readonly_field_names = set(getattr(model_admin, "readonly_fields", []) or [])
 
     for field_name, field in model._meta["fields"].items():
         schema: dict[str, Any] = {
@@ -239,10 +246,14 @@ def model_schema(model: type[Model], model_admin: Any = None) -> dict[str, Any]:
         if getattr(field, "write_only", False):
             schema["writeOnly"] = True
 
-        # Auto PKs and auto-timestamps are read-only in forms
+        # Auto PKs, auto-timestamps, and ModelAdmin.readonly_fields are
+        # read-only in forms (and, for readonly_fields, actually enforced
+        # server-side too — see ModelAdmin.get_editable_fields).
         if isinstance(field, (f.AutoField, f.BigAutoField)):
             schema["readOnly"] = True
         if isinstance(field, f.DateTimeField) and (field.auto_now or field.auto_now_add):
+            schema["readOnly"] = True
+        if field_name in readonly_field_names:
             schema["readOnly"] = True
 
         fields_schema.append(schema)
@@ -264,10 +275,10 @@ def model_schema(model: type[Model], model_admin: Any = None) -> dict[str, Any]:
         result["listFilter"] = model_admin.list_filter
         result["listPerPage"] = model_admin.list_per_page
         result["permissions"] = {
-            "create": model_admin.has_add_permission,
-            "edit": model_admin.has_change_permission,
-            "delete": model_admin.has_delete_permission,
-            "view": model_admin.has_view_permission,
+            "create": model_admin.get_has_add_permission(user),
+            "edit": model_admin.get_has_change_permission(user),
+            "delete": model_admin.get_has_delete_permission(user),
+            "view": model_admin.get_has_view_permission(user),
         }
 
     return result

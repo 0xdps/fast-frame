@@ -1,6 +1,7 @@
 """Password hashing utilities for FastFrame authentication."""
 
 import hashlib
+import hmac
 import secrets
 
 
@@ -47,9 +48,11 @@ def check_password(password: str, encoded: str) -> bool:
         if algorithm != 'pbkdf2_sha256':
             return False
         
-        # Re-hash the provided password with the stored salt
+        # Re-hash the provided password with the stored salt and compare
+        # in constant time — a naive `==` on the digest leaks timing
+        # information proportional to the number of matching leading bytes.
         expected = make_password(password, salt)
-        return expected == encoded
+        return hmac.compare_digest(expected, encoded)
         
     except ValueError:
         # Invalid format

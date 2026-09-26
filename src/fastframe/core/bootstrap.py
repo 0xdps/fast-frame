@@ -16,6 +16,17 @@ def bootstrap(settings_module: str | None = None) -> AppsRegistry:
     registry = populate_apps(settings)
     for app_config in registry.app_configs:
         app_config.ready()
+
+    # Resolve any pending forward-referenced FK/M2M targets (e.g. a field
+    # declared as `fields.ForeignKey("Later")` where "Later" is defined
+    # further down the same module, or in a model imported after this one)
+    # now that every installed app's models have been imported — before
+    # any caller does `Model.metadata.create_all()`, which needs M2M join
+    # tables to already exist in `Model.metadata` to create them.
+    from sqlalchemy.orm import configure_mappers
+
+    configure_mappers()
+
     _registry = registry
     return registry
 

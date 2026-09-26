@@ -7,6 +7,7 @@ from typing import Any
 from fastframe.models import Model, fields
 
 from .hashers import check_password, make_password
+from .validators import validate_password_strength
 
 
 class User(Model):
@@ -64,7 +65,12 @@ class User(Model):
         default=dict,
         help_text="Flexible storage for permissions, preferences, admin access, etc."
     )
-    
+
+    # Group membership — each Group carries its own list of permission
+    # strings; a user's effective permissions are their own plus every
+    # group they belong to (see fastframe.contrib.auth.permissions).
+    groups = fields.ManyToManyField("Group", related_name="users")
+
     # Timestamps (auto-populated)
     date_joined = fields.DateTimeField(
         auto_now_add=True,
@@ -114,6 +120,25 @@ class User(Model):
         self.user_data["superuser"] = bool(value)
     
     @property
+    def session_version(self) -> int:
+        """Monotonic counter embedded in every session token issued to this user.
+
+        Bump it (via :meth:`invalidate_sessions`) to make every previously
+        issued session cookie stop working immediately, without needing a
+        server-side session table or touching any other user's sessions.
+        """
+        return int(self.user_data.get("session_version", 0))
+
+    def invalidate_sessions(self) -> None:
+        """Invalidate every session cookie issued to this user so far.
+
+        Bearer API tokens (:mod:`fastframe.contrib.auth.tokens`) are
+        unaffected — revoke those individually via ``DELETE /api/auth/token``.
+        Caller is responsible for saving the instance afterwards.
+        """
+        self.user_data["session_version"] = self.session_version + 1
+
+    @property
     def permissions(self) -> list[str]:
         """Get list of user permissions."""
         return self.user_data.get("permissions", [])
@@ -136,17 +161,20 @@ class User(Model):
     # Permission methods
     
     def has_permission(self, perm: str) -> bool:
-        """Check if user has specific permission.
-        
+        """Check if user has specific permission, own or via a group.
+
         Args:
             perm: Permission string (e.g., "blog.add_post")
-            
+
         Returns:
             True if user has permission, False otherwise
         """
-        if self.is_superuser:
-            return True
-        return perm in self.permissions
+        from .permissions import user_has_perm
+
+        return user_has_perm(self, perm)
+
+    # Alias matching the permissions module / Django's naming.
+    has_perm = has_permission
     
     def add_permission(self, perm: str) -> None:
         """Add a permission to the user."""
@@ -164,12 +192,21 @@ class User(Model):
     
     # Authentication methods
     
-    def set_password(self, raw_password: str) -> None:
+    def set_password(self, raw_password: str, *, validate: bool = True) -> None:
         """Hash and set user's password.
-        
+
         Args:
-            raw_password: The plaintext password to hash and store
+            raw_password: The plaintext password to hash and store.
+            validate: Enforce ``PASSWORD_MIN_LENGTH`` (and that the password
+                isn't just the username). Set ``False`` to bypass — e.g. for
+                seeding fixtures/tests with intentionally weak passwords.
+
+        Raises:
+            fastframe.models.exceptions.ValidationError: If ``validate`` and
+                the password doesn't meet the minimum policy.
         """
+        if validate:
+            validate_password_strength(raw_password, username=self.username)
         self.password = make_password(raw_password)
     
     def check_password(self, raw_password: str) -> bool:
@@ -193,3 +230,33 @@ class User(Model):
     def get_short_name(self) -> str:
         """Get user's short name (first name)."""
         return self.first_name or self.username
+
+
+class Group(Model):
+    """A named collection of permission strings, assignable to many users.
+
+    There's no separate ``Permission`` model — ``permissions`` is just a
+    flat list of ``"{app_label}.{action}_{model}"`` strings (e.g.
+    ``"blog.change_post"``). A user's effective permissions are their own
+    (``User.permissions``) plus every group they belong to — see
+    :mod:`fastframe.contrib.auth.permissions`.
+    """
+
+    name = fields.CharField(max_length=150, unique=True)
+    permissions = fields.JSONField(
+        default=list,
+        help_text="List of permission strings, e.g. ['blog.add_post', 'blog.change_post'].",
+    )
+
+    class Meta:
+        db_table = "auth_groups"
+        ordering = ["name"]
+        verbose_name = "Group"
+        verbose_name_plural = "Groups"
+        app_label = "auth"
+
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return f"<Group: {self.name}>"

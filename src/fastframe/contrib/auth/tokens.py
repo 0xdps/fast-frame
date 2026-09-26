@@ -35,6 +35,11 @@ class Token(Model):
     )
     created_at = fields.DateTimeField(auto_now_add=True)
     last_used_at = fields.DateTimeField(null=True, blank=True)
+    expires_at = fields.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When this token stops working. Null = never expires.",
+    )
 
     class Meta:
         db_table = "auth_tokens"
@@ -47,6 +52,14 @@ class Token(Model):
         return self.name or f"token for user {self.user_id}"
 
 
+class _UseSettingsDefault:
+    """Sentinel distinguishing "not passed" from an explicit ``None``
+    (which means "never expires") on :func:`create_token`."""
+
+
+_USE_DEFAULT: Any = _UseSettingsDefault()
+
+
 def generate_raw_token() -> str:
     """A new random, unguessable token key (64 hex chars / 256 bits)."""
     return secrets.token_hex(32)
@@ -57,17 +70,35 @@ def hash_token(raw_token: str) -> str:
     return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
 
 
-def create_token(user: Any, *, name: str = "") -> str:
+def create_token(user: Any, *, name: str = "", expires_in_days: int | None = _USE_DEFAULT) -> str:
     """Create a new token for ``user`` and return the raw key (shown once).
 
     Args:
         user: The user model instance the token authenticates as.
         name: Optional label for the token.
+        expires_in_days: Days until the token expires. Pass ``None``
+            explicitly for a token that never expires. Left unset, it
+            defaults to ``API_TOKEN_DEFAULT_EXPIRY_DAYS`` (itself ``None``
+            — never expire — unless a project sets it).
 
     Returns:
         The raw token string. Store it now — only its hash is kept.
     """
     from fastframe.admin.serializers import get_pk_name, serialize_value
+
+    if expires_in_days is _USE_DEFAULT:
+        try:
+            from fastframe.conf import settings
+
+            expires_in_days = getattr(settings, "API_TOKEN_DEFAULT_EXPIRY_DAYS", None)
+        except (ImportError, AttributeError):
+            expires_in_days = None
+
+    expires_at = None
+    if expires_in_days is not None:
+        from datetime import timedelta
+
+        expires_at = _utcnow() + timedelta(days=int(expires_in_days))
 
     raw = generate_raw_token()
     pk_name = get_pk_name(type(user))
@@ -75,6 +106,7 @@ def create_token(user: Any, *, name: str = "") -> str:
         key_hash=hash_token(raw),
         user_id=str(serialize_value(getattr(user, pk_name))),
         name=name,
+        expires_at=expires_at,
     ).save()
     return raw
 
@@ -103,6 +135,15 @@ def get_user_from_token(raw_token: str) -> Any | None:
     # lookup path that might compare raw strings directly.
     if not hmac.compare_digest(token.key_hash, key_hash):
         return None
+
+    if token.expires_at is not None:
+        expires_at = token.expires_at
+        if expires_at.tzinfo is None:
+            from datetime import UTC
+
+            expires_at = expires_at.replace(tzinfo=UTC)
+        if expires_at < _utcnow():
+            return None
 
     user_model = get_user_model()
     pk_name = _pk_name(user_model)
