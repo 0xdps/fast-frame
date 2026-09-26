@@ -1,7 +1,7 @@
 """FastFrame Admin - Django-like admin interface for FastFrame.
 
 Provides an automatic admin interface for CRUD operations on your models.
-Inspired by Django Admin but performance-first with SSR + htmx.
+Inspired by Django Admin, served as a REST API + bundled React UI.
 
 Example:
     from fastframe.admin import ModelAdmin, admin_site
