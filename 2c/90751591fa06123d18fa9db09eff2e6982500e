@@ -1,0 +1,24 @@
+README.md
+  s_8de26d66febf8a::t_d17a0761894899 78
+  s_8de26d66febf8a::t_f312bef5271213 11-17,19-34,41,43,45-46
+docs/architecture.md
+  s_8de26d66febf8a::t_ec7d9cebb1c483 21,27,29,33-35
+  s_8de26d66febf8a::t_ddee32111a6383 45-61,64-67,69
+  s_8de26d66febf8a::t_06ac20336017d2 77,81-85,87,92-97,106-111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2c90751591fa06123d18fa9db09eff2e6982500e",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
