@@ -22,5 +22,6 @@ Start here:
 18. [Admin customization](admin-customization.md) — React admin source
 19. [Admin security warning](ADMIN_SECURITY_WARNING.md) — auth model and current limits
 20. [Models & fields design](models-fields-design.md) — field types, relationships, `ManyToManyField`
+21. [REST API](rest-api.md) — opt-in, token-authenticated CRUD over registered models
 
 Architecture Decision Records: [../adr/README.md](../adr/README.md)

@@ -35,17 +35,14 @@ def _admin_settings() -> tuple[bool, str, str]:
         return True, "static", "/admin"
 
 
-def _admin_auth_settings() -> tuple[bool, str]:
-    """Return (require_auth, api_prefix) from settings, with safe defaults."""
+def _admin_api_prefix() -> str:
+    """Return ADMIN_API_PREFIX from settings, with a safe default."""
     try:
         from fastframe.conf import settings
 
-        return (
-            bool(getattr(settings, "ADMIN_REQUIRE_AUTH", True)),
-            str(getattr(settings, "ADMIN_API_PREFIX", "/api/admin")),
-        )
+        return str(getattr(settings, "ADMIN_API_PREFIX", "/api/admin"))
     except (ImportError, AttributeError):
-        return True, "/api/admin"
+        return "/api/admin"
 
 
 _LOGIN_PAGE_TEMPLATE = """<!DOCTYPE html>
@@ -124,18 +121,15 @@ def _login_page_html(api_prefix: str) -> str:
 def _admin_login_redirect(request: Request) -> HTMLResponse | None:
     """Return a login page response if the request isn't authenticated.
 
-    Returns None when authentication is disabled or the request already
-    carries a valid admin session, meaning the real view should proceed.
+    Returns None when the request already carries a valid admin session,
+    meaning the real view should proceed. Admin auth is always required —
+    there is no setting to disable it.
     """
-    require_auth, api_prefix = _admin_auth_settings()
-    if not require_auth:
-        return None
-
     from fastframe.admin.auth import get_current_admin_user
 
     if get_current_admin_user(request) is not None:
         return None
-    return HTMLResponse(_login_page_html(api_prefix))
+    return HTMLResponse(_login_page_html(_admin_api_prefix()))
 
 
 def _built_admin_router(directory: pathlib.Path, prefix: str) -> APIRouter:

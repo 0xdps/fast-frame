@@ -22,7 +22,13 @@ ADMIN_SITE_HEADER = "Administration"
 ADMIN_PREFIX = "/admin"
 ADMIN_API_PREFIX = "/api/admin"
 ADMIN_MODE = "static"  # "static" (pre-built) or "custom" (user builds)
-ADMIN_REQUIRE_AUTH = True  # Require a logged-in User with can_access_admin
+# Admin always requires a logged-in User with can_access_admin — there is
+# no setting to disable this (see docs/ADMIN_SECURITY_WARNING.md).
+
+# ===== REST API (generic, token-authenticated CRUD) =====
+ENABLE_REST_API = False  # opt-in: off by default, unlike admin
+ENABLE_REST_API_DOCS = True  # Include REST API endpoints in OpenAPI schema
+API_PREFIX = "/api/v1"
 
 # ===== OpenAPI/Swagger =====
 ENABLE_OPENAPI = True

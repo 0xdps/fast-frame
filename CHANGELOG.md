@@ -7,8 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Generic REST API** (`fastframe.api`, opt-in via `ENABLE_REST_API`):
+  token-authenticated CRUD (`GET/POST/PUT/DELETE /api/v1/{resource}`,
+  `/api/v1/schema`, `/api/v1/{resource}/choices/{field}`) over the same
+  models registered with `admin_site` — for non-browser clients that can't
+  carry a session cookie. `POST /api/auth/token` exchanges
+  username/password for an opaque bearer token (`secrets.token_hex(32)`,
+  stored only as its SHA-256 hash, shown once); `DELETE /api/auth/token`
+  revokes it. Any active user (not just `can_access_admin`) may
+  authenticate; per-model permissions still come from the shared
+  `ModelAdmin.has_*_permission` flags. `ENABLE_REST_API_DOCS` and
+  `API_PREFIX` (default `/api/v1`) round out the settings. Internally, the
+  admin API and this new API now share one CRUD implementation
+  (`fastframe.admin.api._build_crud_router`), parameterized by which auth
+  dependency guards it. See [docs/rest-api.md](docs/rest-api.md).
+- **Audit log** (`fastframe.admin.audit.AuditLog`): every create, update,
+  and delete made through the admin API or the new REST API is recorded —
+  who, what (model, object id/repr), when, which surface (`source`:
+  `"admin"`/`"api"`), and the changed values (full snapshot for
+  create/delete, changed-fields-only diff for update). Read-only,
+  browsable in the admin UI like any other model. See the "Audit Logging"
+  section of
+  [docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md).
+
 ### Removed
 
+- **`ADMIN_REQUIRE_AUTH` setting**: admin authentication is now always
+  required — there is no way to disable it, even for local development.
+  Every `/api/admin/*` route always requires a valid session. See
+  [docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md).
 - **SSR admin mode** (`ADMIN_MODE = "ssr"`): the Jinja2-templated,
   server-rendered admin views (`admin_index`, `model_list`, `model_add`,
   `model_detail`) and their templates have been removed. The admin UI is now

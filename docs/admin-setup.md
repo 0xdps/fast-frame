@@ -221,6 +221,6 @@ app.add_middleware(
 ## Next Steps
 
 1. **React Admin UI**: Copy `examples/blog_app/admin-ui/` to your project and customize the theme
-2. **Authentication**: Login is required by default (`ADMIN_REQUIRE_AUTH`) — see [docs/ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md) for how it works and its current limits (no fine-grained permissions yet)
+2. **Authentication**: Login is always required (no setting disables it) — see [docs/ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md) for how it works and its current limits (no fine-grained permissions yet)
 3. **Actions**: Add bulk actions and custom endpoints
 4. **Customization**: Override React admin components for your brand

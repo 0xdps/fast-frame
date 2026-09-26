@@ -7,14 +7,13 @@ DATABASE_URL = "sqlite:///./test_admin_auth.db"
 AUTH_USER_MODEL = "auth.User"
 DEFAULT_AUTO_FIELD = "AutoField"
 
-# Admin — auth enabled (the secure default)
+# Admin — auth is always required (no setting to disable it)
 ENABLE_ADMIN = True
 ENABLE_ADMIN_DOCS = True
 ADMIN_MODE = "static"
 ADMIN_SITE_TITLE = "Test Admin"
 ADMIN_PREFIX = "/admin"
 ADMIN_API_PREFIX = "/api/admin"
-ADMIN_REQUIRE_AUTH = True
 
 # OpenAPI
 ENABLE_OPENAPI = True

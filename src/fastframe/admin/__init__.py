@@ -44,6 +44,7 @@ __all__ = [
     "get_admin_api_router",
     "get_admin_auth_router",
     "include_admin",
+    "ensure_audit_log_registered",
 ]
 
 
@@ -65,6 +66,20 @@ def _import_user_admin() -> None:
         return
 
 
+def ensure_audit_log_registered() -> None:
+    """Import the audit log model so it's registered and on the metadata.
+
+    Done eagerly (not lazily on first request) so ``Model.metadata.create_all()``
+    picks up its table before anything tries to write to it. Independent of
+    ``AUTH_USER_MODEL`` — unlike :func:`_import_user_admin`, this always
+    runs. Called from both ``include_admin()`` and
+    ``fastframe.api.include_rest_api()`` (idempotent — see import caching).
+    """
+    import importlib
+
+    importlib.import_module("fastframe.admin.audit")
+
+
 def include_admin(app: Any) -> None:
     """Mount the admin API and UI when ``ENABLE_ADMIN`` is true.
 
@@ -80,6 +95,7 @@ def include_admin(app: Any) -> None:
     if not getattr(settings, "ENABLE_ADMIN", True):
         return
     _import_user_admin()
+    ensure_audit_log_registered()
     app.include_router(get_admin_auth_router())
     app.include_router(get_admin_api_router())
     app.include_router(get_admin_router())

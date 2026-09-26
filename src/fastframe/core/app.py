@@ -53,4 +53,9 @@ def create_app(*, include_admin: bool | None = None, **kwargs: Any) -> FastAPI:
         from fastframe.admin import include_admin as mount
 
         mount(app)
+
+    if bool(getattr(settings, "ENABLE_REST_API", False)):
+        from fastframe.api import include_rest_api
+
+        include_rest_api(app)
     return app
