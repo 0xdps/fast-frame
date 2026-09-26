@@ -1,0 +1,152 @@
+src/fastframe/conf/global_settings.py
+  s_8de26d66febf8a::t_03167ef8fdabd7 84-89
+  s_8de26d66febf8a::t_221f2088d99d12 33-67
+src/fastframe/contrib/auth/hashers.py
+  s_8de26d66febf8a::t_17e2aa865a49ae 4
+  s_8de26d66febf8a::t_f63cc7f83747fc 51-53,55
+src/fastframe/contrib/auth/admin.py
+  s_8de26d66febf8a::t_6c16d108cd4f4d 40-47,49-52
+  s_8de26d66febf8a::t_a90d3de677d96c 1,5
+src/fastframe/__version__.py
+  s_8de26d66febf8a::t_819cfdf020def2 1
+tests/test_import.py
+  s_8de26d66febf8a::t_a9ac9816a37c24 4
+src/fastframe/contrib/auth/__init__.py
+  s_8de26d66febf8a::t_7c8c42c08b4557 49-54,64-65,73-76,80
+src/fastframe/core/bootstrap.py
+  s_8de26d66febf8a::t_5fbe74070a162f 19-29
+src/fastframe/admin/site.py
+  s_8de26d66febf8a::t_0cff00c32c95ef 61-69,74-76
+  s_8de26d66febf8a::t_61f917615b1f52 194-240
+src/fastframe/admin/serializers.py
+  s_8de26d66febf8a::t_bad99e15f77cd9 249-251,256
+  s_8de26d66febf8a::t_aa6227136b93e1 206-213,215
+  s_8de26d66febf8a::t_3e89373330a8ad 278-281
+  s_8de26d66febf8a::t_f2b4e9467db1b2 257
+tests/test_middleware.py
+  s_8de26d66febf8a::t_ab803215dcd781 98
+  s_8de26d66febf8a::t_a9eaf778fca21a 89
+  s_8de26d66febf8a::t_fbff45125831f7 73-75
+  s_8de26d66febf8a::t_d5e0f5ba8384c5 55
+  s_8de26d66febf8a::t_1b1a98ce11fc5c 1-54,56-72,76-88,90-97,99-100
+tests/test_general_auth.py
+  s_8de26d66febf8a::t_7f176c51fb7450 1-161
+docs/rest-api.md
+  s_8de26d66febf8a::t_9c28c0213e33af 102-109
+  s_8de26d66febf8a::t_105edefd371445 48-66
+docs/settings.md
+  s_8de26d66febf8a::t_79312302bc9a1b 31-33
+  s_8de26d66febf8a::t_2b002022e01a40 45-85
+src/fastframe/core/ratelimit.py
+  s_8de26d66febf8a::t_4d49063f2e1226 1-17,22-84,90
+  s_8de26d66febf8a::t_8804d5b761e5bf 18-21
+  s_8de26d66febf8a::t_7f956cc8c99927 85-89,91-132,174-178,181
+  s_8de26d66febf8a::t_17cdfc2fc9099e 133-173,179-180
+src/fastframe/middleware/__init__.py
+  s_8de26d66febf8a::t_d07f607586823a 1-5
+tests/test_rest_api.py
+  s_8de26d66febf8a::t_8cb9e3c0725273 284-386
+  s_8de26d66febf8a::t_88a072b7926644 43-56,59
+  s_8de26d66febf8a::t_938ba2c06df2fd 84-85
+src/fastframe/models/fields.py
+  s_8de26d66febf8a::t_3aa5aaeaea704b 497-508,519-526
+src/fastframe/contrib/auth/tokens.py
+  s_8de26d66febf8a::t_16cbc660193710 90-102,109
+  s_8de26d66febf8a::t_a6f4f7d017d7db 73,79-82,89
+  s_8de26d66febf8a::t_27868de11b0ecd 139-147
+  s_8de26d66febf8a::t_abddde244259df 38-42
+  s_8de26d66febf8a::t_7e25c6d158cfb5 55-62
+tests/conftest.py
+  s_8de26d66febf8a::t_ee7cebf085949f 11-24
+docs/permissions.md
+  s_8de26d66febf8a::t_829926aaf7ebe7 1-142
+src/fastframe/core/app.py
+  s_8de26d66febf8a::t_85c8aadfdec1ab 48-54
+  s_8de26d66febf8a::t_608b324c91b24a 69-82,86-104
+  s_8de26d66febf8a::t_cef1819879182f 83-85
+src/fastframe/api/auth.py
+  s_8de26d66febf8a::t_44adc98aad816a 55-60,63,77-82,87,89
+  s_8de26d66febf8a::t_8514ec2a6d087f 15
+docs/roadmap.md
+  s_8de26d66febf8a::t_77c695c661c236 32-71
+  s_8de26d66febf8a::t_65004564dc5895 10-11
+tests/test_auth_user_model.py
+  s_8de26d66febf8a::t_ead52ee93db44a 165-169,171-172,174-178,180,183-186,188-195,198-199
+  s_8de26d66febf8a::t_a138e6ca61ba51 170,173,179,181-182,187,196-197
+  s_8de26d66febf8a::t_6dbffa40457af8 240-291
+src/fastframe/contrib/auth/validators.py
+  s_8de26d66febf8a::t_430249c289e784 1-43
+src/fastframe/contrib/auth/dependencies.py
+  s_8de26d66febf8a::t_92e5e2a53edade 26-30
+  s_8de26d66febf8a::t_b0092f025fe2f3 1-25,31-177
+tests/test_permissions.py
+  s_8de26d66febf8a::t_607ad7e5cf2c3f 49-50
+  s_8de26d66febf8a::t_e64678b729aacf 1-36,39,48,51-54,56-76,79-127,138-146,155-167,171-236,259-268
+  s_8de26d66febf8a::t_b8465ec3576a3e 128-137,147-154
+  s_8de26d66febf8a::t_faa090e69e7f79 77-78
+  s_8de26d66febf8a::t_38ed7326195514 237-258
+  s_8de26d66febf8a::t_98d5fc484120e3 37-38,40-47,55
+  s_8de26d66febf8a::t_d04f95a2f8a8cc 168-170
+CHANGELOG.md
+  s_8de26d66febf8a::t_248bcb783fb17b 10-116
+src/fastframe/admin/api.py
+  s_8de26d66febf8a::t_10b546c2ef0786 436
+  s_8de26d66febf8a::t_5de52213bc82cf 135,144-145
+  s_8de26d66febf8a::t_16767976295607 220,224-226
+  s_8de26d66febf8a::t_a05c6fcf9650f3 338,347
+  s_8de26d66febf8a::t_4701b1b2ffdfd9 290,297
+  s_8de26d66febf8a::t_8724481d780dcb 394
+  s_8de26d66febf8a::t_197136e6b73966 266,271
+  s_8de26d66febf8a::t_1a8dbdb5e03b6e 163,168-169
+src/fastframe/contrib/auth/models.py
+  s_8de26d66febf8a::t_9d268aea55bed7 68-73
+  s_8de26d66febf8a::t_29df5a72b14b58 164-165,168,172-177
+  s_8de26d66febf8a::t_b3d5ccee4815c1 232-262
+  s_8de26d66febf8a::t_8a2625d204553c 10
+  s_8de26d66febf8a::t_5001d4bcceb3a5 195,197,199-206,208-209
+  s_8de26d66febf8a::t_e06a2dd6bdd30f 123-140
+  s_8de26d66febf8a::t_5cd25762cf8d20 122
+src/fastframe/models/base.py
+  s_8de26d66febf8a::t_6ac938925e7a57 348,352-361
+docs/README.md
+  s_8de26d66febf8a::t_3bf5ba59b0370f 26
+src/fastframe/middleware/security.py
+  s_8de26d66febf8a::t_cc191ac2dee96d 1-48
+docs/auth.md
+  s_8de26d66febf8a::t_e39e1bd7e6c1d7 37-132
+src/fastframe/contrib/auth/permissions.py
+  s_8de26d66febf8a::t_bfa647921a27bb 57-61,67
+  s_8de26d66febf8a::t_8e743deb7d2057 1-56,62-66,68-81
+src/fastframe/admin/auth.py
+  s_8de26d66febf8a::t_962d33173a5e86 13-19,28-33,37,39-43,45,57,66,99-100,112-114,121-122,124-125,131,137
+src/fastframe/contrib/auth/views.py
+  s_8de26d66febf8a::t_bbf05049bfa44f 1-103
+docs/ADMIN_SECURITY_WARNING.md
+  s_8de26d66febf8a::t_6fd96d335e2774 154-156,159-167
+  s_8de26d66febf8a::t_e7da58703bfe65 57,62-70,75-114
+  s_8de26d66febf8a::t_6014bbb3804498 189-194
+  s_8de26d66febf8a::t_67bcc26a6b1585 3,14-18,28-30
+  s_8de26d66febf8a::t_6a1dfef0d9f384 205-216
+  s_8de26d66febf8a::t_8fd85b62375770 234-235,237,243-246
+  s_8de26d66febf8a::t_13d5e124ca19f5 115-117
+tests/test_rate_limiting.py
+  s_8de26d66febf8a::t_b75e9a30e25c41 1-139
+pyproject.toml
+  s_8de26d66febf8a::t_da92fc438162bb 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "6a40ded61710aa08578997ece846e85348b7dff2",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
