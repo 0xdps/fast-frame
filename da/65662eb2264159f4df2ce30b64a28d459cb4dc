@@ -1,0 +1,27 @@
+CHANGELOG.md
+  s_84047f2da83946::t_3809e06a5f29ce 16-22
+README.md
+  s_84047f2da83946::t_e91a6349a54031 15
+pyproject.toml
+  s_84047f2da83946::t_f7257f0c8adb12 3
+src/fastframe/__version__.py
+  s_84047f2da83946::t_ef01a5962e5785 1
+tests/test_import.py
+  s_84047f2da83946::t_406949e84dd85d 4
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "da65662eb2264159f4df2ce30b64a28d459cb4dc",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
