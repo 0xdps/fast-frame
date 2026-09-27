@@ -61,4 +61,4 @@ python manage.py test
 
 ## Release process (future)
 
-Not defined for 0.0.0 scaffolding. Pre-1.0 releases will follow SemVer with changelog entries in [CHANGELOG.md](../CHANGELOG.md).
+Not defined for 0.0.0 scaffolding. Pre-1.0 releases will follow SemVer with changelog entries in [CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).

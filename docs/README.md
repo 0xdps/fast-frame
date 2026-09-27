@@ -11,7 +11,7 @@ Start here:
 7. [Session lifecycle](session-lifecycle.md) — database session rules (draft)
 8. [CLI](cli.md) — `fastframe` vs `manage.py`
 9. [Shell](shell.md) — REPL, `SHELL_IMPORTS`, startup script
-10. [Public API v0.1](public-api-v0.1.md) — stable surface (draft)
+10. [Public API v0.1](public-api-v0.1.md) — stable surface
 11. [Roadmap](roadmap.md) — beyond v0.1
 12. [Repository layout](repository-layout.md) — repo and package structure
 13. [Development](development.md) — working on the framework
@@ -25,4 +25,4 @@ Start here:
 21. [REST API](rest-api.md) — opt-in, token-authenticated CRUD over registered models
 22. [Permissions](permissions.md) — Django-style permission strings, groups, and `ModelAdmin.enforce_permissions`
 
-Architecture Decision Records: [../adr/README.md](../adr/README.md)
+Architecture Decision Records: [adr/README.md](adr/README.md)

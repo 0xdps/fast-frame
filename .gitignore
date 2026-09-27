@@ -30,6 +30,9 @@ venv/
 ENV/
 env/
 
+# MkDocs build output
+/site/
+
 # Testing / coverage
 .pytest_cache/
 .coverage

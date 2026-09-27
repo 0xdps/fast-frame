@@ -17,7 +17,7 @@ Explicit boundaries help keep FastFrame coherent. This list applies especially t
 
 - The thin manager is **convenience on SQLAlchemy**, not a hidden query language.
 - No promise to support every Django ORM feature via `objects.*`.
-- Complex queries, locking, window functions, and advanced loading → SQLAlchemy.
+- Eager loading of declared relations (`select_related()`, `prefetch_related()`) is in the thin layer. Locking, window functions, `annotate()`, and subquery composition stay SQLAlchemy. A new ORM method past the list in [ADR 0003](adr/0003-thin-orm-with-sqlalchemy-escape-hatch.md) needs a superseding ADR, not a feature-page edit.
 
 ## Not hiding SQLAlchemy forever
 

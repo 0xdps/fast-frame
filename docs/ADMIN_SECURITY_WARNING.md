@@ -200,7 +200,7 @@ implemented. See [permissions.md](permissions.md).
 ## Security Roadmap
 
 Everything below marked "Released" shipped together in **v0.1.0**, the
-first tagged release — see [CHANGELOG.md](../CHANGELOG.md).
+first tagged release — see [CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).
 
 | Feature | Status |
 |---------|--------|
@@ -241,7 +241,7 @@ If you discover a security issue in FastFrame:
 - [REST API](rest-api.md)
 - [Settings](settings.md)
 - [Roadmap](roadmap.md)
-- [Contributing Security Features](../CONTRIBUTING.md)
+- [Contributing Security Features](https://github.com/0xdps/fast-frame/blob/trunk/CONTRIBUTING.md)
 
 ---
 

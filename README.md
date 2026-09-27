@@ -8,7 +8,8 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**v0.1.0 released.** The core development loop — `fastframe startproject`,
+**v0.1.0, not yet released.** This tree is the first-release candidate,
+still under test. The core development loop — `fastframe startproject`,
 `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin
 models with a chainable `QuerySet`, and Alembic migrations — is
 implemented and validated end-to-end against a real app (see
@@ -77,6 +78,8 @@ python manage.py check --database
 
 Inside a generated project, `manage.py` is the familiar entry point (similar to Django). The global installer CLI is `fastframe` (see [docs/cli.md](docs/cli.md)).
 
+Documentation is published at [fastframe.readthedocs.io](https://fastframe.readthedocs.io/) once the Read the Docs project is imported. Source of that site is `mkdocs.yml` and `.readthedocs.yaml`.
+
 ## Documentation
 
 | Document | Description |
@@ -90,7 +93,7 @@ Inside a generated project, `manage.py` is the familiar entry point (similar to 
 | [App contract](docs/app-contract.md) | Installed apps and extension points |
 | [ORM features](docs/orm-features.md) | `Q`/`F`, eager loading, bulk ops, `values()`, `atomic()`, … |
 | [Session lifecycle](docs/session-lifecycle.md) | DB session rules |
-| [Public API](docs/public-api-v0.1.md) | Stable surface (v0.1 + v0.2) |
+| [Public API](docs/public-api-v0.1.md) | Stable surface (v0.1) |
 | [Shell](docs/shell.md) | Stdlib REPL, `SHELL_IMPORTS`, startup script |
 | [Repository layout](docs/repository-layout.md) | This repo and future package structure |
 | [Contributing](CONTRIBUTING.md) | How to participate |

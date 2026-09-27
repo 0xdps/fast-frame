@@ -11,7 +11,7 @@ FastFrame aims for “batteries included, not forced.” Django's extensibility 
 ## Decision
 
 - Projects configure **`INSTALLED_APPS`**.
-- Apps may contribute **`AppConfig.ready()`**, **models**, **routers**, and **management commands** via documented conventions (see [docs/app-contract.md](../docs/app-contract.md)).
+- Apps may contribute **`AppConfig.ready()`**, **models**, **routers**, and **management commands** via documented conventions (see [docs/app-contract.md](../app-contract.md)).
 - Features like admin, auth, and templates should ship as **optional apps** when ready, not as mandatory core.
 
 ## Consequences

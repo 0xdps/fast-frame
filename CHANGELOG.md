@@ -5,18 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Versioning starts fresh at `0.1.0` — nothing prior to this was tagged or
-released. Going forward: fixes bump the patch version (`0.1.0` → `0.1.1`),
-new features bump the minor version (`0.1.0` → `0.2.0`).
+Nothing is released yet. `0.1.0` below is the candidate for the first
+release, still under test. Commit messages that say `v0.2.0`, `v0.3.0`,
+or `v0.4.0` are pre-release working names, not package versions. After
+`0.1.0` is actually released: fixes bump the patch version
+(`0.1.0` → `0.1.1`), a new feature bumps the minor version
+(`0.1.0` → `0.2.0`).
 
 ## [Unreleased]
 
-## [0.2.0] - 2026-09-26
+## [0.1.0] - Unreleased
 
-Two threads: make the framework's own "batteries" (admin, general auth,
-the generic REST API) genuinely opt-in like any other app, and grow the
-ORM's day-to-day convenience surface without turning it into a second
-query-algebra.
+First release candidate. Not tagged. Two threads that were drafted as an
+unreleased `0.2.0` are part of this candidate, not a later version:
+batteries mount through `INSTALLED_APPS`, and the ORM covers day-to-day
+CRUD without becoming a second query algebra.
 
 ### Added
 
@@ -39,8 +42,7 @@ query-algebra.
   `ROOT_URLCONF` routers, DB session middleware, exception handlers).
   `create_app()` is now a thin, **deprecated** alias for it.
 - A freshly generated project (`fastframe startproject`) does not
-  install admin, general auth, or the REST API by default — previously
-  admin and general auth defaulted to *on* (opt-out, not opt-in).
+  install admin, general auth, or the REST API by default.
 
 **Richer ORM — still a thin layer over SQLAlchemy, not a second query
 algebra ([docs/orm-features.md](docs/orm-features.md))**
@@ -90,14 +92,29 @@ algebra ([docs/orm-features.md](docs/orm-features.md))**
   entirely by `INSTALLED_APPS` membership. `create_app(include_admin=...)`'s
   unused kwarg is also gone (it had zero real usages).
 
-## [0.1.0] - 2026-09-26
+The rest of this candidate is the core loop, admin, REST API, and auth
+work below. It was drafted under pre-release labels (`v0.2` / `v0.3` /
+`v0.4` in commit messages). Those labels are not releases.
 
-First public release. Proves the core FastFrame development loop
-end-to-end (validated against a real app, `examples/todo_app`), then
-builds out a full Django-like admin, a generic token-authenticated REST
-API, and a hardened auth/authorization system on top of it.
+### Also in this candidate
 
-### Added
+**Records (no behavior change)**
+
+- Roadmap Phase 3 no longer tells readers to opt into the REST API with
+  `ENABLE_REST_API`. That setting does not exist. The switch is
+  `"fastframe.api"` in `INSTALLED_APPS`.
+- ADR 0003 lists the ORM surface in this candidate, and the methods that
+  still require a superseding ADR (`annotate()`, subquery composition,
+  window functions, `ManyToManyField(through=...)`, a FastFrame
+  `select()`).
+- ADR 0007 no longer points at a later admin SPA package. That note used
+  a pre-release version label. The decision remains: admin is React-only
+  (ADR 0008).
+- Non-goals no longer send eager loading to SQLAlchemy. Declared-relation
+  `select_related()` / `prefetch_related()` are in the thin layer.
+  Locking, window functions, and `annotate()` are not.
+- `test_admin_not_mounted_unless_installed` no longer documents the
+  removed `ENABLE_ADMIN` setting. Behavior was already `INSTALLED_APPS`.
 
 **Core loop**
 
@@ -182,7 +199,7 @@ API, and a hardened auth/authorization system on top of it.
 
 **Generic REST API**
 
-- `fastframe.api`, opt-in via `ENABLE_REST_API`: token-authenticated CRUD
+- `fastframe.api`, opt-in by listing it in `INSTALLED_APPS`: token-authenticated CRUD
   (`GET/POST/PUT/DELETE /api/v1/{resource}`, `/api/v1/schema`,
   `/api/v1/{resource}/choices/{field}`) over the same models registered
   with `admin_site`, for non-browser clients that can't carry a session
@@ -234,7 +251,7 @@ API, and a hardened auth/authorization system on top of it.
 - General-purpose session auth outside `/admin`
   (`fastframe.contrib.auth.views`, `fastframe.contrib.auth.dependencies`):
   `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-  (opt-out via `ENABLE_AUTH_API = False`), independent of
+  (present when `fastframe.contrib.auth` is in `INSTALLED_APPS`), independent of
   `can_access_admin` and sharing the same signed session cookie as the
   admin. New FastAPI dependencies for any app router: `get_current_user`,
   `login_required`, `permission_required(perm)`. See
@@ -250,7 +267,7 @@ API, and a hardened auth/authorization system on top of it.
 - CORS + security headers + a working `MIDDLEWARE` setting
   (`fastframe.middleware.security.SecurityHeadersMiddleware`,
   `fastframe.core.app._apply_middleware`): `MIDDLEWARE` (dotted paths) is
-  applied by `create_app()`. `SECURE_HEADERS` (default `True`) adds
+  applied by `get_asgi_application()`. `SECURE_HEADERS` (default `True`) adds
   `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` always,
   and `Strict-Transport-Security` when `DEBUG = False`.
   `CORS_ALLOWED_ORIGINS` (default `[]`, disabled) opts in to Starlette's

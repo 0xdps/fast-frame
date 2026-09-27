@@ -3,8 +3,9 @@
 ## Status
 
 Superseded by [ADR 0008](0008-rest-api-react-admin.md). The SSR/Jinja2
-admin code path was removed entirely in v0.3.0 (no `ADMIN_MODE = "ssr"`);
-the admin is React-only. Kept for historical context on why SSR was tried
+admin code path was removed before the first release (no `ADMIN_MODE = "ssr"`);
+the admin is React-only. "v0.3" in the title is a pre-release working name,
+not a package version. Kept for historical context on why SSR was tried
 first.
 
 ## Context
@@ -79,16 +80,18 @@ For occasional admin use (not 8hrs/day), SSR is faster.
 - Heavy admin users may want SPA eventually
 - Some interactions require server roundtrips
 
-**Mitigation:**
-- v0.4+ can offer optional `fastframe-admin-spa` package
+**Mitigation (historical, from when this ADR was accepted):**
 - Power users can build custom views with FastAPI + React
 - htmx reduces "feel" of server roundtrips (partial updates)
+
+The "optional SPA package in a later version" note that used to sit here
+referred to a pre-release version label. It is not a planned package.
+ADR 0008 already chose React Admin as the admin UI.
 
 ## Alternatives Considered
 
 **React Admin / Vue Admin:**
-- Rejected for v0.3 due to complexity and build time
-- May revisit as optional package in v0.4+
+- Rejected here, then adopted in ADR 0008. Do not re-open a second admin UI package from this record.
 
 **No admin at all:**
 - Rejected - admin is a core Django feature users expect
