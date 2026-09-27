@@ -5,32 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-`0.1.0` was tagged. The wheel did not build, so that tag was not
-published. `0.1.1` is the first publishable release. Commit messages
-that say `v0.2.0`, `v0.3.0`, or `v0.4.0` are pre-release working names,
-not package versions. After this release: fixes bump the patch version,
-a new feature bumps the minor version.
+`0.1.0` is the first release. Commit messages that say `v0.2.0`,
+`v0.3.0`, or `v0.4.0` are pre-release working names, not package
+versions. After this release: fixes bump the patch version, a new
+feature bumps the minor version.
 
 ## [Unreleased]
 
-## [0.1.2] - 2026-09-27
-
-- Drop the remaining wheel `force-include` of `admin/static`. That
-  directory is already inside the package, so Hatch added
-  `fastframe/admin/static/favicon.svg` twice. `v0.1.1` failed to build
-  for this reason.
-
-## [0.1.1] - 2026-09-27
-
-- The wheel no longer force-includes `admin/templates/admin-ui`. That
-  copy landed `dist/favicon.svg` on `fastframe/admin/static/favicon.svg`,
-  which the package already contains, so `python -m build` failed.
-  `v0.1.0` was tagged and could not be published for this reason.
-
 ## [0.1.0] - 2026-09-27
 
-First release candidate. Not tagged. Two threads that were drafted as an
-unreleased `0.2.0` are part of this candidate, not a later version:
+First release. The distribution name is `fast-frame`. Two threads that
+were drafted as an unreleased `0.2.0` are part of this release, not a
+later version:
 batteries mount through `INSTALLED_APPS`, and the ORM covers day-to-day
 CRUD without becoming a second query algebra.
 
