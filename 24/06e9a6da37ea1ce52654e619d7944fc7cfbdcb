@@ -1,0 +1,25 @@
+README.md
+  s_84047f2da83946::t_2a84df320e77f0 101
+docs/repository-layout.md
+  s_84047f2da83946::t_354607cef372fe 12
+docs/development.md
+  s_84047f2da83946::t_8a3fa23e29a705 59
+CONTRIBUTING.md
+  s_84047f2da83946::t_408bf96389d26f 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "2406e9a6da37ea1ce52654e619d7944fc7cfbdcb",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
