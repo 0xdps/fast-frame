@@ -1,0 +1,21 @@
+src/fastframe/contrib/auth/models.py
+  s_84047f2da83946::t_cee0961692fc36 259
+src/fastframe/models/fields.py
+  s_84047f2da83946::t_cb80a5575039e7 530-531
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d9aa54f9c8a2575bcd8765c9c565a8daa89c3ddc",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
