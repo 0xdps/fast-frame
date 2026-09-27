@@ -1,0 +1,23 @@
+examples/todo_app/pyproject.toml
+  s_5ee238a6b2991f::t_ae70ee7fc1b853 7
+src/fastframe/cli/commands/startproject.py
+  s_5ee238a6b2991f::t_79d7bddd08d29f 38
+src/fastframe/project_template/pyproject.toml
+  s_5ee238a6b2991f::t_2986b90076e1fb 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "d9dd671244b0210bc3f2932f179e6ef949986b25",
+  "prompts": {},
+  "sessions": {
+    "s_5ee238a6b2991f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f2be725e-e717-4580-95d5-6502590902a2",
+        "model": "openrouter/OpenRouter/deepseek/deepseek-v4-pro-0813"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
