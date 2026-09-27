@@ -1,0 +1,19 @@
+docs/adr/0001-record-architecture-decisions.md
+  s_84047f2da83946::t_f5d055ec2080ce 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "99f894b2b0bb708c45c5a2ad4ce30cefda8c6473",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
