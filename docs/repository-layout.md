@@ -9,7 +9,7 @@ fast-frame/
 ├── README.md, LICENSE, CONTRIBUTING.md, CHANGELOG.md, SECURITY.md
 ├── pyproject.toml
 ├── docs/                    # product & technical documentation (this file included)
-├── adr/                     # architecture decision records
+├── docs/adr/                # architecture decision records
 ├── .github/                 # issue/PR templates, CI workflow
 ├── examples/
 │   └── todo_app/            # real end-to-end app built with the v0.1 loop
