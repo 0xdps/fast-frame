@@ -12,6 +12,19 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-27
+
+### Changed
+
+- The health check is now a built-in, opt-in app (`fastframe.health`)
+  instead of a boilerplate `health/` app folder in every generated
+  project. Add `"fastframe.health"` to `INSTALLED_APPS` to mount
+  `GET /health`; freshly generated projects include it by default.
+- The health check is overridable: `HEALTH_PATH` changes the route
+  (default `/health`) and `HEALTH_CHECK` (a dotted path or callable
+  returning a JSON-serializable body) replaces the default
+  `{"status": "ok"}` response.
+
 ## [0.1.1] - 2026-09-27
 
 ### Fixed
