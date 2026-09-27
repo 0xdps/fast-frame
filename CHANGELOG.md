@@ -12,6 +12,20 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-27
+
+### Fixed
+
+- `fastframe startproject` no longer crashes with a `UnicodeDecodeError`
+  when the installed package contains compiled `__pycache__/*.pyc` files
+  inside the project template (scaffolding now skips bytecode artifacts).
+- Fixed the test suite running under pytest 9: the repo root is now added
+  to `pythonpath` so `import tests.fixtures.*` and
+  `FASTFRAME_SETTINGS_MODULE = "tests.fixtures.*"` resolve correctly.
+- Disabled the false-positive Pylint `E1137`
+  (`unsupported-assignment-operation`) error on field descriptors (e.g.
+  `JSONField`) that return mutable containers at runtime.
+
 ## [0.1.0] - 2026-09-27
 
 First release. The distribution name is `fast-frame`. Two threads that
