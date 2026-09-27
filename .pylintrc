@@ -1,0 +1,16 @@
+[MAIN]
+ignore=project_template
+jobs=0
+
+[MESSAGES CONTROL]
+# Convention noise (missing docstrings, import placement, line length) is
+# Ruff's job. Fail CI on errors and warnings. SQLAlchemy mapped classes and
+# FastAPI's request.app look like no-member / not-callable to pylint.
+disable=
+    C,
+    R,
+    E1101,
+    E1102,
+
+[FORMAT]
+max-line-length=120
