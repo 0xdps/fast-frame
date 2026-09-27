@@ -22,7 +22,7 @@ Instructions for contributing to the **FastFrame framework** repository.
 
    ```text
    ruff check src tests
-   pylint src/fastframe --fail-under=0
+   pylint src/fastframe --fail-on=E,F
    ```
 
 ## Fixture project
