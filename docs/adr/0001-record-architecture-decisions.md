@@ -10,7 +10,7 @@ FastFrame will make many structural choices (ORM facade, CLI, async strategy, ap
 
 ## Decision
 
-Use Architecture Decision Records in `adr/`, numbered sequentially, with status and consequences.
+Use Architecture Decision Records in `docs/adr/`, numbered sequentially, with status and consequences.
 
 ## Consequences
 

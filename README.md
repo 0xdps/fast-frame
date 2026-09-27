@@ -98,7 +98,7 @@ Documentation is published at [fastframe.readthedocs.io](https://fastframe.readt
 | [Repository layout](docs/repository-layout.md) | This repo and future package structure |
 | [Contributing](CONTRIBUTING.md) | How to participate |
 
-Architecture decisions are recorded in [adr/](adr/).
+Architecture decisions are recorded in [docs/adr/](docs/adr/).
 
 ## Technology direction (implementation choices)
 

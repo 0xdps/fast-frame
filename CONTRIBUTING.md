@@ -5,7 +5,7 @@ Thank you for your interest in FastFrame. This project is in early stages; conve
 ## Before you code
 
 1. Read [docs/design-principles.md](docs/design-principles.md) and [docs/non-goals.md](docs/non-goals.md).
-2. For architectural or API changes, add or update an [ADR](adr/README.md).
+2. For architectural or API changes, add or update an [ADR](docs/adr/README.md).
 3. Keep v0.1 scope small — see [docs/mvp-v0.1.md](docs/mvp-v0.1.md).
 
 ## Development setup (when implementation exists)

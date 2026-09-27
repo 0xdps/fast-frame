@@ -56,7 +56,7 @@ python manage.py test
 ## Documentation changes
 
 - Product docs live in `docs/`.
-- Architectural decisions: add an ADR under `adr/` for significant choices.
+- Architectural decisions: add an ADR under `docs/adr/` for significant choices.
 - Keep [public-api-v0.1.md](public-api-v0.1.md) in sync when stabilizing APIs.
 
 ## Release process (future)
