@@ -1,5 +1,7 @@
 # FastFrame documentation
 
+![FastFrame](assets/logo.svg){ width="96" }
+
 Start here:
 
 1. [Vision & thesis](vision-and-thesis.md) — why FastFrame exists
