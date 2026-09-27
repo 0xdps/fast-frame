@@ -1,0 +1,56 @@
+docs/app-contract.md
+  s_5ee238a6b2991f::t_05a139cf984cfc 114-120
+src/fastframe/conf/global_settings.py
+  s_5ee238a6b2991f::t_bbae916404f50b 82-89
+src/fastframe/health/apps.py
+  s_5ee238a6b2991f::t_3f5dc548cf339b 1-26
+tests/fixtures/miniproject/config/settings.py
+  s_5ee238a6b2991f::t_072d785088f845 12
+tests/test_shell.py
+  s_5ee238a6b2991f::t_f0adcfbe32c1c2 30
+examples/todo_app/README.md
+  s_5ee238a6b2991f::t_3d52d3e2aae2f7 32
+tests/test_health.py
+  s_5ee238a6b2991f::t_588644585ac525 8,10-11,36-38,56-58
+  s_5ee238a6b2991f::t_b1f71ea736eca0 1-7,9,12-35,39-55,59-66
+docs/repository-layout.md
+  s_5ee238a6b2991f::t_c0f0d312790193 55
+examples/todo_app/config/settings.py
+  s_5ee238a6b2991f::t_d12883e76c9724 13
+src/fastframe/project_template/config/settings.py
+  s_5ee238a6b2991f::t_fc0b2cd8af274a 12
+src/fastframe/project_template/config/urls.py
+  s_5ee238a6b2991f::t_8027089590d4ec 1-4
+tests/fixtures/miniproject/config/shell_startup.py
+  s_5ee238a6b2991f::t_eb33ab45682837 3-5
+docs/settings.md
+  s_5ee238a6b2991f::t_bf6bc466f07a9e 18,20,27,35-37,40-49
+  s_5ee238a6b2991f::t_da9e1df5aa5c57 50
+docs/cli.md
+  s_5ee238a6b2991f::t_4a94af118070c3 17
+src/fastframe/health/__init__.py
+  s_5ee238a6b2991f::t_1b1287b0fa7d41 1-16
+tests/test_scaffold.py
+  s_5ee238a6b2991f::t_6eb2cabdbf36bf 24,28
+src/fastframe/health/views.py
+  s_5ee238a6b2991f::t_588644585ac525 12-13
+  s_5ee238a6b2991f::t_a02095b2aee29b 1-11,14-62
+tests/test_miniproject.py
+  s_5ee238a6b2991f::t_49efa0ab31e2df 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "470ac3f4ce7fc03d40fb01185d16812e25ed82a7",
+  "prompts": {},
+  "sessions": {
+    "s_5ee238a6b2991f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f2be725e-e717-4580-95d5-6502590902a2",
+        "model": "openrouter/OpenRouter/deepseek/deepseek-v4-pro-0813"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
