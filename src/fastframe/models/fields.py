@@ -319,11 +319,16 @@ class DateTimeField(Field):
         self.auto_now = auto_now
         self.auto_now_add = auto_now_add
 
-        # auto_now_add sets server default to current timestamp
-        if auto_now_add:
-            from sqlalchemy.sql import func
+        from sqlalchemy.sql import func
 
+        # A timestamp that updates on every write still needs a value on the
+        # first INSERT — otherwise a NOT NULL column (fields default to
+        # nullable=False) is bound as NULL and the flush fails.
+        if auto_now_add or auto_now:
             kwargs.setdefault("db_default", func.now())
+        # auto_now additionally re-stamps the column on every UPDATE.
+        if auto_now:
+            kwargs.setdefault("onupdate", func.now())
 
         super().__init__(**kwargs)
 

@@ -121,6 +121,26 @@ def test_datetimefield_auto_now_add():
     assert created_col.server_default is not None
 
 
+def test_datetimefield_auto_now():
+    """DateTimeField with auto_now sets both an insert default and onupdate.
+
+    auto_now must set a server_default so the initial INSERT doesn't bind
+    NULL into a NOT NULL column (regression: `updated_at` used to raise
+    "NOT NULL constraint failed" on create), and an onupdate so the column
+    is re-stamped on every save.
+    """
+
+    class Todo(Model):
+        __tablename__ = "todos"
+        updated_at = fields.DateTimeField(auto_now=True)
+
+    mapper = inspect(Todo)
+    updated_col = mapper.columns["updated_at"]
+    assert updated_col.server_default is not None
+    assert updated_col.onupdate is not None
+    assert updated_col.nullable is False
+
+
 def test_auto_primary_key():
     """Model auto-adds 'id' primary key if not specified."""
 
