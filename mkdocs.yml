@@ -1,6 +1,6 @@
 site_name: FastFrame
 site_description: A batteries-included Python web framework built on FastAPI.
-site_url: https://fastframe.readthedocs.io/
+site_url: https://fast-frame.readthedocs.io/
 repo_url: https://github.com/0xdps/fast-frame
 repo_name: 0xdps/fast-frame
 edit_uri: edit/trunk/docs/

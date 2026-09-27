@@ -82,7 +82,7 @@ python manage.py check --database
 
 Inside a generated project, `manage.py` is the familiar entry point (similar to Django). The global installer CLI is `fastframe` (see [docs/cli.md](docs/cli.md)).
 
-Documentation is published at [fastframe.readthedocs.io](https://fastframe.readthedocs.io/) once the Read the Docs project is imported. Source of that site is `mkdocs.yml` and `.readthedocs.yaml`.
+Documentation: [fast-frame.readthedocs.io](https://fast-frame.readthedocs.io/). Source of that site is `mkdocs.yml` and `.readthedocs.yaml`.
 
 ## Documentation
 
