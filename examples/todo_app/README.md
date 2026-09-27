@@ -29,7 +29,7 @@ python manage.py shell               # Todo model is auto-imported
 
 | Method | Path | Description |
 | --- | --- | --- |
-| GET | `/health` | Built-in health check |
+| GET | `/health` | Built-in health check (via `fastframe.health`) |
 | GET | `/todos` | List todos (optional `?done=true/false`) |
 | POST | `/todos` | Create a todo (`{"title": "..."}`) |
 | GET | `/todos/{id}` | Get a todo (404 if missing) |

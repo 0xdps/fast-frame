@@ -10,7 +10,7 @@ DEBUG = os.environ.get("DEBUG", "true").lower() in {"1", "true", "yes"}
 
 INSTALLED_APPS = [
     "todos",
-    "health",
+    "fastframe.health",
 ]
 
 ROOT_URLCONF = "config.urls"

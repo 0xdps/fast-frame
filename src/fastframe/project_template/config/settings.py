@@ -9,7 +9,7 @@ APP_NAME = "{{PROJECT_TITLE}}"
 DEBUG = os.environ.get("DEBUG", "true").lower() in {"1", "true", "yes"}
 
 INSTALLED_APPS = [
-    "health",
+    "fastframe.health",
 ]
 
 ROOT_URLCONF = "config.urls"

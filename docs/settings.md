@@ -15,15 +15,16 @@ settings.ADMIN_API_PREFIX
 `bootstrap()` and `get_asgi_application()` reload this object after the
 environment variable is set.
 
-## Enabling admin, auth, and the REST API
+## Enabling admin, auth, the REST API, and the health check
 
-These three ship inside `fastframe` but are **opt-in apps**, not
+These ship inside `fastframe` but are **opt-in apps**, not
 always-on settings flags — add their dotted path to `INSTALLED_APPS` to
 turn each on (and nothing more is needed; `get_asgi_application()` mounts
 their routers automatically for whatever's installed):
 
 ```python
 INSTALLED_APPS = [
+    "fastframe.health",       # GET /health
     "fastframe.contrib.auth",  # User/Group models + general session auth
     "fastframe.admin",         # admin UI + API (requires the line above)
     "fastframe.api",           # token-authenticated generic REST API
@@ -31,9 +32,21 @@ INSTALLED_APPS = [
 ]
 ```
 
-A freshly generated project's `INSTALLED_APPS` doesn't include any of
-these by default — add what you want. The settings below configure an
+A freshly generated project's `INSTALLED_APPS` includes
+`"fastframe.health"` by default (so `GET /health` works immediately) and
+none of the others — add what you want. The settings below configure an
 *already-installed* app; they don't turn it on by themselves.
+
+## Health check
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `HEALTH_PATH` | `"/health"` | URL path for the health-check endpoint. |
+| `HEALTH_CHECK` | `None` | A dotted path (`"module.callable"`) or callable returning a JSON-serializable body. `None` uses the built-in `{"status": "ok"}`. |
+
+Overriding `HEALTH_CHECK` replaces the entire response body — point it at
+your own function (e.g. one that also reports a DB ping) and it wins over
+the default.
 
 ## Admin
 

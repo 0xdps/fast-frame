@@ -52,10 +52,9 @@ src/fastframe/
 │   └── templates/                        # env.py / script.py.mako for new projects
 ├── shell/
 │   └── context.py               # build_shell_namespace() for `manage.py shell`
-└── project_template/            # files copied by `fastframe startproject`
+├── project_template/            # files copied by `fastframe startproject`
     ├── manage.py, pyproject.toml
     ├── config/                   # settings.py, urls.py, asgi.py, migrations/
-    ├── health/                   # example built-in app
     └── tests/                    # conftest.py (project_env, client fixtures), test_health.py
 ```
 

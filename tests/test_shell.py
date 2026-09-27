@@ -27,7 +27,7 @@ def test_app_shell_hook(miniproject_env) -> None:
     from fastframe.shell.context import build_shell_namespace
 
     class HookConfig(AppConfig):
-        name = "health"
+        name = "fastframe.health"
         label = "health"
 
         def shell(self, context: dict) -> None:
