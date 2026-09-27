@@ -37,7 +37,7 @@ dev = [
 
 [project.urls]
 Homepage = "https://github.com/0xdps/fast-frame"
-Documentation = "https://fastframe.readthedocs.io/"
+Documentation = "https://fast-frame.readthedocs.io/"
 Repository = "https://github.com/0xdps/fast-frame"
 Issues = "https://github.com/0xdps/fast-frame/issues"
 
