@@ -91,7 +91,7 @@ class User(Model):
     
     def __str__(self) -> str:
         """String representation of user."""
-        return self.username
+        return str(self.username)
     
     def __repr__(self) -> str:
         """Developer representation of user."""
@@ -256,7 +256,7 @@ class Group(Model):
         app_label = "auth"
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     def __repr__(self) -> str:
         return f"<Group: {self.name}>"

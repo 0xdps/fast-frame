@@ -527,6 +527,8 @@ class JSONField(Field):
         return JSON
 
     def get_type_annotation(self) -> type:
+        if self.default is list:
+            return Mapped[list[Any]]
         return Mapped[dict[str, Any]]
 
 
