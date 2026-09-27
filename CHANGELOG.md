@@ -13,6 +13,13 @@ a new feature bumps the minor version.
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-09-27
+
+- Drop the remaining wheel `force-include` of `admin/static`. That
+  directory is already inside the package, so Hatch added
+  `fastframe/admin/static/favicon.svg` twice. `v0.1.1` failed to build
+  for this reason.
+
 ## [0.1.1] - 2026-09-27
 
 - The wheel no longer force-includes `admin/templates/admin-ui`. That
