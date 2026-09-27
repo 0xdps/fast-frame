@@ -1,0 +1,19 @@
+pyproject.toml
+  s_5ee238a6b2991f::t_aa43c3f74eeaf6 79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a36b07da0258bfc5441c5f7db4fe4396d0512399",
+  "prompts": {},
+  "sessions": {
+    "s_5ee238a6b2991f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f2be725e-e717-4580-95d5-6502590902a2",
+        "model": "openrouter/OpenRouter/deepseek/deepseek-v4-pro-0813"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
