@@ -34,7 +34,8 @@ Each app is a Python package. Conventional files FastFrame **may** auto-discover
 | --- | --- |
 | `apps.py` → `AppConfig` subclass | Metadata and `ready()` hook |
 | `models.py` | ORM models for migration discovery |
-| `urls.py` → `router` | FastAPI `APIRouter` to mount |
+| `api.py` → `api` | `FastFrameAPI` (or a native `APIRouter`) mounted for this app |
+| `urls.py` → `router` | FastAPI `APIRouter`, aggregated by `config/urls.py` |
 | `management/commands/` | Custom `manage.py` commands |
 | `AppConfig.checks()` | Hook returning `list[CheckMessage]` for `manage.py check` |
 
@@ -74,12 +75,13 @@ Resolved:
 
 ## Router discovery
 
-Two mechanisms, both mounted automatically by `get_asgi_application()`/`create_app()`, used for different situations:
+Three mechanisms, all mounted by `get_asgi_application()`:
 
-1. **`urls.py` → `router` (the common case for project apps).** Each app exposes `router = APIRouter()` from `urls.py` — this is the stable, locked-in convention (`manage.py startapp` scaffolds it, and `add_router_to_urls()` wires it up automatically). A project's `config/urls.py` aggregates these into a `routers = [...]` list; the app factory mounts each one via `app.include_router(router)`.
-2. **`AppConfig.get_routers()` (for apps that need to build a router from settings).** Override this to return a list of routers computed at mount time — used when a router's shape depends on settings that are only known once the app registry exists (e.g. a prefix, or whether to include a route in the OpenAPI schema at all), rather than a static module-level object. The app factory calls `registry.get_routers()`, which collects every installed app's `get_routers()` in `INSTALLED_APPS` order, *after* every app's `ready()` has already run.
+1. **`<app>.api` → `api`.** An installed app may export `api = FastFrameAPI()` from `api.py`. FastFrame mounts `api.router`. A native `APIRouter` assigned to the same name is mounted too. A missing `api.py` is normal. The path is never inferred from a class name. See [API](api-layer.md).
+2. **`urls.py` → `router`.** Each app may expose `router = APIRouter()` from `urls.py`. `manage.py startapp` scaffolds this, and `add_router_to_urls()` wires it into `config/urls.py`. The app factory mounts that list after the discovered `api` routers.
+3. **`AppConfig.get_routers()`.** Override this to return routers built at mount time, when the shape depends on settings. The factory collects these in `INSTALLED_APPS` order, after every app's `ready()` has run.
 
-This is also the mechanism that makes FastFrame's own batteries — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api` — genuinely opt-in: their routers are built and returned only for apps present in `INSTALLED_APPS`, the same way `models.py` is only imported for installed apps (`fastframe.db.init.import_app_models`). There's no separate `ENABLE_*` setting for turning a battery on — being listed in `INSTALLED_APPS`, and nothing else, is what does it. See [architecture.md](https://github.com/0xdps/fast-frame/blob/trunk/docs/architecture.md).
+This is also what makes FastFrame's own batteries opt-in: `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, and `fastframe.docs`. Their code runs only when listed in `INSTALLED_APPS`. There is no `ENABLE_*` setting for turning one on. `fastframe.docs` is the switch for `/docs`, `/redoc`, and `/openapi.json`. See [architecture.md](https://github.com/0xdps/fast-frame/blob/trunk/docs/architecture.md).
 
 **Non-goal:** a Django URLconf dispatcher with regex paths.
 

@@ -24,6 +24,7 @@ ADMIN_MODE = "static"
 INSTALLED_APPS = [
     "fastframe.contrib.auth",  # default user model + general /api/auth/*
     "fastframe.admin",
+    "fastframe.docs",
 ]
 
 # Secret key for tests

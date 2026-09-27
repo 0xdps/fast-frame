@@ -1,4 +1,4 @@
-"""create_app honors admin and OpenAPI settings."""
+"""create_app mounts admin and OpenAPI only when those apps are installed."""
 
 from fastapi.testclient import TestClient
 
@@ -23,6 +23,16 @@ def test_openapi_and_admin_can_be_disabled(monkeypatch):
     assert app.redoc_url is None
     paths = [getattr(route, "path", "") for route in app.routes]
     assert not any(path.startswith("/api/admin") or path.startswith("/admin") for path in paths)
+
+
+def test_docs_are_not_mounted_unless_installed(monkeypatch):
+    _reload(monkeypatch, "tests.fixtures.openapi_off_settings")
+    from fastframe.core.app import create_app
+
+    app = create_app()
+    client = TestClient(app)
+    assert client.get("/docs").status_code == 404
+    assert client.get("/openapi.json").status_code == 404
 
 
 def test_static_admin_and_docs_are_mounted(monkeypatch):

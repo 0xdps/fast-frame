@@ -48,6 +48,7 @@ nav:
   - Home: index.md
   - Start:
       - Tutorial: tutorial.md
+      - API: api-layer.md
       - CLI: cli.md
       - Settings: settings.md
   - Models:

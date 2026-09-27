@@ -10,7 +10,7 @@ cd myproject
 python manage.py runserver
 ```
 
-A generated project does not install admin, auth, or the REST API. Add those later by listing them in `INSTALLED_APPS`.
+A generated project does not install admin, auth, the REST API, or Swagger. Add those later by listing them in `INSTALLED_APPS`. Swagger is `"fastframe.docs"`.
 
 ## Add an app and a model
 
@@ -36,7 +36,24 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-Routes are normal FastAPI routers. Export one from `todos/urls.py` and FastFrame mounts it.
+## Add an endpoint
+
+Put this in `todos/api.py`. FastFrame mounts `api` from each installed app. The path is the string you write. It is not inferred from the class name.
+
+```python
+from fastframe.http import FastFrameAPI
+
+api = FastFrameAPI()
+
+@api.route("/todos")
+class TodoAPI:
+    def get(self):
+        return Todo.objects.all()
+```
+
+A function route is the same idea: `@api.get("/todos")`. Request and response models come from `fastframe.schemas` (`BaseModel`, `Field`), which are Pydantic's classes. A native `APIRouter` in `todos/urls.py` still works. See [API](api-layer.md).
+
+`/docs` is not on unless you add `"fastframe.docs"` to `INSTALLED_APPS`.
 
 ## Day-to-day commands
 

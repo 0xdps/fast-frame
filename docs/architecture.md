@@ -148,6 +148,7 @@ myproject/
 │   └── __init__.py
 ├── users/                 # example app from startapp
 │   ├── models.py
+│   ├── api.py             # optional FastFrameAPI (or APIRouter) named api
 │   ├── urls.py            # APIRouter export
 │   ├── migrations/
 │   └── __init__.py

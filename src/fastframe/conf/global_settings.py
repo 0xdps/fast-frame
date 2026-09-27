@@ -69,13 +69,9 @@ CORS_ALLOW_HEADERS: list[str] = ["*"]
 SECURE_HEADERS = True
 
 # ===== OpenAPI/Swagger =====
-ENABLE_OPENAPI = True
-OPENAPI_URL = "/openapi.json"
-SWAGGER_UI_URL = "/docs"  # None to disable
-REDOC_URL = "/redoc"  # None to disable
-OPENAPI_TITLE = "FastFrame API"
-OPENAPI_VERSION = "1.0.0"
-OPENAPI_DESCRIPTION = "API Documentation"
+# Whether /docs, /redoc, and /openapi.json exist is controlled by
+# ``INSTALLED_APPS`` (add ``"fastframe.docs"``) — not a setting here.
+# FastAPI still serves them. FastFrame does not ship a second docs UI.
 
 # ===== Database =====
 DATABASE_URL = "sqlite:///./db.sqlite3"

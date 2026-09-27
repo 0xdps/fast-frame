@@ -13,12 +13,12 @@ AUTH_USER_MODEL = "auth.User"
 ADMIN_MODE = "static"
 ADMIN_SITE_TITLE = "Simple Admin"
 
-ENABLE_OPENAPI = True
-OPENAPI_TITLE = "Simple Admin API"
+APP_NAME = "Simple Admin API"
 
 INSTALLED_APPS = [
     "fastframe.contrib.auth",  # admin login uses the default User model
     "fastframe.admin",
+    "fastframe.docs",
 ]
 SECRET_KEY = "dev-secret-key-change-in-production"
 DEBUG = True

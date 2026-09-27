@@ -24,9 +24,7 @@ ADMIN_MODE = "static"  # Use pre-built admin, change to "custom" for React admin
 ADMIN_SITE_TITLE = "Blog Admin"
 ADMIN_SITE_HEADER = "Blog Administration"
 
-# ===== OpenAPI =====
-OPENAPI_TITLE = "Blog API"
-OPENAPI_DESCRIPTION = "FastFrame Blog Demo API"
+APP_NAME = "Blog API"
 
 # Apps
 INSTALLED_APPS = [

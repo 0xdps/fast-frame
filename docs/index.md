@@ -4,13 +4,16 @@
 
 A batteries-included Python web framework built on FastAPI.
 
-Django's developer experience, FastAPI's foundation, and modularity by default. FastFrame does not replace FastAPI routing or SQLAlchemy. It gives you a project, apps, settings, migrations, and a `manage.py` loop.
+Django's developer experience, FastAPI's foundation, and modularity by default. FastFrame does not replace FastAPI or SQLAlchemy. It gives you a project, apps, settings, migrations, a routing facade, and a `manage.py` loop.
+
+Import by area: `fastframe.http`, `fastframe.schemas`, `fastframe.models`. Admin, auth, the token REST API, and Swagger are apps you add to `INSTALLED_APPS`. A new project includes none of them.
 
 ## Start here
 
 1. [Tutorial](tutorial.md) — create a project, an app, and a model.
-2. [CLI](cli.md) — `fastframe` and `manage.py`.
-3. [Settings](settings.md) — what you can configure.
+2. [API](api-layer.md) — `fastframe.http.FastFrameAPI`, or a native FastAPI router.
+3. [CLI](cli.md) — `fastframe` and `manage.py`.
+4. [Settings](settings.md) — what you can configure.
 
 ## Build with it
 
