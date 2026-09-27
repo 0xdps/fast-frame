@@ -1,0 +1,24 @@
+src/fastframe/core/bootstrap.py
+  s_5ee238a6b2991f::t_a91ef68251fe27 17-20
+tests/test_admin_autodiscovery.py
+  s_5ee238a6b2991f::t_9a8a735bae0c12 1-84
+src/fastframe/admin/apps.py
+  s_5ee238a6b2991f::t_1e234f29de58c2 25-34,36,41-47
+  s_5ee238a6b2991f::t_e4085f7b81dc10 48
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "58343c6fbf03c6cddfb2d53fa063fcb521241df8",
+  "prompts": {},
+  "sessions": {
+    "s_5ee238a6b2991f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f2be725e-e717-4580-95d5-6502590902a2",
+        "model": "openrouter/OpenRouter/deepseek/deepseek-v4-pro-0813"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
