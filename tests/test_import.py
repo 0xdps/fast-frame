@@ -1,7 +1,7 @@
 def test_version() -> None:
     import fastframe
 
-    assert fastframe.__version__ == "0.1.2"
+    assert fastframe.__version__ == "0.1.0"
 
 
 def test_schema_reexports_are_pydantic() -> None:

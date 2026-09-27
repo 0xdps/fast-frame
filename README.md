@@ -12,7 +12,7 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**v0.1.2.** `v0.1.0` and `v0.1.1` were tagged but their wheels did not build. This tree is
+**v0.1.0.** This tree is
 still under test. The core development loop — `fastframe startproject`,
 `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin
 models with a chainable `QuerySet`, and Alembic migrations — is
