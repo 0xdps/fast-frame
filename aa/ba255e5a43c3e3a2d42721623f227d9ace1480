@@ -1,0 +1,29 @@
+brand/logo.svg
+  s_84047f2da83946::t_e61e86321b1167 1-5
+README.md
+  s_84047f2da83946::t_93c52966e0719b 3-6
+docs/assets/logo.svg
+  s_84047f2da83946::t_c4ae0bbcc270d6 1-5
+docs/README.md
+  s_84047f2da83946::t_542569dab0f0a3 3-4
+mkdocs.yml
+  s_84047f2da83946::t_b4a68d8f00a8aa 11-12
+brand/logo-lockup.svg
+  s_84047f2da83946::t_fb2a9a86d57a3b 1-7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "aaba255e5a43c3e3a2d42721623f227d9ace1480",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
