@@ -14,14 +14,11 @@ ADMIN_SITE_TITLE = "Test Admin"
 ADMIN_PREFIX = "/admin"
 ADMIN_API_PREFIX = "/api/admin"
 
-# OpenAPI
-ENABLE_OPENAPI = True
-SWAGGER_UI_URL = "/docs"
-
 # Apps
 INSTALLED_APPS = [
     "fastframe.contrib.auth",
     "fastframe.admin",
+    "fastframe.docs",
 ]
 
 # Security

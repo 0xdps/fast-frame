@@ -64,10 +64,6 @@ not appear in Swagger.
 
 ## OpenAPI
 
-```python
-ENABLE_OPENAPI = False          # no /docs, /redoc, or /openapi.json
-SWAGGER_UI_URL = None           # hide Swagger only
-REDOC_URL = None                # hide ReDoc only
-```
-
-See [settings.md](settings.md).
+Leave `"fastframe.docs"` out of `INSTALLED_APPS` and `/docs`, `/redoc`,
+and `/openapi.json` are not mounted. Add it when you want FastAPI's
+Swagger. See [settings.md](settings.md).

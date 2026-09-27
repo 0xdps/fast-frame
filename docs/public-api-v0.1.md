@@ -36,13 +36,21 @@ Exact names will match implementation; breaking renames require CHANGELOG + ADR.
 
 ## Application factory
 
-- `get_asgi_application()` — returns ASGI callable for production servers. Applies `MIDDLEWARE`/CORS/security headers, mounts every installed app's routers (see "Apps and routing" below), then `ROOT_URLCONF`'s routers.
+- `get_asgi_application()` — returns the ASGI app. Applies `MIDDLEWARE`, CORS, and security headers. Mounts installed-app routers, then `api` from `<app>.api` when that module exists, then `ROOT_URLCONF`. Swagger exists only when `"fastframe.docs"` is installed.
+
+## Routing facade
+
+- `FastFrameAPI` — facade over `APIRouter`. Import `from fastframe.http import FastFrameAPI`. `get` / `post` / `put` / `patch` / `delete` / `head` / `options` register functions. `route(path)` registers a class. See [API](api-layer.md). Native `APIRouter` remains supported. `fastframe.api` is the optional token REST app, not this facade.
+
+## Schemas
+
+- `BaseModel`, `Field` — Pydantic, re-exported. `from fastframe.schemas import BaseModel, Field`. Not a wrapper. See [ADR 0010](https://github.com/0xdps/fast-frame/blob/trunk/docs/adr/0010-curated-reexports.md).
 - `create_app()` (`fastframe.core.app`) — deprecated thin alias for `get_asgi_application()`. Kept for backward compatibility; new code should call `get_asgi_application()` directly.
 
 ## Apps and routing (v0.2)
 
-- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api` (and any project app) are only imported/routed when listed here. There is no separate `ENABLE_*` setting for turning one of these on.
-- `AppConfig.get_routers()` — optional hook returning `list[APIRouter]`, built at mount time (e.g. from settings) rather than a static module-level `router`. Collected, in `INSTALLED_APPS` order, by `AppsRegistry.get_routers()` and mounted by `get_asgi_application()` alongside the `urls.py` → `router` convention. See [app-contract.md](app-contract.md#router-discovery).
+- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, `fastframe.docs`, and any project app. There is no `ENABLE_*` setting for turning one on. `fastframe.docs` mounts `/docs`, `/redoc`, and `/openapi.json`.
+- `AppConfig.get_routers()` — optional hook returning `list[APIRouter]`, built at mount time. Collected in `INSTALLED_APPS` order and mounted beside `<app>.api` and the `urls.py` → `router` convention. See [app-contract.md](app-contract.md#router-discovery).
 
 ## Database
 

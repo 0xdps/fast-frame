@@ -30,10 +30,14 @@ for the admin by default), **opt-in per-model permissions** (`Group`,
 permission strings — see [docs/permissions.md](docs/permissions.md)),
 **general-purpose session auth for non-admin routes**, rate limiting on
 login/token endpoints, session revocation, and CORS/security headers.
-All three of these — admin, general auth, and the REST API — are
-**batteries you opt into via `INSTALLED_APPS`**, mounted the same way any
-other app is (see [docs/app-contract.md](docs/app-contract.md)); a
-freshly generated project doesn't install any of them by default. Current
+Admin, general auth, the token REST API, and Swagger
+(`fastframe.docs`) are **batteries you opt into via `INSTALLED_APPS`**.
+A freshly generated project installs none of them. Your own endpoints
+live in `<app>.api` as a `FastFrameAPI`, imported from `fastframe.http`.
+Request models are `BaseModel` and `Field` from `fastframe.schemas`
+(Pydantic, re-exported, not wrapped). A native `APIRouter` in `urls.py`
+still works. See [docs/api-layer.md](docs/api-layer.md) and
+[docs/app-contract.md](docs/app-contract.md). Current
 security posture and open gaps (CSRF, per-object permissions): see
 [docs/ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md).
 

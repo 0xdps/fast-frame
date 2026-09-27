@@ -17,14 +17,15 @@ Start here:
 11. [Roadmap](roadmap.md) — beyond v0.1
 12. [Repository layout](repository-layout.md) — repo and package structure
 13. [Development](development.md) — working on the framework
-14. [Settings](settings.md) — admin, OpenAPI, auth, primary keys
-15. [Auth](auth.md) — user model and `AUTH_USER_MODEL`
-16. [Admin deployment](admin-deployment.md) — static, custom, or none
-17. [Admin setup](admin-setup.md) — walkthrough for adding admin to an app
-18. [Admin customization](admin-customization.md) — React admin source
-19. [Admin security warning](ADMIN_SECURITY_WARNING.md) — auth model and current limits
-20. [Models & fields design](models-fields-design.md) — field types, relationships, `ManyToManyField`
-21. [REST API](rest-api.md) — opt-in, token-authenticated CRUD over registered models
-22. [Permissions](permissions.md) — Django-style permission strings, groups, and `ModelAdmin.enforce_permissions`
+14. [Settings](settings.md) — admin, docs app, auth, primary keys
+15. [API](api-layer.md) — `FastFrameAPI`, schemas, and native FastAPI
+16. [Auth](auth.md) — user model and `AUTH_USER_MODEL`
+17. [Admin deployment](admin-deployment.md) — static, custom, or none
+18. [Admin setup](admin-setup.md) — walkthrough for adding admin to an app
+19. [Admin customization](admin-customization.md) — React admin source
+20. [Admin security warning](ADMIN_SECURITY_WARNING.md) — auth model and current limits
+21. [Models & fields design](models-fields-design.md) — field types, relationships, `ManyToManyField`
+22. [REST API](rest-api.md) — opt-in, token-authenticated CRUD over registered models
+23. [Permissions](permissions.md) — Django-style permission strings, groups, and `ModelAdmin.enforce_permissions`
 
 Architecture Decision Records: [adr/README.md](adr/README.md)

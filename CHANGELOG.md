@@ -98,6 +98,27 @@ work below. It was drafted under pre-release labels (`v0.2` / `v0.3` /
 
 ### Also in this candidate
 
+**API**
+
+- `FastFrameAPI` (`from fastframe.http import FastFrameAPI`). Function routes
+  (`@api.get("/users")`) and resource routes (`@api.route("/users")` on a
+  class whose methods are HTTP verbs). The path is always explicit. A
+  class name is never a URL. Returned `Model` and `QuerySet` values
+  serialize to field dicts. Pydantic, `response_model`, and `Depends`
+  stay FastAPI's. `api.include_router` mounts a native `APIRouter`.
+  An installed app may export `api` from `<app>.api`; that router is
+  mounted beside the app's `urls.py` router. A missing `api.py` is fine.
+  See ADR 0009.
+- Swagger, ReDoc, and `/openapi.json` are now the `fastframe.docs` app.
+  Add `"fastframe.docs"` to `INSTALLED_APPS` to mount them. A project
+  that does not list it has no docs routes. `ENABLE_OPENAPI`,
+  `OPENAPI_URL`, `SWAGGER_UI_URL`, `REDOC_URL`, `OPENAPI_TITLE`,
+  `OPENAPI_VERSION`, and `OPENAPI_DESCRIPTION` are removed. The schema
+  title is `APP_NAME`.
+- `BaseModel` and `Field` are re-exported from Pydantic
+  (`from fastframe.schemas import BaseModel, Field`). They are the Pydantic
+  objects, not a subclass. See ADR 0010.
+
 **Records (no behavior change)**
 
 - Roadmap Phase 3 no longer tells readers to opt into the REST API with

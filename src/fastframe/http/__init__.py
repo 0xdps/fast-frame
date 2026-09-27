@@ -1,6 +1,7 @@
+from fastframe.http.api import FastFrameAPI
 from fastframe.http.asgi import get_asgi_application
 
-__all__ = ["get_asgi_application"]
+__all__ = ["FastFrameAPI", "get_asgi_application"]
 
 # NOTE: `Pagination`/`pagination` (fastframe.http.pagination) are deliberately
 # *not* re-exported here. Re-exporting a name identical to its submodule

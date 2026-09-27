@@ -101,20 +101,19 @@ login resets the counter for that identifier (username + client IP).
 | `SECURE_HEADERS` | `True` | Adds `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy` on every response; adds `Strict-Transport-Security` too, but only when `DEBUG = False`. |
 | `MIDDLEWARE` | `[]` | Dotted paths (`"module.ClassName"`) to your own Starlette-compatible middleware, applied in list order. Added before the built-in CORS/security-headers middleware, so those two end up wrapping your custom middleware (CORS outermost). |
 
-## OpenAPI
+## Docs
 
-| Setting | Default | Meaning |
-| --- | --- | --- |
-| `ENABLE_OPENAPI` | `True` | `False` disables the schema, Swagger UI, and ReDoc. |
-| `OPENAPI_URL` | `"/openapi.json"` | Schema path. |
-| `SWAGGER_UI_URL` | `"/docs"` | Swagger UI. Set `None` to disable only Swagger. |
-| `REDOC_URL` | `"/redoc"` | ReDoc. Set `None` to disable only ReDoc. |
-| `OPENAPI_TITLE` | `"FastFrame API"` | Schema title. |
-| `OPENAPI_VERSION` | `"1.0.0"` | Schema version. |
-| `OPENAPI_DESCRIPTION` | `"API Documentation"` | Schema description. |
+| App | What it mounts |
+| --- | --- |
+| `fastframe.docs` | FastAPI's `/docs`, `/redoc`, and `/openapi.json` |
 
-`get_asgi_application()` applies these. Keyword arguments passed to it
-override them.
+Not installed means those routes do not exist. There is no
+`ENABLE_OPENAPI` setting. The schema title is `APP_NAME`, or
+`"FastFrame API"` when that is unset.
+
+`ENABLE_ADMIN_DOCS` and `ENABLE_REST_API_DOCS` only matter once
+`fastframe.docs` is installed. They choose whether those batteries
+appear in the schema. They do not create `/docs` by themselves.
 
 ## Auth and primary keys
 

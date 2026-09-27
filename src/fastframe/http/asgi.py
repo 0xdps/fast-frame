@@ -12,6 +12,7 @@ from fastframe.core.apps import AppsRegistry
 from fastframe.core.bootstrap import bootstrap, get_apps_registry
 from fastframe.core.settings import load_settings
 from fastframe.db.session import begin_session, end_session
+from fastframe.http.discovery import discover_api_routers
 from fastframe.models.exceptions import DoesNotExist, MultipleObjectsReturned
 
 
@@ -51,6 +52,8 @@ def _mount_app_registry_routers(app: FastAPI, registry: AppsRegistry) -> None:
     """
     for router in registry.get_routers():
         app.include_router(router)
+    for router in discover_api_routers(registry):
+        app.include_router(router)
 
 
 def get_asgi_application(settings_module: str | None = None, **kwargs: Any) -> FastAPI:
@@ -66,13 +69,14 @@ def get_asgi_application(settings_module: str | None = None, **kwargs: Any) -> F
        ``fastframe.contrib.auth``, and ``fastframe.api``: list them in
        ``INSTALLED_APPS`` and their routers are mounted automatically,
        nothing more required. Leave them out and none of their code runs.
+       ``"fastframe.docs"`` is the same kind of switch for Swagger, ReDoc,
+       and ``/openapi.json``.
     3. A project's own ``ROOT_URLCONF``-aggregated routers.
     4. The per-request DB session middleware and exception handlers.
 
-    OpenAPI/Swagger follows ``ENABLE_OPENAPI``, ``OPENAPI_URL``,
-    ``SWAGGER_UI_URL``, and ``REDOC_URL``. The app title prefers
-    ``APP_NAME`` (a project's own identity) and falls back to
-    ``OPENAPI_TITLE``. Explicit keyword arguments always win over settings.
+    The schema title prefers ``APP_NAME``. Explicit keyword arguments
+    always win over that default, including ``docs_url`` if a caller
+    builds the app by hand.
 
     Always re-bootstraps (rebuilding the app registry from the *current*
     settings' ``INSTALLED_APPS``), rather than reusing a previous
@@ -83,18 +87,15 @@ def get_asgi_application(settings_module: str | None = None, **kwargs: Any) -> F
     registry = bootstrap(settings_module)
     settings = registry.settings
 
-    enable_openapi = bool(getattr(settings, "ENABLE_OPENAPI", True))
+    docs_installed = registry.is_installed("fastframe.docs")
     app_kwargs: dict[str, Any] = {
-        "title": getattr(settings, "APP_NAME", None)
-        or getattr(settings, "OPENAPI_TITLE", "FastFrame API"),
-        "version": getattr(settings, "OPENAPI_VERSION", "1.0.0"),
-        "description": getattr(settings, "OPENAPI_DESCRIPTION", "API Documentation"),
+        "title": getattr(settings, "APP_NAME", None) or "FastFrame API",
         "debug": bool(getattr(settings, "DEBUG", False)),
     }
-    if enable_openapi:
-        app_kwargs["openapi_url"] = getattr(settings, "OPENAPI_URL", "/openapi.json")
-        app_kwargs["docs_url"] = getattr(settings, "SWAGGER_UI_URL", "/docs")
-        app_kwargs["redoc_url"] = getattr(settings, "REDOC_URL", "/redoc")
+    if docs_installed:
+        app_kwargs["openapi_url"] = "/openapi.json"
+        app_kwargs["docs_url"] = "/docs"
+        app_kwargs["redoc_url"] = "/redoc"
     else:
         app_kwargs["openapi_url"] = None
         app_kwargs["docs_url"] = None

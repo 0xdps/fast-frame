@@ -3,8 +3,8 @@
 # Database
 DATABASE_URL = "sqlite:///./test_no_admin.db"
 
-# OpenAPI
-ENABLE_OPENAPI = True
-
 # Apps — admin is "disabled" simply by not being listed here.
-INSTALLED_APPS = []
+# Docs stay on so this fixture still has a schema if a test asks for one.
+INSTALLED_APPS = [
+    "fastframe.docs",
+]

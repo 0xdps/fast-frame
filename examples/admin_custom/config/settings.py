@@ -13,12 +13,12 @@ AUTH_USER_MODEL = "auth.User"
 ADMIN_MODE = "custom"
 ADMIN_SITE_TITLE = "Custom Admin"
 
-ENABLE_OPENAPI = True
-OPENAPI_TITLE = "Custom Admin API"
+APP_NAME = "Custom Admin API"
 
 INSTALLED_APPS = [
     "fastframe.contrib.auth",  # admin login uses the default User model
     "fastframe.admin",
+    "fastframe.docs",
 ]
 SECRET_KEY = "dev-secret-key-change-in-production"
 DEBUG = True

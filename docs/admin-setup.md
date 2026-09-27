@@ -57,13 +57,16 @@ need — add `"fastframe.admin"` to `INSTALLED_APPS`:
 INSTALLED_APPS = [
     "fastframe.contrib.auth",  # required: admin login uses the User model
     "fastframe.admin",
+    "fastframe.docs",  # optional: /docs, /redoc, /openapi.json
     "myapp",
 ]
 ```
 
 That's it. Visit `http://localhost:8000/admin/`. Nothing about the admin
 is imported or mounted unless this app is listed — the same as any other
-`INSTALLED_APPS` entry (see [app-contract.md](app-contract.md)).
+`INSTALLED_APPS` entry (see [app-contract.md](app-contract.md)). Swagger
+is the same kind of switch: leave `"fastframe.docs"` out and `/docs` is
+not mounted.
 
 If you're building your own `FastAPI()` app by hand instead (not going
 through either factory — see `examples/blog_app`), choose one or more of
