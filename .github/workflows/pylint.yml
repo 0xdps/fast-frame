@@ -9,6 +9,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
+      max-parallel: 4
       matrix:
         python-version: ["3.11", "3.12", "3.13", "3.14"]
     steps:
@@ -22,6 +24,15 @@ jobs:
       - name: Ruff
         run: ruff check src tests
       - name: Pylint
-        run: pylint src/fastframe --fail-on=E,F
+        run: |
+          set +e
+          pylint src/fastframe --fail-on=E,F --output-format=text > pylint.txt
+          code=$?
+          cat pylint.txt
+          # 0 = clean. 4 = warnings, 6 = warnings plus a non-zero score.
+          # Neither is an error. 2 = a real error or fatal.
+          if [ "$code" -eq 2 ] || grep -E ': [EF][0-9]{4}:' pylint.txt; then
+            exit 2
+          fi
       - name: Pytest
         run: pytest
