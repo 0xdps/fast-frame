@@ -139,4 +139,4 @@ def list_reports(): ...
 - No per-field permissions beyond the binary `readonly_fields` cut.
 - `ManyToManyField(through=...)` (custom columns on a join table, which
   would let `Group.permissions` be a real M2M to a `Permission` model
-  instead of a flat JSON list) is deferred — see [roadmap.md](roadmap.md).
+  instead of a flat JSON list) is deferred — see the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md).

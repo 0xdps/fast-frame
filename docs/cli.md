@@ -173,7 +173,7 @@ python manage.py createadminuser --username admin --email admin@example.com --pa
 ### `startadmin`
 
 Copies the React admin source into the project so it can be themed and
-extended. See [admin-customization.md](admin-customization.md).
+extended. See [admin-customization.md](https://github.com/0xdps/fast-frame/blob/trunk/docs/admin-customization.md).
 
 ```text
 python manage.py startadmin              # creates ./admin-ui

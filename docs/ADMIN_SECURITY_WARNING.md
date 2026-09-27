@@ -67,7 +67,7 @@ Authentication and authorization are now handled. These are still open:
 | **CORS / security headers** | ✅ Implemented — opt-in `CORS_ALLOWED_ORIGINS`, `SECURE_HEADERS` on by default | — |
 | **CSRF Protection** | ⚠️ Mitigated only (cookie is `SameSite=Lax`; no CSRF token) | LOW-MEDIUM |
 | **Per-object (row-level) permissions** | ❌ Not implemented — permissions are per-model only | LOW |
-| **`ManyToManyField(through=...)`** | ❌ Not implemented — deferred, see [roadmap.md](roadmap.md) | — |
+| **`ManyToManyField(through=...)`** | ❌ Not implemented — deferred, see the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md) | — |
 | **Audit Logging** | ✅ Implemented — see below | — |
 
 ---
@@ -218,7 +218,7 @@ first tagged release — see [CHANGELOG.md](https://github.com/0xdps/fast-frame/
 | Per-object (row-level) permissions | 📋 Planned |
 | `ManyToManyField(through=...)` | 📋 Planned |
 
-See [docs/roadmap.md](roadmap.md) for the full plan.
+See the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md) for the full plan.
 
 ---
 
@@ -240,7 +240,7 @@ If you discover a security issue in FastFrame:
 - [Auth](auth.md)
 - [REST API](rest-api.md)
 - [Settings](settings.md)
-- [Roadmap](roadmap.md)
+- [Roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md)
 - [Contributing Security Features](https://github.com/0xdps/fast-frame/blob/trunk/CONTRIBUTING.md)
 
 ---
