@@ -6,11 +6,15 @@ jobs=0
 # Convention noise (missing docstrings, import placement, line length) is
 # Ruff's job. Fail CI on errors and warnings. SQLAlchemy mapped classes and
 # FastAPI's request.app look like no-member / not-callable to pylint.
+# E1137: field descriptors (e.g. JSONField) return mutable containers at
+# runtime, so `self.user_data["key"] = value` is valid but pylint sees the
+# descriptor object and flags unsupported item assignment.
 disable=
     C,
     R,
     E1101,
     E1102,
+    E1137,
 
 [FORMAT]
 max-line-length=120
