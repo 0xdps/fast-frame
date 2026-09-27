@@ -23,6 +23,7 @@ Instructions for contributing to the **FastFrame framework** repository.
    ```text
    ruff check src tests
    pylint src/fastframe --fail-on=E,F
+   # Exit 4 or 6 means warnings only. CI fails on exit 2, or on an E/F message.
    ```
 
 ## Fixture project
