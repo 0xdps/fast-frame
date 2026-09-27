@@ -27,7 +27,6 @@ theme:
         name: Switch to light mode
   features:
     - navigation.sections
-    - navigation.expand
     - navigation.top
     - content.code.copy
     - search.suggest
@@ -46,48 +45,39 @@ markdown_extensions:
   - pymdownx.superfences
 
 nav:
-  - Home: README.md
-  - Project:
-      - Vision and thesis: vision-and-thesis.md
-      - Design principles: design-principles.md
-      - Architecture: architecture.md
-      - Non-goals: non-goals.md
-      - Roadmap: roadmap.md
-      - MVP v0.1: mvp-v0.1.md
-      - Repository layout: repository-layout.md
-  - Using FastFrame:
-      - App contract: app-contract.md
-      - Settings: settings.md
+  - Home: index.md
+  - Start:
+      - Tutorial: tutorial.md
       - CLI: cli.md
-      - Shell: shell.md
-      - Session lifecycle: session-lifecycle.md
-      - Public API: public-api-v0.1.md
-      - Development: development.md
+      - Settings: settings.md
   - Models:
-      - ORM features: orm-features.md
-      - Models and fields: models-fields-design.md
+      - Fields: models-fields-design.md
+      - Queries: orm-features.md
   - Auth and admin:
       - Auth: auth.md
       - Permissions: permissions.md
+      - Admin: admin-setup.md
+      - Deploying admin: admin-deployment.md
       - REST API: rest-api.md
-      - Admin setup: admin-setup.md
-      - Admin deployment: admin-deployment.md
-      - Admin customization: admin-customization.md
-      - Admin security: ADMIN_SECURITY_WARNING.md
-  - Decisions:
-      - Index: adr/README.md
-      - "0001: Record decisions": adr/0001-record-architecture-decisions.md
-      - "0002: FastAPI as HTTP": adr/0002-fastapi-as-http-layer.md
-      - "0003: Thin ORM": adr/0003-thin-orm-with-sqlalchemy-escape-hatch.md
-      - "0004: Dual CLI": adr/0004-dual-cli-fastframe-and-manage-py.md
-      - "0005: Installed apps": adr/0005-extensibility-via-installed-apps.md
-      - "0006: Sync SQLAlchemy": adr/0006-sync-sqlalchemy-for-v0-1.md
-      - "0007: SSR admin (superseded)": adr/0007-ssr-for-admin-v0-3.md
-      - "0008: REST + React admin": adr/0008-rest-api-react-admin.md
+      - Security: ADMIN_SECURITY_WARNING.md
+  - Reference:
+      - Apps: app-contract.md
+      - Public API: public-api-v0.1.md
+      - Shell: shell.md
 
 exclude_docs: |
-  changelog.md
-  contributing.md
+  README.md
+  adr/**
+  vision-and-thesis.md
+  design-principles.md
+  architecture.md
+  non-goals.md
+  roadmap.md
+  mvp-v0.1.md
+  repository-layout.md
+  development.md
+  session-lifecycle.md
+  admin-customization.md
 
 plugins:
   - search

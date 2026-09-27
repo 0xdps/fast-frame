@@ -13,7 +13,7 @@ composition.
 expression composition, and window functions. If you need those, use
 SQLAlchemy directly — `Model.metadata`, `Model.__table__`, and a plain
 SQLAlchemy `Session` (`fastframe.db.session.get_current_session()`) are
-always available; see [design-principles.md](design-principles.md).
+always available; see [design-principles.md](https://github.com/0xdps/fast-frame/blob/trunk/docs/design-principles.md).
 
 ## Field lookups
 

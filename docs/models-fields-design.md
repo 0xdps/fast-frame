@@ -164,7 +164,7 @@ tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
 **UUIDField** - UUID primary/foreign keys
 **JSONField** - Native JSON/JSONB
 
-**FileField / ImageField** - Deferred until the storage layer exists (Phase 6+, see [roadmap.md](roadmap.md))
+**FileField / ImageField** - Deferred until the storage layer exists (Phase 6+, see the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md))
 
 ---
 
@@ -422,7 +422,7 @@ class BookAdmin(ModelAdmin):
 
 Everything above shipped in v0.1.0. What's still open:
 
-- `ManyToManyField(through=...)` — custom columns on the join table (deferred, see [roadmap.md](roadmap.md))
+- `ManyToManyField(through=...)` — custom columns on the join table (deferred, see the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md))
 - `FileField` / `ImageField` — blocked on a storage layer (Phase 6+)
 - Per-model permissions are now per-request and opt-in
   (`ModelAdmin.enforce_permissions`, see [permissions.md](permissions.md)),
