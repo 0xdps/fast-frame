@@ -14,6 +14,10 @@ def bootstrap(settings_module: str | None = None) -> AppsRegistry:
 
     conf_settings.reload()
     registry = populate_apps(settings)
+    # Make the registry available *before* running ready() hooks, so an
+    # app's ready() can discover sibling apps (e.g. fastframe.admin imports
+    # every installed app's admin.py to register models).
+    _registry = registry
     for app_config in registry.app_configs:
         app_config.ready()
 

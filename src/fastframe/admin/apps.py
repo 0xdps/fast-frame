@@ -22,14 +22,29 @@ class AdminConfig(AppConfig):
     label = "admin"
 
     def ready(self) -> None:
-        # Import side effects only — registers the active user model's
-        # admin.py (if any) and the audit log model, so both are on
-        # Model.metadata (and browsable in the admin) before anything
-        # tries to create tables or serve a request.
+        # Import side effects only. Three things must be registered before
+        # anything creates tables or serves a request:
+        #   1. the active user model's admin.py (if any),
+        #   2. the audit log model,
+        #   3. every installed app's optional admin.py — so that a project's
+        #      `admin_site.register(...)` calls (Django-style, module level)
+        #      run simply by being in an app named in INSTALLED_APPS. A
+        #      missing admin.py is normal and skipped.
+        import importlib
+
         from fastframe.admin import _import_user_admin, ensure_audit_log_registered
+        from fastframe.core.bootstrap import get_apps_registry
 
         _import_user_admin()
         ensure_audit_log_registered()
+
+        for app_config in get_apps_registry().app_configs:
+            if not app_config.name:
+                continue
+            try:
+                importlib.import_module(f"{app_config.name}.admin")
+            except ModuleNotFoundError:
+                continue
 
     def get_routers(self) -> list[APIRouter]:
         # Auth router first: its literal paths (/login, /logout, /me) must
