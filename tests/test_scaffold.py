@@ -21,10 +21,11 @@ def test_startproject_creates_layout(tmp_path: Path) -> None:
     run_startproject("demo", str(dest))
     assert (dest / "manage.py").is_file()
     assert (dest / "config" / "settings.py").is_file()
-    assert (dest / "health" / "urls.py").is_file()
+    assert not (dest / "health").exists()
     assert (dest / "tests" / "test_health.py").is_file()
     settings = (dest / "config" / "settings.py").read_text(encoding="utf-8")
     assert "demo" in settings.lower() or "Demo" in settings
+    assert '"fastframe.health"' in settings
 
 
 def test_startapp_scaffold_and_wiring(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

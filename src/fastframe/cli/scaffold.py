@@ -71,7 +71,6 @@ def create_project(destination: Path, project_name: str) -> None:
     context = {
         "PROJECT_NAME": project_name,
         "PROJECT_TITLE": project_name.replace("_", " ").title(),
-        "APP_CLASS": "Health",
     }
     root = _template_root()
     for item in sorted(root.iterdir()):
@@ -88,7 +87,6 @@ def create_project(destination: Path, project_name: str) -> None:
     migrations_dir = destination / "config" / "migrations"
     migrations_dir.mkdir(parents=True, exist_ok=True)
     shutil.copy2(_migrations_script_mako(), migrations_dir / "script.py.mako")
-    (destination / "health" / "migrations" / "versions").mkdir(parents=True, exist_ok=True)
 
 
 def create_app(app_dir: Path, app_name: str) -> None:

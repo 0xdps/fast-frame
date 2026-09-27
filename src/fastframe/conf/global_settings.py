@@ -79,6 +79,14 @@ DATABASE_URL = "sqlite:///./db.sqlite3"
 # ===== Apps =====
 INSTALLED_APPS = []
 
+# ===== Health check =====
+# Whether the /health endpoint is mounted at all is controlled by
+# ``INSTALLED_APPS`` (add ``"fastframe.health"``) — not a setting here.
+# HEALTH_CHECK may be a dotted path ("module.callable") or a plain callable
+# returning a JSON-serializable body; defaults to {"status": "ok"}.
+HEALTH_PATH = "/health"
+HEALTH_CHECK: str | None = None
+
 # ===== Middleware =====
 # Dotted paths to Starlette-compatible middleware classes (each must accept
 # just `app` in its constructor and read any settings it needs itself),

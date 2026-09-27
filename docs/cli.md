@@ -14,7 +14,7 @@ fastframe startproject myproject
 
 Creates:
 
-- Project directory with `manage.py`, `config/`, built-in `health` app, and `tests/`
+- Project directory with `manage.py`, `config/`, and `tests/`
 - `pyproject.toml` depending on `fastframe`
 
 Install via:

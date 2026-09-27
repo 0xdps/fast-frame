@@ -111,4 +111,10 @@ Versioning of the app contract will be documented when v0.1 ships; breaking chan
 
 ## Proof point for v0.2 — done
 
-The `health` app (shipped in every project via `project_template/`) plus the real `manage.py check`/`check --database` framework (`fastframe.core.checks`) validated the contract end-to-end: a router (`health/urls.py`), models discovery, and now app-level `checks()` all work through the same `AppConfig` mechanism. Before building admin (v0.3), this is the pattern third-party apps should follow.
+The built-in `fastframe.health` app (listed in every generated project's
+`INSTALLED_APPS`) plus the real `manage.py check`/`check --database`
+framework (`fastframe.core.checks`) validated the contract end-to-end: a
+router (mounted via `AppConfig.get_routers()`), models discovery, and
+app-level `checks()` all work through the same `AppConfig` mechanism.
+Before building admin (v0.3), this is the pattern third-party apps should
+follow.

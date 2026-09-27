@@ -9,7 +9,7 @@ APP_NAME = "MiniProject"
 DEBUG = True
 
 INSTALLED_APPS = [
-    "health",
+    "fastframe.health",
     "users",
     "posts",
 ]
