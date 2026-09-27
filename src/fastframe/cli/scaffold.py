@@ -50,6 +50,12 @@ def _copy_rendered_tree(source: Path, destination: Path, context: dict[str, str]
     for item in source.rglob("*"):
         if item.is_dir():
             continue
+        # Skip any compiled bytecode (or other non-text artifacts) that may have
+        # been generated inside the template package, e.g. __pycache__/*.pyc.
+        if "__pycache__" in item.parts:
+            continue
+        if item.suffix in {".pyc", ".pyo"}:
+            continue
         rel = item.relative_to(source)
         if rel.name.endswith(".tpl"):
             rel = rel.with_name(rel.name[:-4])
