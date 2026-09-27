@@ -1,0 +1,127 @@
+examples/admin_simple/README.md
+  s_84047f2da83946::t_764630e7eb4d71 14-17
+docs/public-api-v0.1.md
+  s_84047f2da83946::t_93b72a63b03f8f 40-42
+  s_84047f2da83946::t_5dea7d6d2ccbe4 44-46
+  s_84047f2da83946::t_d5f47d7fe65816 39,52-53
+  s_84047f2da83946::t_cf86e23c5c3769 43,47
+src/fastframe/http/asgi.py
+  s_84047f2da83946::t_9432f49992fa63 55-56
+  s_84047f2da83946::t_3dca085cfad9f7 90,92,95-98
+docs/adr/0010-curated-reexports.md
+  s_84047f2da83946::t_9bc40afec0cb1f 1-13,16-17,20-25
+  s_84047f2da83946::t_cf86e23c5c3769 14-15,18-19
+mkdocs.yml
+  s_84047f2da83946::t_14352f641b4b6a 51
+tests/test_import.py
+  s_84047f2da83946::t_19aff40ae98718 5-10,12-14
+  s_84047f2da83946::t_cf86e23c5c3769 11
+tests/fixtures/admin_test_settings.py
+  s_84047f2da83946::t_764630e7eb4d71 21
+docs/settings.md
+  s_84047f2da83946::t_d5f47d7fe65816 104,106-116
+docs/api-layer.md
+  s_84047f2da83946::t_08956647ce6b4a 73-74
+  s_84047f2da83946::t_cf86e23c5c3769 6-7,12
+  s_84047f2da83946::t_b2ceea7b9e8ee1 1-5,8-10,13-36,41-49,51-72
+  s_84047f2da83946::t_1ead7fe42c8a4f 37-40,50
+  s_84047f2da83946::t_a9e2eda8458404 11
+tests/test_create_app.py
+  s_84047f2da83946::t_764630e7eb4d71 1
+  s_84047f2da83946::t_eead4dc5e61d2f 28-37
+docs/adr/README.md
+  s_84047f2da83946::t_1386ab883a8515 22
+  s_84047f2da83946::t_31873f2f06ddf4 23
+docs/architecture.md
+  s_84047f2da83946::t_d5f47d7fe65816 151
+src/fastframe/docs/apps.py
+  s_84047f2da83946::t_58333e1ef02a9e 1-19
+CHANGELOG.md
+  s_84047f2da83946::t_2f29e47739aada 118,120
+  s_84047f2da83946::t_08956647ce6b4a 112-117
+  s_84047f2da83946::t_cf86e23c5c3769 103,119
+  s_84047f2da83946::t_bb0e0a5a83d534 101-102,104-111,121
+tests/fixtures/test_settings.py
+  s_84047f2da83946::t_764630e7eb4d71 27
+docs/app-contract.md
+  s_84047f2da83946::t_d5f47d7fe65816 37-38,78,80-82,84
+src/fastframe/conf/global_settings.py
+  s_84047f2da83946::t_33b980c83ab9e8 72-74
+README.md
+  s_84047f2da83946::t_d5f47d7fe65816 33-40
+src/fastframe/http/responses.py
+  s_84047f2da83946::t_941c04f882ed83 29-32
+  s_84047f2da83946::t_d2e5584f5e044a 1-25,27-28
+  s_84047f2da83946::t_adbdd299e8f371 26
+docs/adr/0009-fastframe-api.md
+  s_84047f2da83946::t_8ede722735ba8b 1-23
+src/fastframe/http/__init__.py
+  s_84047f2da83946::t_2e601d42c6e8e6 1,4
+src/fastframe/docs/__init__.py
+  s_84047f2da83946::t_914fd5f9b03b9f 1-10
+examples/admin_simple/config/settings.py
+  s_84047f2da83946::t_764630e7eb4d71 16,21
+src/fastframe/http/api.py
+  s_84047f2da83946::t_c6ab930d09731e 23-24
+  s_84047f2da83946::t_6226755baf82f3 1-22,25-38,40-41,43-44,46-47,49-50,52-53,55-56,58-145
+  s_84047f2da83946::t_c0d087db3f1758 39
+  s_84047f2da83946::t_7493ba083e9dfe 42
+  s_84047f2da83946::t_817a063868ff68 45
+  s_84047f2da83946::t_6fff3950fbe009 48
+  s_84047f2da83946::t_9c38cfebadf8eb 51
+  s_84047f2da83946::t_330e9546808bf8 54
+  s_84047f2da83946::t_a7a050a069b144 57
+tests/test_fastframe_api.py
+  s_84047f2da83946::t_ca45df01cbfe53 1-8,10-109
+  s_84047f2da83946::t_2af1466bda590e 110-114,116-134
+  s_84047f2da83946::t_cf86e23c5c3769 9,115
+docs/admin-deployment.md
+  s_84047f2da83946::t_764630e7eb4d71 67-69
+examples/blog_app/config/settings.py
+  s_84047f2da83946::t_764630e7eb4d71 27
+src/fastframe/http/discovery.py
+  s_84047f2da83946::t_0fc78b303ef123 1-44
+docs/tutorial.md
+  s_84047f2da83946::t_08956647ce6b4a 13
+  s_84047f2da83946::t_ea326f607d6c34 39-43,45-53
+  s_84047f2da83946::t_d5f47d7fe65816 54-56
+  s_84047f2da83946::t_cf86e23c5c3769 44
+tests/fixtures/admin_auth_test_settings.py
+  s_84047f2da83946::t_764630e7eb4d71 21
+docs/admin-setup.md
+  s_84047f2da83946::t_08956647ce6b4a 60,67-69
+docs/index.md
+  s_84047f2da83946::t_c161834d62bd78 15-16
+  s_84047f2da83946::t_d5f47d7fe65816 7-9,14
+tests/fixtures/openapi_off_settings.py
+  s_84047f2da83946::t_764630e7eb4d71 1
+docs/README.md
+  s_84047f2da83946::t_d5f47d7fe65816 20
+  s_84047f2da83946::t_d5474687fb3ea3 23-29
+  s_84047f2da83946::t_46b34e142d345e 21-22
+src/fastframe/__init__.py
+  s_84047f2da83946::t_cf86e23c5c3769 1-7
+  s_84047f2da83946::t_5eb231d89c7b75 8
+examples/admin_custom/config/settings.py
+  s_84047f2da83946::t_764630e7eb4d71 16,21
+tests/fixtures/admin_disabled_settings.py
+  s_84047f2da83946::t_764630e7eb4d71 7-10
+src/fastframe/schemas.py
+  s_84047f2da83946::t_d289839b5a86ed 1-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c118979665c54894eb1f7e7c88eabf1ce992dd97",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
