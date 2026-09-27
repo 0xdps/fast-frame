@@ -99,7 +99,7 @@ setting the `F()` value).
 Post.objects.filter(author_id=1).update(views=F("views") + 1)
 ```
 
-See [`QuerySet.update()`](#bulk-update-and-delete) below — same
+See [`QuerySet.update()`](#bulk-update-and-delete-queryset-level) below — same
 atomicity, applied to every matching row in one statement instead of one.
 
 ## Avoiding N+1: `select_related()` / `prefetch_related()`

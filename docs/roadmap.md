@@ -3,12 +3,13 @@
 Direction beyond the first release. Dates aren't fixed; scope shifts as
 real usage informs priorities.
 
-Phases below are development milestones, not package version numbers —
-they don't map 1:1 onto `fastframe`'s actual semver release (see
-[CHANGELOG.md](../CHANGELOG.md)). Everything through **Phase 4** shipped
-together as **v0.1.0**, the first tagged release. From here, releases
-follow standard semver: fixes bump the patch version, new features bump
-the minor version.
+Phases below are development milestones, not package version numbers.
+Everything through **Phase 4.5** is in the unreleased **v0.1.0**
+candidate. Commit messages that say `v0.2.0`, `v0.3.0`, or `v0.4.0` are
+pre-release working names, not package versions — see
+[CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md). After `0.1.0` is released, fixes bump
+the patch version and a new feature bumps the minor version. Phase 5
+has not started.
 
 | Phase | Theme | Status |
 | --- | --- | --- |
@@ -16,7 +17,7 @@ the minor version.
 | Phase 2 | Developer experience polish | ✅ Shipped (v0.1.0) |
 | Phase 3 | Admin, relationships, session auth | ✅ Shipped (v0.1.0) |
 | Phase 4 | Harden auth & authorization | ✅ Shipped (v0.1.0) |
-| Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (v0.2.0) |
+| Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (v0.1.0) |
 | Phase 5 | Templates and static files | 🔜 Next |
 | Phase 6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
 | Phase 7 | Production-ready platform | 📋 Planned |
@@ -33,9 +34,9 @@ the minor version.
 
 - **Declarative fields** (`fields.CharField`, `IntegerField`, `BooleanField`, `DateTimeField`, `DecimalField`, `EmailField`, `URLField`, `UUIDField`, `JSONField`, …) — see [models-fields-design.md](models-fields-design.md).
 - **Auto relationships**: `ForeignKey` and `ManyToManyField` (incl. self-referential) generate their SQLAlchemy `relationship()`/join tables automatically; Django-style `RelatedList` helpers (`.add()`, `.remove()`, `.set()`, `.clear()`, `.all()`).
-- **Admin**: REST API (`get_admin_api_router()`) + a bundled React admin UI (react-admin) built on top of it. The admin is **React-only** — an SSR/Jinja2 mode was tried (see [ADR 0007](../adr/0007-ssr-for-admin-v0-3.md)) and replaced by the REST + React approach (see [ADR 0008](../adr/0008-rest-api-react-admin.md)); the SSR code path has since been removed entirely.
+- **Admin**: REST API (`get_admin_api_router()`) + a bundled React admin UI (react-admin) built on top of it. The admin is **React-only** — an SSR/Jinja2 mode was tried (see [ADR 0007](adr/0007-ssr-for-admin-v0-3.md)) and replaced by the REST + React approach (see [ADR 0008](adr/0008-rest-api-react-admin.md)); the SSR code path has since been removed entirely.
 - **Session authentication**: signed-cookie login/logout for the admin, always required (`can_access_admin` — no setting disables it), plus a built-in `User` model with password hashing. Details and current gaps: [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md).
-- **Generic REST API**: `ENABLE_REST_API` opts in to token-authenticated CRUD (`/api/v1/{resource}`) over the same registered models, for non-browser clients (mobile apps, scripts, integrations).
+- **Generic REST API**: token-authenticated CRUD (`/api/v1/{resource}`) over the same registered models, for non-browser clients (mobile apps, scripts, integrations). Opt in by adding `"fastframe.api"` to `INSTALLED_APPS` (Phase 4.5). There is no `ENABLE_REST_API` setting.
 - **Audit log**: every create/update/delete through either surface is recorded in `AuditLog` (who, what, when, old→new values), viewable read-only in the admin.
 
 ## Phase 4 — Harden auth & authorization ✅

@@ -180,8 +180,8 @@ def test_admin_schema_includes_user(client):
     assert "email" in field_names
 
 
-def test_admin_respects_enable_admin_setting(monkeypatch):
-    """Admin should not mount if ENABLE_ADMIN=False."""
+def test_admin_not_mounted_unless_installed(monkeypatch):
+    """Admin routes 404 unless ``fastframe.admin`` is in ``INSTALLED_APPS``."""
     monkeypatch.setenv("FASTFRAME_SETTINGS_MODULE", "tests.fixtures.admin_disabled_settings")
 
     app = create_app()

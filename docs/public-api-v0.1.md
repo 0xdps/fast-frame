@@ -1,6 +1,6 @@
-# Public API (v0.1 + v0.2)
+# Public API (v0.1)
 
-Surfaces intended to remain **stable** across minor releases. Everything else is experimental until documented here. v0.2 additions are called out inline.
+Surfaces intended to remain **stable** across minor releases. Everything else is experimental until documented here. Headings marked "v0.2" below are pre-release working names for work that shipped in v0.1.0, not a later package version.
 
 ## Global CLI (`fastframe`)
 
