@@ -1,0 +1,38 @@
+docs/ADMIN_SECURITY_WARNING.md
+  s_84047f2da83946::t_1479ab892d13fe 243
+  s_84047f2da83946::t_b03faef4976d15 221
+mkdocs.yml
+  s_84047f2da83946::t_c491e6fccda9c0 69
+  s_84047f2da83946::t_848d6612aa296f 49-50,52,54-55,59-60,62-66,70-80
+  s_84047f2da83946::t_d11d32be85c7d0 48
+docs/orm-features.md
+  s_84047f2da83946::t_6036bb102d98fb 16
+docs/models-fields-design.md
+  s_84047f2da83946::t_0496c6bbf5b75a 425
+docs/permissions.md
+  s_84047f2da83946::t_50723a6f032c76 142
+docs/app-contract.md
+  s_84047f2da83946::t_43ebad7d91d269 82
+docs/cli.md
+  s_84047f2da83946::t_12621389138ca6 176
+docs/index.md
+  s_84047f2da83946::t_d839e879da5d1c 1-28
+docs/tutorial.md
+  s_84047f2da83946::t_835f935e15659c 1-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "596715faa1f1b8ecc17a46f8ed6a2bb5fa9ca854",
+  "prompts": {},
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
