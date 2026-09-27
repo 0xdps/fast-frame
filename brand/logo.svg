@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="FastFrame">
+  <rect width="128" height="128" rx="28" fill="#111111"/>
+  <path d="M34 34 H78 L94 50 V94 H50 L34 78 Z" fill="none" stroke="#F5F5F5" stroke-width="7" stroke-linejoin="miter"/>
+  <path d="M58 50 H78 L94 66" fill="none" stroke="#FF4D2E" stroke-width="7" stroke-linejoin="miter" stroke-linecap="square"/>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" role="img" aria-label="FastFrame">
+  <rect width="640" height="160" fill="#F6F6F6"/>
+  <rect x="24" y="24" width="112" height="112" rx="24" fill="#111111"/>
+  <path d="M48 52 H86 L100 66 V104 H62 L48 90 Z" fill="none" stroke="#F5F5F5" stroke-width="6" stroke-linejoin="miter"/>
+  <path d="M70 66 H86 L100 80" fill="none" stroke="#FF4D2E" stroke-width="6" stroke-linejoin="miter" stroke-linecap="square"/>
+  <text x="164" y="98" fill="#111111" font-family="ui-sans-serif, system-ui, sans-serif" font-size="54" font-weight="700" letter-spacing="-1.5">FastFrame</text>
+</svg>

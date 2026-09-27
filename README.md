@@ -1,5 +1,9 @@
 # FastFrame
 
+<p align="left">
+  <img src="brand/logo.svg" alt="FastFrame" width="96" height="96">
+</p>
+
 **A batteries-included Python web framework built on FastAPI.**
 
 FastFrame aims to provide a **Django-like developer experience** from initial development through production, while using **FastAPI** as its HTTP/ASGI foundation. The goal is not to recreate Django feature-for-feature. Instead, FastFrame offers strong conventions, sensible defaults, and a cohesive workflow by composing mature Python libraries underneath.
