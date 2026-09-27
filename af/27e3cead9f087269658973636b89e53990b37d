@@ -1,0 +1,35 @@
+.github/workflows/pylint.yml
+  h_95aea6b4aa8772 1,5,13,24-25
+pyproject.toml
+  s_84047f2da83946::t_08652262e8a0ef 36
+docs/development.md
+  s_84047f2da83946::t_ff85752b70b945 25
+.github/workflows/publish.yml
+  s_84047f2da83946::t_859e84e7805faa 1-35
+.pylintrc
+  h_95aea6b4aa8772 16
+  s_84047f2da83946::t_71e871ed3ca18c 1-15
+mise.toml
+  h_95aea6b4aa8772 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "af27e3cead9f087269658973636b89e53990b37d",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
