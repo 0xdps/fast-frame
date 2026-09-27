@@ -1,0 +1,21 @@
+pyproject.toml
+  s_5ee238a6b2991f::t_e8a2698922a5c7 3
+CHANGELOG.md
+  s_5ee238a6b2991f::t_86f784bca5ec4b 15-27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ef5c1b9dd78c12680ee9a3b3d5478cca5ac4df33",
+  "prompts": {},
+  "sessions": {
+    "s_5ee238a6b2991f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f2be725e-e717-4580-95d5-6502590902a2",
+        "model": "openrouter/OpenRouter/deepseek/deepseek-v4-pro-0813"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
