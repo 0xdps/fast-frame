@@ -1,0 +1,82 @@
+docs/ADMIN_SECURITY_WARNING.md
+  s_84047f2da83946::t_d5dd5c51b036c2 244
+  h_95aea6b4aa8772 203
+docs/requirements.txt
+  s_84047f2da83946::t_2fd495a62536b8 1-2
+docs/public-api-v0.1.md
+  s_84047f2da83946::t_adce5b939b6c6e 1,3
+adr/0007-ssr-for-admin-v0-3.md
+  s_84047f2da83946::t_40a55482588023 83,87-90,94
+  h_95aea6b4aa8772 6-8
+tests/test_admin_integration.py
+  s_84047f2da83946::t_1aadf2d828cdc6 183-184
+docs/roadmap.md
+  s_84047f2da83946::t_5f62fbbe1e9f58 37
+  s_84047f2da83946::t_ffbcc0331c45a7 39
+  s_84047f2da83946::t_0375a9ac627be9 20
+  s_84047f2da83946::t_289fdb164837d0 7-9,11-12
+  s_84047f2da83946::t_21ec3d5f4873b8 10
+  s_84047f2da83946::t_40fe2454326538 6
+adr/0003-thin-orm-with-sqlalchemy-escape-hatch.md
+  s_84047f2da83946::t_b3907925c87a55 13,16,22
+  s_84047f2da83946::t_a1c89f6bbd3fb8 15
+pyproject.toml
+  s_84047f2da83946::t_d4f6ca0235b813 40
+  s_84047f2da83946::t_02792964a5dff3 3
+adr/0005-extensibility-via-installed-apps.md
+  s_84047f2da83946::t_7a8d0967324371 14
+docs/orm-features.md
+  s_84047f2da83946::t_6400d2bfacbded 102
+docs/app-contract.md
+  s_84047f2da83946::t_4c551c64aaa7bc 82
+docs/development.md
+  s_84047f2da83946::t_055dfde774c46c 64
+.gitignore
+  s_84047f2da83946::t_3858fdcdb44cb3 33-35
+README.md
+  s_84047f2da83946::t_3ac78506e8eb03 11-12
+  s_84047f2da83946::t_8302309445be30 81-82
+  s_84047f2da83946::t_1a94291dc11dfc 96
+docs/non-goals.md
+  s_84047f2da83946::t_e4df77734ab0d8 20
+.readthedocs.yaml
+  s_84047f2da83946::t_751e5d5234db67 1-17
+mkdocs.yml
+  s_84047f2da83946::t_16d97a18125305 86-89
+  s_84047f2da83946::t_a11363a06bc27f 1-74,85,90-93
+  s_84047f2da83946::t_a57f4368a0688b 75-84
+CHANGELOG.md
+  s_84047f2da83946::t_accad88f9f48b1 254
+  h_95aea6b4aa8772 270
+  s_84047f2da83946::t_c56d14845ce03c 202
+  s_84047f2da83946::t_e1d833bda807af 8-13,17,19-22
+  s_84047f2da83946::t_d050580d4ce523 95-97,99
+  s_84047f2da83946::t_f27d532c5fb56b 101-117
+  h_95aea6b4aa8772 45
+docs/README.md
+  s_84047f2da83946::t_7b7263452765ce 14
+  s_84047f2da83946::t_e333626e345c84 28
+docs/adr
+  s_84047f2da83946::t_4576cfb278ef96 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "03a0a54da72b1d42871faaad1127e3f7ac145fd9",
+  "prompts": {},
+  "humans": {
+    "h_95aea6b4aa8772": {
+      "author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_84047f2da83946": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "2447b238-15ed-49fc-a5a1-c1e3c775dd67",
+        "model": "openrouter/OpenRouter/x-ai/grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
