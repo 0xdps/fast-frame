@@ -1,6 +1,6 @@
 [project]
 name = "fastframe"
-version = "0.1.0"
+version = "0.1.1"
 description = "A batteries-included Python web framework built on FastAPI."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -55,7 +55,6 @@ packages = ["src/fastframe"]
 
 [tool.hatch.build.targets.wheel.force-include]
 "src/fastframe/admin/static" = "fastframe/admin/static"
-"src/fastframe/admin/templates/admin-ui" = "fastframe/admin/templates/admin-ui"
 
 [tool.hatch.build.targets.sdist]
 include = ["src/fastframe", "README.md", "LICENSE"]
