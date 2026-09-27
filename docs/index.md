@@ -1,6 +1,8 @@
 # FastFrame
 
-![FastFrame](assets/logo.svg){ width="96" }
+<p align="center">
+  <img src="assets/logo.png" alt="FastFrame" width="96" height="96">
+</p>
 
 A batteries-included Python web framework built on FastAPI.
 

@@ -1,7 +1,7 @@
 # FastFrame
 
-<p align="left">
-  <img src="brand/logo.svg" alt="FastFrame" width="96" height="96">
+<p align="center">
+  <img src="brand/logo.png" alt="FastFrame" width="96" height="96">
 </p>
 
 **A batteries-included Python web framework built on FastAPI.**
