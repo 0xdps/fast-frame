@@ -86,6 +86,7 @@ Same endpoints, same response shapes as the admin API (see
 
 ```
 GET    /api/v1/schema
+GET    /api/v1/counts
 GET    /api/v1/{resource}
 GET    /api/v1/{resource}/{id}
 POST   /api/v1/{resource}
@@ -94,6 +95,10 @@ DELETE /api/v1/{resource}/{id}
 DELETE /api/v1/{resource}?ids=a&ids=b
 GET    /api/v1/{resource}/choices/{field}
 ```
+
+`/schema` is descriptor-only (models + field metadata, no row counts);
+`/counts` returns `{"counts": {"<resource>": N, ...}}` for every registered
+model in a single combined query.
 
 ## Revoking a token
 

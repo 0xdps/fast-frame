@@ -53,6 +53,11 @@ export interface ModelSchema {
   permissions: ModelPermissions;
 }
 
+export interface CountsResponse {
+  /** Map of resource name -> row count, from the dedicated /counts endpoint. */
+  counts: Record<string, number>;
+}
+
 export interface SchemaResponse {
   models: ModelSchema[];
 }

@@ -157,6 +157,22 @@ def test_schema_includes_field_metadata(client):
     assert book["listDisplay"] == ["title", "status", "pages"]
 
 
+def test_schema_has_no_total(client):
+    """Row counts live on /counts, not the (static) schema response."""
+    resp = client.get("/api/admin/schema")
+    for model in resp.json()["models"]:
+        assert "total" not in model
+
+
+def test_counts_endpoint_returns_per_model_counts(client, seeded):
+    """One /counts call returns every model's row count (single query)."""
+    resp = client.get("/api/admin/counts")
+    assert resp.status_code == 200
+    counts = resp.json()["counts"]
+    assert counts["apibook"] == 5
+    assert counts["apiauthor"] == 2
+
+
 # ----------------------------------------------------------------------
 # List
 # ----------------------------------------------------------------------

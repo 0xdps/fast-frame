@@ -263,7 +263,7 @@ def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) 
         "resource": resource_name(model),
         "label": model._meta.get("verbose_name", model.__name__),
         "labelPlural": model._meta.get("verbose_name_plural", f"{model.__name__}s"),
-        "appLabel": model._meta.get("app_label", "app"),
+        "appLabel": _app_label(model),
         "pkField": get_pk_name(model),
         "ordering": model._meta.get("ordering", []),
         "fields": fields_schema,
@@ -287,3 +287,22 @@ def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) 
 def resource_name(model: type[Model]) -> str:
     """URL/resource identifier for a model (e.g. Post -> 'post')."""
     return model.__name__.lower()
+
+
+def _app_label(model: type[Model]) -> str:
+    """Return the app label used to group models in the admin.
+
+    Prefers an explicit ``Meta.app_label``. Otherwise derives it from the
+    model's module path: for a plain project app ``todo.models.Todo`` this
+    yields ``todo``; for a framework model ``fastframe.contrib.auth.models.User``
+    it yields ``fastframe.contrib.auth``. This is what lets the admin UI
+    group the (flat) registry per app without requiring every model to set
+    ``app_label`` explicitly.
+    """
+    explicit = model._meta.get("app_label")
+    if explicit:
+        return explicit
+    module = model.__module__
+    if module.endswith(".models"):
+        return module[: -len(".models")]
+    return module.rsplit(".", 1)[0]
