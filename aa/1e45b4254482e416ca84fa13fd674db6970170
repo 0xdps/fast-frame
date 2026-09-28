@@ -1,0 +1,50 @@
+src/fastframe/admin/templates/admin-ui/src/App.tsx
+  s_5ee238a6b2991f::t_019e0d812cadef 2,12-16,21,28-37,46-59,67,71,79-81,83,89-104,116-119
+tests/test_admin_api.py
+  s_5ee238a6b2991f::t_5033852f897e6a 160-172,174-175
+  s_5ee238a6b2991f::t_bf20264dffdda1 173
+src/fastframe/admin/templates/admin-ui/src/api.ts
+  s_5ee238a6b2991f::t_1bebe99c024531 56-58
+  s_5ee238a6b2991f::t_87dfcfe5b38849 59-60
+src/fastframe/project_template/pyproject.toml
+  s_5ee238a6b2991f::t_f504d534d8021f 1-7
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_5ee238a6b2991f::t_299248e4fa71d3 141-144,148-156
+  s_5ee238a6b2991f::t_2d34ba51dc6004 157
+src/fastframe/admin/serializers.py
+  s_5ee238a6b2991f::t_9c4bf6903d10a9 266
+  s_5ee238a6b2991f::t_4349f487ed51c7 290-308
+src/fastframe/admin/static/index.html
+  s_5ee238a6b2991f::t_5c856785a2af2c 14-15
+src/fastframe/admin/static/assets/index-D0nTjovI.css
+  s_5ee238a6b2991f::t_5c856785a2af2c 1
+src/fastframe/admin/static/assets/index-DwC-2KNf.js
+  s_5ee238a6b2991f::t_5c856785a2af2c 1-184
+docs/rest-api.md
+  s_5ee238a6b2991f::t_63d06eabc26a38 89,99-101
+  s_5ee238a6b2991f::t_c34086443d4477 102
+src/fastframe/admin/api.py
+  s_5ee238a6b2991f::t_f6fa1a22a1c529 559-563,568-569,571-573,575-577,579,582-585,591-592,595
+  s_5ee238a6b2991f::t_df99d1b3530868 556-558,564,567,570,574,578,580-581,586-590,593-594,596-597
+  s_5ee238a6b2991f::t_a370401b2c7b11 565-566
+  s_5ee238a6b2991f::t_9d9cd9ac432c11 143-152,162-180
+  s_5ee238a6b2991f::t_7aacb762c8e737 17
+  s_5ee238a6b2991f::t_b44b3e3a634109 137-140
+  s_5ee238a6b2991f::t_015c7c9459c420 181
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "aa1e45b4254482e416ca84fa13fd674db6970170",
+  "prompts": {},
+  "sessions": {
+    "s_5ee238a6b2991f": {
+      "agent_id": {
+        "tool": "github-copilot",
+        "id": "f2be725e-e717-4580-95d5-6502590902a2",
+        "model": "openrouter/OpenRouter/deepseek/deepseek-v4-pro-0813"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
