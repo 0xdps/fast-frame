@@ -14,6 +14,7 @@ reachable from both — but are gated by different auth dependencies:
 
 Endpoints (relative to whichever prefix the router is mounted at):
     GET    /schema                      All registered models + field schemas
+    GET    /counts                      Per-model row counts (single query)
     GET    /{resource}                  List (paging, sort, search, filters)
     GET    /{resource}/{id}             Retrieve one
     POST   /{resource}                  Create (422 on validation error)
@@ -133,11 +134,22 @@ def _build_crud_router(
     # ------------------------------------------------------------------
 
     @router.get("/schema")
-    async def get_schema(current_user: Any = Depends(auth_dependency)) -> dict[str, Any]:
+    async def get_schema(
+        session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
+    ) -> dict[str, Any]:
         """Return metadata for every registered model.
 
-        The React admin uses this to auto-configure resources, forms,
-        list columns, filters, and permissions.
+        The React admin uses this single call to auto-configure resources,
+        forms, list columns, filters, and permissions. It is purely
+        descriptor data — no database queries per model, and it is stable
+        for the lifetime of the process (models are registered at import
+        time), so it can safely be cached/re-served without re-processing.
+
+        Per-model row counts intentionally live on the separate ``/counts``
+        endpoint (one combining query), so this endpoint never triggers a
+        ``COUNT(*)`` per model and never changes shape just because rows
+        were added or removed.
         """
         registry = admin_site.get_registry()
         return {
@@ -146,6 +158,26 @@ def _build_crud_router(
                 for model, model_admin in registry.items()
             ]
         }
+
+    # ------------------------------------------------------------------
+    # Counts
+    # ------------------------------------------------------------------
+
+    @router.get("/counts")
+    async def get_counts(
+        session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
+    ) -> dict[str, Any]:
+        """Return ``{resource: row_count}`` for every registered model.
+
+        Computed with a *single* SQL round trip (a UNION ALL of per-table
+        ``COUNT(*)``), so counting N models costs one query, not N. The
+        dashboard calls this once, separately from ``/schema``, so the
+        (stable, cacheable) schema is never re-sent just because row counts
+        changed.
+        """
+        registry = admin_site.get_registry()
+        return {"counts": _resource_counts(session, registry)}
 
     # ------------------------------------------------------------------
     # List
@@ -519,6 +551,48 @@ def _audit(
 # ----------------------------------------------------------------------
 # Helpers
 # ----------------------------------------------------------------------
+
+
+def _resource_counts(session: Any, registry: dict[type, Any]) -> dict[str, int]:
+    """Return ``{resource: row_count}`` for every registered model in one query.
+
+    Emits a single ``SELECT ... UNION ALL SELECT ...`` so counting N models
+    costs one DB round trip instead of N. Models whose table has not been
+    created yet (or lacks ``__tablename__``) are skipped, so the dashboard
+    degrades gracefully during early development before ``manage.py migrate``
+    has run.
+    """
+    from sqlalchemy import func, literal, select, union_all
+    from sqlalchemy import inspect as sa_inspect
+
+    # (label, Table) pairs for every model that actually maps to a table.
+    labeled_tables: list[tuple[str, Any]] = []
+    for model in registry:
+        try:
+            table = sa_inspect(model).local_table
+        except Exception:
+            continue
+        if table is None:
+            continue
+        labeled_tables.append((resource_name(model), table))
+
+    if not labeled_tables:
+        return {}
+
+    statements = [
+        select(literal(label).label("resource"), func.count().label("total")).select_from(table)
+        for label, table in labeled_tables
+    ]
+    combined = union_all(*statements)
+
+    try:
+        rows = session.execute(combined).all()
+    except Exception:
+        # A missing table (or schema drift) breaks the combined query; fall
+        # back to an empty map rather than 500ing the schema endpoint.
+        return {}
+
+    return {str(resource): int(total) for resource, total in rows}
 
 
 def _find_resource(resource: str) -> tuple[type, Any]:
