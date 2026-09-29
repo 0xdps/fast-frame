@@ -49,6 +49,30 @@
  * (list tables, dropdowns, textareas, the sidebar, etc.), not just a few
  * hand-picked containers.
  */
+/*
+ * Disable the native rubber-band/bounce effect (trackpad scrolling past a
+ * container's top/bottom edge, which briefly reveals empty space beyond
+ * the actual content before snapping back), and stop scroll "chaining" —
+ * scrolling past an inner panel's edge bleeding into whatever's behind it
+ * — on the two containers that are actually meant to scroll: the main
+ * content area and the sidebar's own internal scroller (see the "app
+ * shell" rules below, which make `.RaLayout-content` — not the page —
+ * the real scroll container).
+ *
+ * IMPORTANT: this must stay scoped to specific containers, NOT applied
+ * via a blanket `*` selector. `overscroll-behavior: none`/`contain` also
+ * blocks legitimate scroll *chaining*, so setting it on every element
+ * breaks scrolling anywhere a nested MUI wrapper (e.g. a form's `Card`)
+ * has any scrollable region of its own between the content and the real
+ * scroll container — scrolling gets "stuck" there instead of passing
+ * through.
+ */
+.RaLayout-content,
+.frame-menu-scroll,
+.RaSidebar-fixed {
+  overscroll-behavior: none;
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar-thumb) transparent;
@@ -99,11 +123,47 @@
   background: rgba(238, 241, 246, 0.38);
 }
 
+/*
+ * "App shell" layout: the page itself never scrolls — `html`/`body`/`#root`
+ * are pinned to exactly the viewport height with `overflow: hidden` — so
+ * that scrolling happens *only* inside the two panels that should own it:
+ * the sidebar's own scroller (`.frame-menu-scroll`, already `flex: 1` +
+ * `min-height: 0` + `overflow-y: auto` — see below) and react-admin's main
+ * content area (`.RaLayout-content`, made scrollable here). Without this,
+ * `.RaLayout-content` has no height bound of its own (react-admin's
+ * `Layout` only sets `flexGrow`/`flexBasis`, not `height`), so it — and
+ * everything above it up to `html` — just grows to fit the content instead
+ * of scrolling internally, making the *page* scroll instead.
+ *
+ * `.layout` is react-admin's own root element (`clsx('layout', className)`
+ * in `Layout.js`); `.RaLayout-appFrame`/`.RaLayout-contentWithSidebar` are
+ * the flex containers in between — each needs `min-height: 0` for the same
+ * reason `.frame-menu-scroll` needs it (a `flexGrow` child won't shrink
+ * below its content's natural height without it, so the bound from `html`
+ * down to `.RaLayout-content` would otherwise break at the first missing
+ * link).
+ */
 html,
 body,
 #root {
   height: 100%;
   margin: 0;
+  overflow: hidden;
+}
+
+.layout {
+  height: 100%;
+  overflow: hidden;
+}
+
+.RaLayout-appFrame,
+.RaLayout-contentWithSidebar {
+  min-height: 0;
+}
+
+.RaLayout-content {
+  min-height: 0;
+  overflow-y: auto;
 }
 
 body {
