@@ -1,0 +1,49 @@
+src/fastframe/admin/static/index.html
+  s_8de26d66febf8a::t_09bc9115ce6951 14
+  s_8de26d66febf8a::t_5f322589818a6a 15
+CHANGELOG.md
+  s_8de26d66febf8a::t_5081edb312b0f0 40-50
+src/fastframe/admin/static/assets/index-CFsoBbXN.css
+  s_8de26d66febf8a::t_5f322589818a6a 1
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_8de26d66febf8a::t_9ac83fcb75c294 296
+  s_8de26d66febf8a::t_f10f950ce154ea 266-267
+  s_8de26d66febf8a::t_13790431ccd77f 347
+  s_8de26d66febf8a::t_699bfb7f985790 205
+  s_8de26d66febf8a::t_bd4791bb114756 251
+  s_8de26d66febf8a::t_81481b8d982dc2 425-426,430-431
+  s_8de26d66febf8a::t_83e887a80c9fa2 281
+  s_8de26d66febf8a::t_676301a7b7e7c9 1-39,48-49
+  s_8de26d66febf8a::t_ce54b8e0efbf76 217
+  s_8de26d66febf8a::t_ef831d9e5dfe01 469-470
+  s_8de26d66febf8a::t_87aeb1069fc603 486,490,494-495
+  s_8de26d66febf8a::t_09d25d5555bdae 522-523
+  s_8de26d66febf8a::t_d36d139dbfcba3 447-448
+  s_8de26d66febf8a::t_d8b5d27bd67a8a 378
+  s_8de26d66febf8a::t_c782f3390c2c27 330
+  s_8de26d66febf8a::t_f908d3f2955fed 412
+src/fastframe/admin/static/assets/index-DBF8U38U.js
+  s_8de26d66febf8a::t_09bc9115ce6951 1-184
+src/fastframe/admin/templates/admin-ui/src/userMenu.tsx
+  s_8de26d66febf8a::t_615ec16172e849 33-40
+  s_8de26d66febf8a::t_2c88259ea170f5 1
+src/fastframe/admin/templates/admin-ui/src/theme.ts
+  s_8de26d66febf8a::t_71411d13be7eb0 165-172
+  s_8de26d66febf8a::t_96f4155a8a5500 78-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "cd158ce803f214aa72bdb1d2fed28f55d4797c46",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
