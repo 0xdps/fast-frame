@@ -7,13 +7,13 @@ import { formFields, buildResourceViews, type ResourceViews } from "./resources"
 
 const tones = ["#3157E8", "#0F9F6E", "#6D5BD0", "#0E7490", "#C2410C"];
 
-function toneFor(name: string): string {
+export function toneFor(name: string): string {
   let index = 0;
   for (const char of name) index = (index + char.charCodeAt(0)) % tones.length;
   return tones[index] ?? tones[0];
 }
 
-function initials(first: unknown, last: unknown, username: unknown): string {
+export function initials(first: unknown, last: unknown, username: unknown): string {
   const a = String(first ?? "").trim();
   const b = String(last ?? "").trim();
   if (a && b) return `${a[0]}${b[0]}`.toUpperCase();
