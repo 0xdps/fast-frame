@@ -1,3 +1,42 @@
+:root {
+  --content-bg: #f4f7fb;
+  --surface: #ffffff;
+  --surface-border: #e3e8ee;
+  --divider: #eef1f5;
+  --text-primary: #172033;
+  --text-muted: #5c6b7a;
+  --input-bg: #ffffff;
+  --input-border: #d5dde6;
+  --pill-on-bg: #e7f7f1;
+  --pill-on-fg: #0b7a54;
+  --pill-off-bg: #fdecec;
+  --pill-off-fg: #a33b42;
+}
+
+/*
+ * Most of the app is styled with plain MUI components, which already read
+ * `theme.palette` and repaint themselves for dark mode automatically (see
+ * `theme.ts`'s `darkTheme`). The handful of hand-styled cards below
+ * (profile header, password panel, activity panel, edit forms) aren't MUI
+ * components, so they can't do that — they're themed off these CSS
+ * variables instead. `userMenu.tsx` keeps `[data-theme]` on `<html>` in
+ * sync with the actual (possibly system-derived) theme mode.
+ */
+[data-theme="dark"] {
+  --content-bg: #0f1522;
+  --surface: #161d2e;
+  --surface-border: #28324a;
+  --divider: #28324a;
+  --text-primary: #eef1f6;
+  --text-muted: #93a0b3;
+  --input-bg: #0f1522;
+  --input-border: #28324a;
+  --pill-on-bg: rgba(62, 207, 149, 0.16);
+  --pill-on-fg: #3ecf95;
+  --pill-off-bg: rgba(239, 106, 114, 0.16);
+  --pill-off-fg: #ef6a72;
+}
+
 html,
 body,
 #root {
@@ -6,8 +45,8 @@ body,
 }
 
 body {
-  background: #f4f7fb;
-  color: #172033;
+  background: var(--content-bg);
+  color: var(--text-primary);
 }
 
 .boot-message {
@@ -163,7 +202,7 @@ body {
 }
 
 .RaLayout-content {
-  background: #f4f7fb;
+  background: var(--content-bg);
   padding: 8px 20px 28px;
 }
 
@@ -175,7 +214,7 @@ body {
 
 .RaList-content {
   border-radius: 16px;
-  border: 1px solid #e3e8ee;
+  border: 1px solid var(--surface-border);
   box-shadow: none;
   overflow: hidden;
 }
@@ -209,7 +248,7 @@ body {
 
 .home-hint {
   margin: 8px 0 0;
-  color: #5c6b7a;
+  color: var(--text-muted);
 }
 
 .eyebrow {
@@ -224,8 +263,8 @@ body {
 
 .activity-panel {
   margin-top: 24px;
-  background: #ffffff;
-  border: 1px solid #e3e8ee;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
   border-radius: 16px;
   padding: 20px 24px 8px;
 }
@@ -239,7 +278,7 @@ body {
 }
 
 .activity-empty {
-  color: #5c6b7a;
+  color: var(--text-muted);
   padding: 8px 0 16px;
 }
 
@@ -254,7 +293,7 @@ body {
   align-items: flex-start;
   gap: 12px;
   padding: 12px 0;
-  border-top: 1px solid #eef1f5;
+  border-top: 1px solid var(--divider);
 }
 
 .activity-item:first-child {
@@ -288,7 +327,7 @@ body {
 
 .activity-body p {
   margin: 0;
-  color: #172033;
+  color: var(--text-primary);
 }
 
 .activity-body a {
@@ -305,7 +344,7 @@ body {
 }
 
 .activity-target {
-  color: #5c6b7a;
+  color: var(--text-muted);
 }
 
 .activity-meta {
@@ -336,7 +375,7 @@ body {
 }
 
 .user-menu-email {
-  color: #5c6b7a;
+  color: var(--text-muted);
   font-size: 0.85rem;
 }
 
@@ -370,7 +409,7 @@ body {
 
 .user-email {
   margin: 2px 0 8px;
-  color: #5c6b7a;
+  color: var(--text-muted);
   font-size: 0.95rem;
 }
 
@@ -383,13 +422,13 @@ body {
 }
 
 .pill.on {
-  background: #e7f7f1;
-  color: #0b7a54;
+  background: var(--pill-on-bg);
+  color: var(--pill-on-fg);
 }
 
 .pill.off {
-  background: #fdecec;
-  color: #a33b42;
+  background: var(--pill-off-bg);
+  color: var(--pill-off-fg);
 }
 
 .user-profile {
@@ -405,8 +444,8 @@ body {
   gap: 16px;
   width: 100%;
   box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #e3e8ee;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
   border-radius: 16px;
   padding: 20px 24px;
 }
@@ -427,8 +466,8 @@ body {
 .password-panel {
   width: 100%;
   box-sizing: border-box;
-  background: #ffffff;
-  border: 1px solid #e3e8ee;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
   border-radius: 16px;
   padding: 20px 24px;
   display: grid;
@@ -444,15 +483,16 @@ body {
   display: grid;
   gap: 6px;
   font-size: 0.85rem;
-  color: #5c6b7a;
+  color: var(--text-muted);
 }
 
 .password-panel input {
-  border: 1px solid #d5dde6;
+  border: 1px solid var(--input-border);
   border-radius: 10px;
   padding: 10px 12px;
   font: inherit;
-  color: #172033;
+  background: var(--input-bg);
+  color: var(--text-primary);
 }
 
 .password-error {
@@ -479,8 +519,8 @@ body {
 
 .user-edit .RaSimpleForm-root,
 .user-create form {
-  background: #ffffff;
-  border: 1px solid #e3e8ee;
+  background: var(--surface);
+  border: 1px solid var(--surface-border);
   border-radius: 16px;
   width: 100%;
 }

@@ -37,6 +37,17 @@ feature bumps the minor version.
 - `GET /schema` no longer opens an unused database session — it depended
   on one but never used it, contradicting its own "no database queries"
   docstring and adding needless per-request DB overhead.
+- Admin dark mode: the new "Recent activity" panel, user profile header,
+  password-change panel, and user edit/create form were hand-styled with
+  hardcoded light colors, so toggling dark mode left them stuck white
+  against an otherwise-dark page. The Save/Delete toolbar on edit/create
+  forms had the same problem for a different reason — react-admin's own
+  default theme (spread as a base into both our light and dark themes)
+  hardcodes that toolbar's background regardless of mode. All of the
+  above now track the active theme (`theme.ts`'s `RaToolbar` override for
+  the toolbar; new CSS variables in `index.css`, kept in sync with the
+  resolved theme mode via a `data-theme` attribute set in `userMenu.tsx`,
+  for everything else).
 
 ## [0.1.2] - 2026-09-27
 

@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import {
   Divider,
   ListItemIcon,
@@ -30,6 +30,14 @@ export function makeUserMenu(models: ModelSchema[]) {
   return function UserMenu() {
     const user = useCurrentUser();
     const [theme, setTheme] = useTheme();
+    // `useTheme()` resolves to the mode actually being rendered (explicit
+    // choice, or the system preference default) — mirror it onto <html>
+    // so plain CSS (index.css) can theme the hand-styled cards that
+    // aren't MUI components (profile header, password panel, activity
+    // panel, etc.) via `[data-theme="dark"]`.
+    useEffect(() => {
+      document.documentElement.dataset.theme = theme;
+    }, [theme]);
     const navigate = useNavigate();
     const [anchor, setAnchor] = useState<HTMLElement | null>(null);
 

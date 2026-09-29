@@ -75,6 +75,15 @@ export const theme = createTheme({
         root: { borderRadius: 10, backgroundColor: "#FFFFFF" },
       },
     },
+    // react-admin's own `defaultTheme` (spread above) is actually its
+    // *light* theme and hardcodes this to `grey[300]` regardless of mode
+    // (see ra-ui-materialui's `defaultTheme.js`). Override explicitly so
+    // the edit/create Save-Delete toolbar matches our surface color.
+    RaToolbar: {
+      styleOverrides: {
+        root: { backgroundColor: "#FFFFFF" },
+      },
+    },
   },
 });
 
@@ -151,6 +160,14 @@ export const darkTheme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: { borderRadius: 10, backgroundColor: "#161D2E" },
+      },
+    },
+    // Same fix as `theme` above: `defaultTheme` is react-admin's *light*
+    // theme, so its `RaToolbar` override (`grey[300]`) leaks into dark
+    // mode unless we override it here too.
+    RaToolbar: {
+      styleOverrides: {
+        root: { backgroundColor: "#161D2E" },
       },
     },
   },
