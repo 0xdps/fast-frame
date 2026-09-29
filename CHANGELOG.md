@@ -48,6 +48,13 @@ feature bumps the minor version.
   the toolbar; new CSS variables in `index.css`, kept in sync with the
   resolved theme mode via a `data-theme` attribute set in `userMenu.tsx`,
   for everything else).
+- Admin sidebar: the model list didn't actually scroll on its own (a
+  missing `min-height: 0` on a flex item let it grow past the sidebar's
+  height instead of shrinking to fit), so once its content overflowed,
+  the whole sidebar — including the brand and search box — scrolled as
+  one unit instead of staying pinned while only the list scrolled.
+  Scrollbars app-wide (sidebar included) are now also slim and
+  theme-colored instead of the browser/OS default.
 
 ## [0.1.2] - 2026-09-27
 

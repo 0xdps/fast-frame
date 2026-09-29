@@ -11,6 +11,8 @@
   --pill-on-fg: #0b7a54;
   --pill-off-bg: #fdecec;
   --pill-off-fg: #a33b42;
+  --scrollbar-thumb: rgba(23, 32, 51, 0.18);
+  --scrollbar-thumb-hover: rgba(23, 32, 51, 0.32);
 }
 
 /*
@@ -35,6 +37,66 @@
   --pill-on-fg: #3ecf95;
   --pill-off-bg: rgba(239, 106, 114, 0.16);
   --pill-off-fg: #ef6a72;
+  --scrollbar-thumb: rgba(238, 241, 246, 0.16);
+  --scrollbar-thumb-hover: rgba(238, 241, 246, 0.28);
+}
+
+/*
+ * Custom scrollbars everywhere (instead of the browser/OS default), themed
+ * off the same variables as everything else. Firefox uses `scrollbar-*`;
+ * Chromium/Safari use the `::-webkit-scrollbar*` pseudo-elements — both are
+ * declared for every element so this applies uniformly across the app
+ * (list tables, dropdowns, textareas, the sidebar, etc.), not just a few
+ * hand-picked containers.
+ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/*
+ * The sidebar keeps its own dark background regardless of light/dark mode
+ * (see `.frame-menu` below), so its scrollbar needs a permanently-light-on-
+ * dark thumb rather than the mode-dependent one above.
+ */
+.frame-menu-scroll,
+.RaSidebar-fixed {
+  scrollbar-color: rgba(238, 241, 246, 0.22) transparent;
+}
+
+.frame-menu-scroll::-webkit-scrollbar-thumb,
+.RaSidebar-fixed::-webkit-scrollbar-thumb {
+  background: rgba(238, 241, 246, 0.22);
+}
+
+.frame-menu-scroll::-webkit-scrollbar-thumb:hover,
+.RaSidebar-fixed::-webkit-scrollbar-thumb:hover {
+  background: rgba(238, 241, 246, 0.38);
 }
 
 html,
@@ -58,7 +120,11 @@ body {
 .frame-menu {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  /* Exact height (not min-height) so `.frame-menu-scroll`'s `flex: 1` below
+     has a real bound to grow/shrink against — otherwise the model list
+     just grows past the viewport instead of scrolling internally, taking
+     the brand/search header along with it. */
+  height: 100%;
   background: #172033;
 }
 
@@ -128,6 +194,12 @@ body {
 
 .frame-menu-scroll {
   flex: 1;
+  /* Without this, a flex item's automatic min-height keeps it from ever
+     shrinking below its content's natural height, so it just grows past
+     the sidebar's fixed height instead of scrolling internally — dragging
+     the brand/search header (siblings in the same flex column) along with
+     it as the *sidebar itself* scrolls. */
+  min-height: 0;
   overflow-y: auto;
   padding-bottom: 12px;
 }
