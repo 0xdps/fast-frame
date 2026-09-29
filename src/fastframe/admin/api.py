@@ -49,7 +49,7 @@ from fastframe.admin.serializers import (
     serialize_instance,
     serialize_value,
 )
-from fastframe.admin.site import admin_site
+from fastframe.admin.site import ModelAdmin, admin_site
 from fastframe.db.session import _get_session_factory, _session_ctx
 from fastframe.models.exceptions import DoesNotExist, ValidationError
 
@@ -135,7 +135,6 @@ def _build_crud_router(
 
     @router.get("/schema")
     async def get_schema(
-        session=Depends(_admin_session),
         current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
         """Return metadata for every registered model.
@@ -165,19 +164,24 @@ def _build_crud_router(
 
     @router.get("/counts")
     async def get_counts(
+        request: Request,
         session=Depends(_admin_session),
         current_user: Any = Depends(auth_dependency),
     ) -> dict[str, Any]:
-        """Return ``{resource: row_count}`` for every registered model.
+        """Return ``{resource: row_count}`` for every model the caller may view.
 
-        Computed with a *single* SQL round trip (a UNION ALL of per-table
-        ``COUNT(*)``), so counting N models costs one query, not N. The
-        dashboard calls this once, separately from ``/schema``, so the
-        (stable, cacheable) schema is never re-sent just because row counts
-        changed.
+        Computed with a single combined SQL round trip for the common case
+        (models with the default, unfiltered queryset); a model with a
+        custom ``get_queryset()`` override is counted individually through
+        that queryset instead, and a model the caller lacks view permission
+        for is omitted entirely — the same authorization ``/{resource}``
+        enforces. The dashboard calls this once, separately from
+        ``/schema``, so the (stable, cacheable) schema is never re-sent just
+        because row counts changed.
         """
+        _session_ctx.set(session)
         registry = admin_site.get_registry()
-        return {"counts": _resource_counts(session, registry)}
+        return {"counts": _resource_counts(session, registry, current_user, request)}
 
     # ------------------------------------------------------------------
     # List
@@ -553,46 +557,78 @@ def _audit(
 # ----------------------------------------------------------------------
 
 
-def _resource_counts(session: Any, registry: dict[type, Any]) -> dict[str, int]:
-    """Return ``{resource: row_count}`` for every registered model in one query.
+def _resource_counts(
+    session: Any, registry: dict[type, Any], current_user: Any, request: Any = None
+) -> dict[str, int]:
+    """Return ``{resource: row_count}`` for every model the caller may view.
 
-    Emits a single ``SELECT ... UNION ALL SELECT ...`` so counting N models
-    costs one DB round trip instead of N. Models whose table has not been
-    created yet (or lacks ``__tablename__``) are skipped, so the dashboard
-    degrades gracefully during early development before ``manage.py migrate``
-    has run.
+    Two rules, matching ``/{resource}`` (the list endpoint) exactly:
+
+    - A model the caller lacks ``get_has_view_permission`` for is omitted
+      entirely — the same authorization ``/{resource}`` enforces, so
+      ``/counts`` can't be used to learn row totals for a model a 403
+      already hides.
+    - A model with a custom (row-filtering) ``get_queryset()`` override is
+      counted through that queryset, not the raw table, so its total
+      matches what ``/{resource}`` would actually list.
+
+    Models using the default, unfiltered ``get_queryset()`` are still
+    counted together in a single combined ``SELECT ... UNION ALL SELECT``
+    (one DB round trip for the common case, not one per model). Only
+    models with a genuine queryset override cost an extra query each.
+    Models whose table has not been created yet (or lacks
+    ``__tablename__``) are skipped, so the dashboard degrades gracefully
+    during early development before ``manage.py migrate`` has run.
     """
     from sqlalchemy import func, literal, select, union_all
     from sqlalchemy import inspect as sa_inspect
 
-    # (label, Table) pairs for every model that actually maps to a table.
+    counts: dict[str, int] = {}
+    # (label, Table) pairs for every permitted model with the default,
+    # unfiltered queryset — batched into one combined query below.
     labeled_tables: list[tuple[str, Any]] = []
-    for model in registry:
+
+    for model, model_admin in registry.items():
+        if not model_admin.get_has_view_permission(current_user):
+            continue
+        label = resource_name(model)
+
+        if type(model_admin).get_queryset is ModelAdmin.get_queryset:
+            try:
+                table = sa_inspect(model).local_table
+            except Exception:
+                continue
+            if table is None:
+                continue
+            labeled_tables.append((label, table))
+        else:
+            # Custom get_queryset(): may filter rows (e.g. a tenant or
+            # "published only" scope), so count it directly rather than
+            # the raw table.
+            try:
+                counts[label] = model_admin.get_queryset(request).count()
+            except Exception:
+                continue
+
+    if labeled_tables:
+        statements = [
+            select(literal(label).label("resource"), func.count().label("total")).select_from(
+                table
+            )
+            for label, table in labeled_tables
+        ]
+        combined = union_all(*statements)
+
         try:
-            table = sa_inspect(model).local_table
+            rows = session.execute(combined).all()
         except Exception:
-            continue
-        if table is None:
-            continue
-        labeled_tables.append((resource_name(model), table))
+            # A missing table (or schema drift) breaks the combined query;
+            # the models counted individually above are still returned.
+            rows = []
+        for resource, total in rows:
+            counts[str(resource)] = int(total)
 
-    if not labeled_tables:
-        return {}
-
-    statements = [
-        select(literal(label).label("resource"), func.count().label("total")).select_from(table)
-        for label, table in labeled_tables
-    ]
-    combined = union_all(*statements)
-
-    try:
-        rows = session.execute(combined).all()
-    except Exception:
-        # A missing table (or schema drift) breaks the combined query; fall
-        # back to an empty map rather than 500ing the schema endpoint.
-        return {}
-
-    return {str(resource): int(total) for resource, total in rows}
+    return counts
 
 
 def _find_resource(resource: str) -> tuple[type, Any]:

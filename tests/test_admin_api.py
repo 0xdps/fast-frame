@@ -173,6 +173,22 @@ def test_counts_endpoint_returns_per_model_counts(client, seeded):
     assert counts["apiauthor"] == 2
 
 
+def test_counts_respects_custom_queryset_scope(client, seeded, monkeypatch):
+    """Regression: /counts used to COUNT(*) the raw table for every model,
+    ignoring a custom, row-filtering get_queryset() override — so its total
+    could exceed (or otherwise not match) what /{resource} actually lists."""
+
+    def published_only(self, request=None):
+        return ApiBook.objects.filter(status="published")
+
+    monkeypatch.setattr(ApiBookAdmin, "get_queryset", published_only)
+
+    resp = client.get("/api/admin/counts")
+    assert resp.status_code == 200
+    # seeded() creates 5 books, alternating status; i=0,2,4 are "published".
+    assert resp.json()["counts"]["apibook"] == 3
+
+
 # ----------------------------------------------------------------------
 # List
 # ----------------------------------------------------------------------

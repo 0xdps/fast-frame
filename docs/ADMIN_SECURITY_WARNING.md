@@ -138,7 +138,11 @@ update).
   (the generic REST API) lets any active user read the full audit log
   (`GET /api/v1/auditlog`), including other users' actions. Tighten
   `AuditLogAdmin.has_view_permission` if that's not acceptable for your
-  project.
+  project. `GET /api/v1/counts` (and `/api/admin/counts`) applies the same
+  `has_view_permission` check per model before including its row count, so
+  it does not add a *new* exposure here — but it's still one call that
+  surfaces row totals (including `AuditLog`'s) for every model the caller
+  can view, rather than one resource at a time.
 
 ---
 

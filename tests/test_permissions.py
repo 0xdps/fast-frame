@@ -256,6 +256,32 @@ def test_hard_override_denies_even_with_matching_permission(client):
     assert resp.status_code == 403
 
 
+def test_counts_endpoint_enforces_view_permission(client):
+    """Regression: /counts used to return row counts for every model
+    regardless of has_view_permission — a caller denied /{resource} could
+    still read that model's total via /counts."""
+    _create_user("mallory")
+    token = _token_for(client, "mallory")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    resp = client.get("/api/v1/counts", headers=headers)
+    assert resp.status_code == 200
+    assert "widget" not in resp.json()["counts"]
+
+
+def test_counts_endpoint_includes_permitted_models(client):
+    _create_user("nina", permissions=["shop.view_widget"])
+    token = _token_for(client, "nina")
+    headers = {"Authorization": f"Bearer {token}"}
+
+    with session_scope():
+        Widget(name="thing").save()
+
+    resp = client.get("/api/v1/counts", headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["counts"]["widget"] == 1
+
+
 def test_schema_permissions_reflect_current_user(client):
     _create_user("frank", permissions=["shop.add_widget"])
     token = _token_for(client, "frank")
