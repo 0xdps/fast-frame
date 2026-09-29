@@ -71,6 +71,22 @@ feature bumps the minor version.
   its own theme-dependent default color independently of whatever color
   we set on the link. The sidebar keeps a permanently dark background
   regardless of theme, so its icons now stay fixed too, same as the text.
+- Admin: on a short window, scrolling the main content or the sidebar's
+  menu list past its top/bottom edge triggered the browser's native
+  rubber-band bounce, briefly revealing empty space beyond the actual
+  content (and letting the scroll "chain" into the page behind it).
+  Fixed by turning the admin into a proper fixed "app shell": `html`/
+  `body`/`#root` are now pinned to exactly the viewport height with
+  `overflow: hidden` (the page itself never scrolls), and react-admin's
+  main content area (`.RaLayout-content`) is made its own bounded,
+  independently-scrollable box instead — the same pattern the sidebar's
+  menu list already used. `overscroll-behavior: none` on just those two
+  real scroll containers (main content, sidebar list) then disables the
+  bounce without breaking scroll *chaining* elsewhere — an earlier,
+  broader attempt at this fix applied it to every element via a `*`
+  selector, which also blocks chaining, and ended up making forms
+  unscrollable whenever a nested MUI wrapper had any scrollable region
+  of its own between the content and the page.
 
 ## [0.1.2] - 2026-09-27
 
