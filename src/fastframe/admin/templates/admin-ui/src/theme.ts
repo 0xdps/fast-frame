@@ -79,3 +79,81 @@ export const theme = createTheme({
 });
 
 Object.assign(theme, { sidebar: { width: 248, closedWidth: 64 } });
+
+const darkInk = "#EEF1F6";
+const darkPaper = "#0F1522";
+
+export const darkTheme = createTheme({
+  ...defaultTheme,
+  palette: {
+    ...defaultTheme.palette,
+    mode: "dark",
+    primary: { main: "#6E8CFF", contrastText: "#0F1522" },
+    secondary: { main: "#3ECF95", contrastText: "#0F1522" },
+    background: { default: darkPaper, paper: "#161D2E" },
+    text: { primary: darkInk, secondary: "#93A0B3" },
+    divider: "#28324A",
+    error: { main: "#EF6A72" },
+  },
+  shape: { borderRadius: 12 },
+  typography: {
+    ...defaultTheme.typography,
+    fontFamily: '"Figtree", "Segoe UI", sans-serif',
+    h4: { fontFamily: '"Outfit", sans-serif', fontWeight: 600, letterSpacing: "-0.03em" },
+    h5: { fontFamily: '"Outfit", sans-serif', fontWeight: 600, letterSpacing: "-0.03em" },
+    h6: { fontFamily: '"Outfit", sans-serif', fontWeight: 600, letterSpacing: "-0.02em" },
+    button: { fontFamily: '"Outfit", sans-serif', fontWeight: 600, textTransform: "none" },
+  },
+  components: {
+    ...defaultTheme.components,
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#161D2E",
+          color: darkInk,
+          boxShadow: "none",
+          borderBottom: "1px solid #28324A",
+        },
+        colorInherit: {
+          backgroundColor: "#161D2E",
+          color: darkInk,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: { borderRadius: 10, textTransform: "none", fontWeight: 600, boxShadow: "none" },
+        contained: { boxShadow: "none" },
+      },
+    },
+    MuiPaper: {
+      styleOverrides: {
+        root: { backgroundImage: "none" },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          fontFamily: '"Outfit", sans-serif',
+          fontWeight: 600,
+          fontSize: "0.8rem",
+          color: "#93A0B3",
+          backgroundColor: "#161D2E",
+        },
+      },
+    },
+    MuiTextField: {
+      defaultProps: { variant: "outlined", size: "small" },
+    },
+    MuiFormControl: {
+      defaultProps: { variant: "outlined", size: "small" },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: { borderRadius: 10, backgroundColor: "#161D2E" },
+      },
+    },
+  },
+});
+
+Object.assign(darkTheme, { sidebar: { width: 248, closedWidth: 64 } });

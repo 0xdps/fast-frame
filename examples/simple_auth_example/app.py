@@ -29,7 +29,7 @@ os.environ.setdefault("FASTFRAME_SETTINGS_MODULE", "config.settings")
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from fastframe.admin import get_admin_api_router, get_admin_router
+from fastframe.admin import get_admin_api_router, get_admin_auth_router, get_admin_router
 from fastframe.core.bootstrap import bootstrap
 from fastframe.models import Model
 
@@ -71,6 +71,10 @@ async def startup():
 # ------------------------------------------------------------------
 # Admin setup - demonstrates two deployment options
 # ------------------------------------------------------------------
+
+# Login/logout/me (unprotected, must be registered before the CRUD router's
+# /{resource} catch-all)
+app.include_router(get_admin_auth_router())
 
 # Option 1: Static admin at /admin/ (pre-built, zero config)
 app.include_router(get_admin_router())

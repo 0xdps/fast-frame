@@ -7,9 +7,13 @@
 
 | File | Change |
 | --- | --- |
-| `src/theme.ts` | Colors, type, component defaults |
-| `src/layout.tsx` | Sidebar brand and app bar |
-| `src/index.css` | Layout of the dashboard and user profile |
+| `src/theme.ts` | Colors, type, component defaults. `theme` (light) and `darkTheme` are both exported and passed to `<Admin>`, so the dark-mode toggle in the user menu works out of the box. |
+| `src/layout.tsx` | Sidebar (search box, models grouped by app, collapsible sections) and the app bar (delegates the user menu to `userMenu.tsx`) |
+| `src/dashboard.tsx` | The "Overview" landing page — deliberately mostly empty, just a greeting plus `activity.tsx`'s recent-activity panel |
+| `src/activity.tsx` | Recent-activity panel, reads the `AuditLog` model (skips rendering if the current user can't view it) |
+| `src/userMenu.tsx` | Top-right avatar menu: profile link, dark-mode toggle, log out |
+| `src/currentUser.ts` | `useCurrentUser()` — fetches `GET /me` for the user menu |
+| `src/index.css` | Layout of the dashboard, sidebar, user menu, and user profile |
 | `src/users.tsx` | Profile page and change-password form. Used when the model name is `User` or `SimpleUser`. |
 | `src/resources.tsx` | Generated list columns and form inputs |
 | `src/App.tsx` | Resource registration. The default router is a hash router, so routes look like `/admin/#/user`. |

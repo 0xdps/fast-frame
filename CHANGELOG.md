@@ -12,6 +12,17 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Added
+
+- Admin dashboard redesign: the model-tile grid is gone, replaced by a
+  "Recent activity" panel sourced from `AuditLog` (skipped entirely if
+  the current user can't view it). The sidebar now has a search box that
+  filters models by name, models are grouped under their own app with
+  each app section collapsible (state persists locally), and the top
+  bar has a user menu (avatar, "My profile", a dark-mode toggle, "Log
+  out") backed by `/me` and `/logout`. A matching dark theme was added
+  alongside the existing light one.
+
 ### Fixed
 
 - `GET /counts` (`/api/admin/counts` and `/api/v1/counts`) now applies the
