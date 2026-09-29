@@ -251,6 +251,28 @@ body {
   background: #172033;
 }
 
+/*
+ * react-admin's `.RaSidebar-fixed` (the actual `position: fixed` layer) has
+ * no explicit width of its own — it shrink-wraps to content instead of
+ * matching its own parent (the Drawer's Paper, which *is* sized to
+ * `theme.sidebar.width`/`closedWidth`). That leaves an uncovered sliver on
+ * the right edge of the reserved sidebar column. Normally you'd never
+ * notice, because react-admin's own `.RaSidebar-docked` spacer (which
+ * *does* have the right width, to reserve horizontal space in the layout)
+ * happens to paint the same dark background there too — but that spacer is
+ * a normal, non-fixed element, so it scrolls away with the rest of the
+ * page while the actually-fixed sidebar stays put, exposing the page
+ * background through that sliver as soon as you scroll. Match the widths
+ * explicitly so the fixed layer fully covers its own reserved column.
+ */
+.RaSidebar-fixed {
+  width: 248px;
+}
+
+.RaSidebar-closed .RaSidebar-fixed {
+  width: 64px;
+}
+
 .RaSidebar-fixed .MuiPaper-root,
 .RaSidebar-docked .MuiPaper-root {
   background: #172033;
