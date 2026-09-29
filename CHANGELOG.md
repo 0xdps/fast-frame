@@ -65,6 +65,12 @@ feature bumps the minor version.
   doesn't, so the gap would open up and grow as soon as you scrolled.
   `.RaSidebar-fixed` now has an explicit width matching the spacer in
   both the open and collapsed states.
+- Admin sidebar: model-link icons flipped between near-black and white
+  depending on the light/dark toggle, while their labels stayed a fixed
+  color — because the icon is wrapped in MUI's `ListItemIcon`, which sets
+  its own theme-dependent default color independently of whatever color
+  we set on the link. The sidebar keeps a permanently dark background
+  regardless of theme, so its icons now stay fixed too, same as the text.
 
 ## [0.1.2] - 2026-09-27
 

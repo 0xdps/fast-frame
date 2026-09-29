@@ -290,8 +290,27 @@ body {
   font-weight: 500;
 }
 
+/*
+ * The icon is wrapped in MUI's `ListItemIcon`, which sets its own default
+ * `color` from the theme (`action.active`) regardless of what we set on
+ * the link itself — so unlike the label text above (fixed via
+ * `.RaMenuItemLink-root`'s `color`), the icon would otherwise flip between
+ * near-black (light theme) and white (dark theme). The sidebar keeps a
+ * permanently dark background either way, so the icon shouldn't change
+ * with the theme any more than the text does.
+ */
+.RaMenuItemLink-icon,
+.RaMenuItemLink-icon .MuiSvgIcon-root {
+  color: #d5dce6 !important;
+}
+
 .RaMenuItemLink-active {
   background: #243049 !important;
+  color: #ffffff !important;
+}
+
+.RaMenuItemLink-active .RaMenuItemLink-icon,
+.RaMenuItemLink-active .RaMenuItemLink-icon .MuiSvgIcon-root {
   color: #ffffff !important;
 }
 
