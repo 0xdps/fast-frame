@@ -55,6 +55,16 @@ feature bumps the minor version.
   one unit instead of staying pinned while only the list scrolled.
   Scrollbars app-wide (sidebar included) are now also slim and
   theme-colored instead of the browser/OS default.
+- Admin sidebar: the visible fixed sidebar (`.RaSidebar-fixed`) had no
+  explicit width, so it shrank to fit its content instead of matching its
+  own reserved-space spacer (`.RaSidebar-docked`, sized to
+  `theme.sidebar.width`/`closedWidth`). That left a sliver on the right
+  edge uncovered by the fixed layer; it only *looked* fine at rest because
+  the (non-fixed) spacer happened to paint the same background there —
+  but that spacer scrolls away with the page while the fixed sidebar
+  doesn't, so the gap would open up and grow as soon as you scrolled.
+  `.RaSidebar-fixed` now has an explicit width matching the spacer in
+  both the open and collapsed states.
 
 ## [0.1.2] - 2026-09-27
 
