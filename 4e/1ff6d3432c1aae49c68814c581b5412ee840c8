@@ -1,0 +1,71 @@
+src/fastframe/admin/static/index.html
+  s_8de26d66febf8a::t_25ee6dca7763c4 14
+  s_8de26d66febf8a::t_b35c0af1f0c1cd 15
+src/fastframe/admin/templates/admin-ui/src/activity.tsx
+  s_8de26d66febf8a::t_1b5a9961e76231 1-11,23,25-98
+  s_8de26d66febf8a::t_4e47eaa1e83834 12-22,24
+src/fastframe/admin/templates/admin-ui/src/users.tsx
+  s_8de26d66febf8a::t_3eb7f5a59bac94 10,16
+src/fastframe/admin/templates/admin-ui/src/layout.tsx
+  s_8de26d66febf8a::t_7bd8a08b1bac1e 3-6,8-12
+  s_8de26d66febf8a::t_0d3d1606f6f702 13-42,44-85,87-93,95-96,100-101,103,105-129,132-137,139-141,144-146,148-156,162-165
+  s_8de26d66febf8a::t_a06fa7d332a9b6 1
+  s_8de26d66febf8a::t_c6bce7446ef58a 2
+  s_8de26d66febf8a::t_05fce6036b04f0 94
+  s_8de26d66febf8a::t_ae92c997ff2a57 7
+  s_8de26d66febf8a::t_04c15486d98587 97-99,102,104
+  s_8de26d66febf8a::t_3595b796365118 43
+  s_8de26d66febf8a::t_8de3eb8086e039 131
+  s_8de26d66febf8a::t_e4952b4684838c 130,138
+  s_8de26d66febf8a::t_6ebe14159eefee 142,147
+  s_8de26d66febf8a::t_87d20d0d1fa367 143
+  s_8de26d66febf8a::t_3297ad632bdd0a 157-160
+src/fastframe/admin/static/assets/index-DmQZcV6h.js
+  s_8de26d66febf8a::t_25ee6dca7763c4 1-184
+src/fastframe/admin/templates/admin-ui/src/currentUser.ts
+  s_8de26d66febf8a::t_5e6b17cf091999 1-47
+src/fastframe/admin/templates/admin-ui/src/theme.ts
+  s_8de26d66febf8a::t_7fd42303bdcceb 82-159
+docs/admin-customization.md
+  s_8de26d66febf8a::t_7dd7a6fa54307b 10-16
+examples/simple_auth_example/app.py
+  s_8de26d66febf8a::t_36baeae4285d47 32
+  s_8de26d66febf8a::t_9e974dd3412436 75-78
+src/fastframe/admin/templates/admin-ui/src/userMenu.tsx
+  s_8de26d66febf8a::t_5cbb49ed27c159 87
+  s_8de26d66febf8a::t_37fbccdd7617ed 82
+  s_8de26d66febf8a::t_2e777c1f2cfaf8 13
+  s_8de26d66febf8a::t_f52be409bce7b9 1-12,14-57,59-81,83-86,88-100
+  s_8de26d66febf8a::t_a49004a1d93d49 58
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_8de26d66febf8a::t_55cfe853508bc2 363-370
+  s_8de26d66febf8a::t_450c8bb0993639 195-199,210-214,225-230,233-234,236,238-241,243-249,252,254-294,296,299-300,303-304,307-311,313,316-323,326-331,334,338
+  s_8de26d66febf8a::t_5d8854391c090e 60-137
+src/fastframe/admin/static/assets/index-BET7maNW.css
+  s_8de26d66febf8a::t_b35c0af1f0c1cd 1
+src/fastframe/admin/templates/admin-ui/src/dashboard.tsx
+  s_8de26d66febf8a::t_0597995b16c681 1-25
+src/fastframe/admin/templates/admin-ui/src/App.tsx
+  s_8de26d66febf8a::t_45dcbbfc7c1afd 61,71
+  s_8de26d66febf8a::t_3f73829dd33444 2,6-7
+  s_8de26d66febf8a::t_363834a0485f58 49-50
+  s_8de26d66febf8a::t_8de3e68b05186f 9
+CHANGELOG.md
+  s_8de26d66febf8a::t_4937198cd2958a 15-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "4e1ff6d3432c1aae49c68814c581b5412ee840c8",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
