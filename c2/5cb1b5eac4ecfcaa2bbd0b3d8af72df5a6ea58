@@ -1,0 +1,30 @@
+src/fastframe/admin/static/index.html
+  s_8de26d66febf8a::t_f70d06481b3064 14-15
+CHANGELOG.md
+  s_8de26d66febf8a::t_9b146b419d66cb 51-57
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_8de26d66febf8a::t_2c860c872d4870 123-127
+  s_8de26d66febf8a::t_624279f42ebb9e 40-99
+  s_8de26d66febf8a::t_2278f85ba5bd23 14-15
+  s_8de26d66febf8a::t_ecb69e8d19c298 197-202
+src/fastframe/admin/static/assets/index-kVnK9bdX.js
+  s_8de26d66febf8a::t_f70d06481b3064 1-184
+src/fastframe/admin/static/assets/index-BnucaIBL.css
+  s_8de26d66febf8a::t_f70d06481b3064 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c25cb1b5eac4ecfcaa2bbd0b3d8af72df5a6ea58",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
