@@ -12,6 +12,21 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Fixed
+
+- `GET /counts` (`/api/admin/counts` and `/api/v1/counts`) now applies the
+  same authorization as `/{resource}`: a model the caller lacks
+  `get_has_view_permission` for is omitted from the response instead of
+  having its row count included regardless. A model with a custom, row-
+  filtering `get_queryset()` override is now counted through that
+  queryset rather than a raw `COUNT(*)` on the full table, so its total
+  matches what `/{resource}` actually lists. Models using the default,
+  unfiltered queryset are still counted together in a single combined
+  query — only models with a genuine override cost an extra query each.
+- `GET /schema` no longer opens an unused database session — it depended
+  on one but never used it, contradicting its own "no database queries"
+  docstring and adding needless per-request DB overhead.
+
 ## [0.1.2] - 2026-09-27
 
 ### Changed
