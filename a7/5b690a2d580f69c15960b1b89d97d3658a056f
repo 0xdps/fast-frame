@@ -1,0 +1,29 @@
+src/fastframe/admin/static/index.html
+  s_8de26d66febf8a::t_9e937dfd6724f9 14-15
+src/fastframe/admin/static/assets/index-DSDmzvrT.css
+  s_8de26d66febf8a::t_9e937dfd6724f9 1
+CHANGELOG.md
+  s_8de26d66febf8a::t_a0a79a212314c3 74-77
+  s_8de26d66febf8a::t_6716b6943db4f0 78-89
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_8de26d66febf8a::t_1ba0ecdd48d01f 55-56,61-66,71-72
+  s_8de26d66febf8a::t_6e55ee7c830970 126-145,151-166
+  s_8de26d66febf8a::t_ae56cf9f0c2af5 57-60,67-68,70
+  s_8de26d66febf8a::t_fb73830eb813f8 52-54,69,73-75
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "a75b690a2d580f69c15960b1b89d97d3658a056f",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": null
+    }
+  }
+}
