@@ -11,6 +11,18 @@
       rel="stylesheet"
     />
     <title>FastFrame Admin</title>
+    <script>
+      try {
+        var saved = localStorage.getItem("frame.theme");
+        var theme =
+          saved === "dark" || saved === "light"
+            ? saved
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

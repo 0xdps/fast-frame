@@ -1,22 +1,33 @@
 # Customizing the admin UI
 
-`python manage.py startadmin` copies the React Admin project into `admin-ui/`
+`python manage.py startadmin` copies the admin UI into `admin-ui/`
 (pass another directory as the first argument, or `--force` to replace it).
+
+## Sidebar
+
+The sidebar does not collapse. Every model uses the same list icon, so a
+narrow icon rail cannot tell one model from another. The sidebar stays at
+its open width and shows each model's name. There is no collapse control.
+
+The FastFrame header at the top of the sidebar opens the dashboard
+(Overview). App groups inside the sidebar can still be collapsed; those
+groups keep the model names when they are open. Model search lives in the
+sidebar.
+
+See [ADR 0011](adr/0011-admin-sidebar-stays-expanded.md).
 
 ## What to edit
 
 | File | Change |
 | --- | --- |
-| `src/theme.ts` | Colors, type, component defaults. `theme` (light) and `darkTheme` are both exported and passed to `<Admin>`, so the dark-mode toggle in the user menu works out of the box. |
-| `src/layout.tsx` | Sidebar (search box, models grouped by app, collapsible sections) and the app bar (delegates the user menu to `userMenu.tsx`) |
-| `src/dashboard.tsx` | The "Overview" landing page — deliberately mostly empty, just a greeting plus `activity.tsx`'s recent-activity panel |
-| `src/activity.tsx` | Recent-activity panel, reads the `AuditLog` model (skips rendering if the current user can't view it) |
-| `src/userMenu.tsx` | Top-right avatar menu: profile link, dark-mode toggle, log out |
-| `src/currentUser.ts` | `useCurrentUser()` — fetches `GET /me` for the user menu |
-| `src/index.css` | Layout of the dashboard, sidebar, user menu, and user profile |
-| `src/users.tsx` | Profile page and change-password form. Used when the model name is `User` or `SimpleUser`. |
-| `src/resources.tsx` | Generated list columns and form inputs |
-| `src/App.tsx` | Resource registration. The default router is a hash router, so routes look like `/admin/#/user`. |
+| `src/shell.tsx` | Sidebar and top bar. The sidebar stays expanded; see [Sidebar](#sidebar). |
+| `src/pages/overview.tsx` | The Overview page: a short greeting and recent activity when the current user can view `AuditLog`. |
+| `src/pages/resource-list.tsx` | Schema-driven list: search, sort, pagination, bulk delete. |
+| `src/pages/resource-form.tsx` | Schema-driven create and edit forms, including the user profile and change-password panel. |
+| `src/admin-state.ts` | Theme and refresh. Dark mode is a `data-theme` attribute on `<html>`. |
+| `src/currentUser.ts` | `useCurrentUser()` — fetches `GET /me` for the user menu. |
+| `src/index.css` | Theme tokens, the fixed app shell, and scrollbars. |
+| `src/App.tsx` | Loads `GET /api/admin/schema` and the hash routes (`/admin/#/user`). |
 
 The UI loads `GET /api/admin/schema` and builds a resource per registered
 model. Register models in Python with `admin_site.register`; do not hard-code
@@ -56,4 +67,4 @@ form. Password fields are `write_only`: they appear on create, stay out of
 API responses, and are updated through the change-password action on edit.
 
 To give another model that profile, match it in `isUserModel()` in
-`src/users.tsx`.
+`src/lib/format.ts`.

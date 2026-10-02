@@ -25,6 +25,14 @@ feature bumps the minor version.
 
 ### Changed
 
+- Admin sidebar no longer collapses. The collapse control is gone, and
+  the FastFrame header at the top of the sidebar opens the dashboard.
+- The top bar no longer repeats the page title. Overview and model names
+  stay in the main content.
+- Admin UI is now built with Tailwind and shadcn-style components. It no
+  longer depends on react-admin or Material UI. Lists, forms, the sidebar,
+  the overview, and the user menu still come from the admin schema and the
+  same `/api/admin` endpoints.
 - Admin: the Audit Log is no longer a sidebar entry. The dashboard's
   Recent activity panel shows a short preview (who, what, when) and is
   the only place that links to the full audit history.
@@ -40,6 +48,11 @@ feature bumps the minor version.
 
 ### Fixed
 
+- Admin user search (`GET /api/admin/user?q=`) no longer crashes. The
+  built-in user admin was combining querysets with `|`, which querysets
+  do not support, so any search term raised `TypeError` (reported by
+  Starlette as an `ExceptionGroup`). Search now uses the shared
+  `search_fields` path.
 - `GET /counts` (`/api/admin/counts` and `/api/v1/counts`) now applies the
   same authorization as `/{resource}`: a model the caller lacks
   `get_has_view_permission` for is omitted from the response instead of

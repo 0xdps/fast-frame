@@ -1,6 +1,6 @@
 """Admin UI router — serves the React admin app (or a "build it" page).
 
-The admin UI is React-only (react-admin, built with Vite). There is no
+The admin UI is React-only (Tailwind, built with Vite). There is no
 server-rendered fallback: ``ADMIN_MODE`` only selects *which* React build to
 serve — the pre-built one shipped with FastFrame (``"static"``, the default)
 or a project-customized one (``"custom"``, via ``manage.py startadmin``).

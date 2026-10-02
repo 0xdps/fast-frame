@@ -21,5 +21,6 @@ We use ADRs to capture significant technical decisions: context, decision, and c
 | [0008](0008-rest-api-react-admin.md) | REST API + React admin | Accepted |
 | [0009](0009-fastframe-api.md) | FastFrameAPI routing facade | Accepted |
 | [0010](0010-curated-reexports.md) | Curated re-exports, not wrapped engines | Accepted |
+| [0011](0011-admin-sidebar-stays-expanded.md) | Admin sidebar stays expanded | Accepted |
 
 When superseding an ADR, link the old and new records and update this index.

@@ -1,6 +1,6 @@
 # FastFrame Admin UI
 
-React Admin frontend for the FastFrame admin REST API. Resources, list columns, and forms are generated from `GET /api/admin/schema`.
+React frontend for the FastFrame admin REST API, styled with Tailwind. Resources, list columns, and forms are generated from `GET /api/admin/schema`.
 
 ## Run
 

@@ -1,737 +1,118 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+}
+
 :root {
-  --content-bg: #f4f7fb;
-  --surface: #ffffff;
-  --surface-border: #e3e8ee;
-  --divider: #eef1f5;
-  --text-primary: #172033;
-  --text-muted: #5c6b7a;
-  --input-bg: #ffffff;
-  --input-border: #d5dde6;
-  --pill-on-bg: #e7f7f1;
-  --pill-on-fg: #0b7a54;
-  --pill-off-bg: #fdecec;
-  --pill-off-fg: #a33b42;
-  --scrollbar-thumb: rgba(23, 32, 51, 0.18);
-  --scrollbar-thumb-hover: rgba(23, 32, 51, 0.32);
+  color-scheme: light;
+  --background: #f4f7fb;
+  --foreground: #152033;
+  --card: #ffffff;
+  --card-foreground: #152033;
+  --muted: #e8eef6;
+  --muted-foreground: #5c6b80;
+  --border: #d7e0ec;
+  --input: #d7e0ec;
+  --ring: #3157e8;
+  --primary: #3157e8;
+  --primary-foreground: #ffffff;
+  --accent: #e8eef8;
+  --accent-foreground: #152033;
+  --destructive: #c2410c;
 }
 
-/*
- * Most of the app is styled with plain MUI components, which already read
- * `theme.palette` and repaint themselves for dark mode automatically (see
- * `theme.ts`'s `darkTheme`). The handful of hand-styled cards below
- * (profile header, password panel, activity panel, edit forms) aren't MUI
- * components, so they can't do that — they're themed off these CSS
- * variables instead. `userMenu.tsx` keeps `[data-theme]` on `<html>` in
- * sync with the actual (possibly system-derived) theme mode.
- */
 [data-theme="dark"] {
-  --content-bg: #0f1522;
-  --surface: #161d2e;
-  --surface-border: #28324a;
-  --divider: #28324a;
-  --text-primary: #eef1f6;
-  --text-muted: #93a0b3;
-  --input-bg: #0f1522;
-  --input-border: #28324a;
-  --pill-on-bg: rgba(62, 207, 149, 0.16);
-  --pill-on-fg: #3ecf95;
-  --pill-off-bg: rgba(239, 106, 114, 0.16);
-  --pill-off-fg: #ef6a72;
-  --scrollbar-thumb: rgba(238, 241, 246, 0.16);
-  --scrollbar-thumb-hover: rgba(238, 241, 246, 0.28);
+  color-scheme: dark;
+  --background: #0f1522;
+  --foreground: #e7edf6;
+  --card: #172033;
+  --card-foreground: #e7edf6;
+  --muted: #1e2940;
+  --muted-foreground: #9aa8bd;
+  --border: #2a3852;
+  --input: #2a3852;
+  --ring: #6d86f0;
+  --primary: #4c6ef5;
+  --primary-foreground: #ffffff;
+  --accent: #243049;
+  --accent-foreground: #e7edf6;
+  --destructive: #f97316;
 }
 
-/*
- * Custom scrollbars everywhere (instead of the browser/OS default), themed
- * off the same variables as everything else. Firefox uses `scrollbar-*`;
- * Chromium/Safari use the `::-webkit-scrollbar*` pseudo-elements — both are
- * declared for every element so this applies uniformly across the app
- * (list tables, dropdowns, textareas, the sidebar, etc.), not just a few
- * hand-picked containers.
- */
-/*
- * Disable the native rubber-band/bounce effect (trackpad scrolling past a
- * container's top/bottom edge, which briefly reveals empty space beyond
- * the actual content before snapping back), and stop scroll "chaining" —
- * scrolling past an inner panel's edge bleeding into whatever's behind it
- * — on the two containers that are actually meant to scroll: the main
- * content area and the sidebar's own internal scroller (see the "app
- * shell" rules below, which make `.RaLayout-content` — not the page —
- * the real scroll container).
- *
- * IMPORTANT: this must stay scoped to specific containers, NOT applied
- * via a blanket `*` selector. `overscroll-behavior: none`/`contain` also
- * blocks legitimate scroll *chaining*, so setting it on every element
- * breaks scrolling anywhere a nested MUI wrapper (e.g. a form's `Card`)
- * has any scrollable region of its own between the content and the real
- * scroll container — scrolling gets "stuck" there instead of passing
- * through.
- */
-.RaLayout-content,
-.frame-menu-scroll,
-.RaSidebar-fixed {
-  overscroll-behavior: none;
-}
-
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) transparent;
-}
-
-*::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-*::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-*::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-}
-
-*::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
-  background-clip: padding-box;
-}
-
-*::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-/*
- * The sidebar keeps its own dark background regardless of light/dark mode
- * (see `.frame-menu` below), so its scrollbar needs a permanently-light-on-
- * dark thumb rather than the mode-dependent one above.
- */
-.frame-menu-scroll,
-.RaSidebar-fixed {
-  scrollbar-color: rgba(238, 241, 246, 0.22) transparent;
-}
-
-.frame-menu-scroll::-webkit-scrollbar-thumb,
-.RaSidebar-fixed::-webkit-scrollbar-thumb {
-  background: rgba(238, 241, 246, 0.22);
-}
-
-.frame-menu-scroll::-webkit-scrollbar-thumb:hover,
-.RaSidebar-fixed::-webkit-scrollbar-thumb:hover {
-  background: rgba(238, 241, 246, 0.38);
-}
-
-/*
- * "App shell" layout: the page itself never scrolls — `html`/`body`/`#root`
- * are pinned to exactly the viewport height with `overflow: hidden` — so
- * that scrolling happens *only* inside the two panels that should own it:
- * the sidebar's own scroller (`.frame-menu-scroll`, already `flex: 1` +
- * `min-height: 0` + `overflow-y: auto` — see below) and react-admin's main
- * content area (`.RaLayout-content`, made scrollable here). Without this,
- * `.RaLayout-content` has no height bound of its own (react-admin's
- * `Layout` only sets `flexGrow`/`flexBasis`, not `height`), so it — and
- * everything above it up to `html` — just grows to fit the content instead
- * of scrolling internally, making the *page* scroll instead.
- *
- * `.layout` is react-admin's own root element (`clsx('layout', className)`
- * in `Layout.js`); `.RaLayout-appFrame`/`.RaLayout-contentWithSidebar` are
- * the flex containers in between — each needs `min-height: 0` for the same
- * reason `.frame-menu-scroll` needs it (a `flexGrow` child won't shrink
- * below its content's natural height without it, so the bound from `html`
- * down to `.RaLayout-content` would otherwise break at the first missing
- * link).
- */
 html,
 body,
 #root {
   height: 100%;
-  margin: 0;
   overflow: hidden;
-}
-
-.layout {
-  height: 100%;
-  overflow: hidden;
-}
-
-.RaLayout-appFrame,
-.RaLayout-contentWithSidebar {
-  min-height: 0;
-}
-
-.RaLayout-content {
-  min-height: 0;
-  overflow-y: auto;
 }
 
 body {
-  background: var(--content-bg);
-  color: var(--text-primary);
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+#main-content,
+.menu-scroll {
+  overscroll-behavior: none;
+  scrollbar-width: thin;
+}
+
+#main-content {
+  scrollbar-color: #c5d0de transparent;
+}
+
+[data-theme="dark"] #main-content {
+  scrollbar-color: #33415c transparent;
+}
+
+.menu-scroll {
+  scrollbar-color: #4a5870 transparent;
+}
+
+#main-content::-webkit-scrollbar,
+.menu-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#main-content::-webkit-scrollbar-thumb {
+  background: #c5d0de;
+  border-radius: 999px;
+}
+
+[data-theme="dark"] #main-content::-webkit-scrollbar-thumb {
+  background: #33415c;
+}
+
+.menu-scroll::-webkit-scrollbar-thumb {
+  background: #4a5870;
+  border-radius: 999px;
 }
 
 .boot-message {
-  padding: 48px;
-  font-family: "Figtree", "Segoe UI", sans-serif;
-  max-width: 640px;
-}
-
-.frame-menu {
-  display: flex;
-  flex-direction: column;
-  /* Exact height (not min-height) so `.frame-menu-scroll`'s `flex: 1` below
-     has a real bound to grow/shrink against — otherwise the model list
-     just grows past the viewport instead of scrolling internally, taking
-     the brand/search header along with it. */
-  height: 100%;
-  /* Clip anything wider than the rail. The collapsed sidebar is only 64px,
-     and without this the brand name paints out over the page. */
-  overflow: hidden;
-  background: #172033;
-}
-
-.frame-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 18px 16px 12px;
-  color: #f4f7fb;
-}
-
-/* Closed rail is 64px (theme.sidebar.closedWidth). Drop the name and
-   center the mark — 16px of side padding plus the wordmark is wider
-   than the rail and spills into the page. */
-.RaSidebar-closed .frame-brand {
-  justify-content: center;
-  gap: 0;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.frame-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: #3157e8;
-  color: white;
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-}
-
-.frame-name {
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.1;
-}
-
-.frame-sub {
-  color: #93a0b3;
-  font-size: 0.75rem;
-  margin-top: 2px;
-}
-
-.frame-search {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 4px 12px 10px;
-  padding: 7px 10px;
-  border-radius: 10px;
-  background: #1f2a41;
-  color: #93a0b3;
-}
-
-.frame-search input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: #f4f7fb;
-  font: inherit;
-  font-size: 0.9rem;
-}
-
-.frame-search input::placeholder {
-  color: #6d7d94;
-}
-
-.frame-search input::-webkit-search-cancel-button {
-  filter: invert(1) opacity(0.6);
-}
-
-.frame-menu-scroll {
-  flex: 1;
-  /* Without this, a flex item's automatic min-height keeps it from ever
-     shrinking below its content's natural height, so it just grows past
-     the sidebar's fixed height instead of scrolling internally — dragging
-     the brand/search header (siblings in the same flex column) along with
-     it as the *sidebar itself* scrolls. */
-  min-height: 0;
-  overflow-y: auto;
-  padding-bottom: 12px;
-}
-
-.frame-menu-empty {
-  margin: 8px 20px;
-  color: #6d7d94;
-  font-size: 0.85rem;
-}
-
-.frame-app-section {
-  margin-top: 4px;
-}
-
-.frame-app-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: calc(100% - 20px);
-  margin: 0 10px;
-  padding: 8px 10px;
-  border: none;
-  background: transparent;
-  color: #93a0b3;
-  font-family: "Outfit", sans-serif;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 8px;
-}
-
-.frame-app-header:hover {
-  background: #1f2a41;
-  color: #d5dce6;
-}
-
-.frame-app-chevron {
-  transition: transform 0.15s ease;
-}
-
-.frame-app-chevron.closed {
-  transform: rotate(-90deg);
-}
-
-.RaSidebar-fixed,
-.RaSidebar-docked {
-  background: #172033;
-}
-
-/*
- * react-admin's `.RaSidebar-fixed` (the actual `position: fixed` layer) has
- * no explicit width of its own — it shrink-wraps to content instead of
- * matching its own parent (the Drawer's Paper, which *is* sized to
- * `theme.sidebar.width`/`closedWidth`). That leaves an uncovered sliver on
- * the right edge of the reserved sidebar column. Normally you'd never
- * notice, because react-admin's own `.RaSidebar-docked` spacer (which
- * *does* have the right width, to reserve horizontal space in the layout)
- * happens to paint the same dark background there too — but that spacer is
- * a normal, non-fixed element, so it scrolls away with the rest of the
- * page while the actually-fixed sidebar stays put, exposing the page
- * background through that sliver as soon as you scroll. Match the widths
- * explicitly so the fixed layer fully covers its own reserved column.
- */
-.RaSidebar-fixed {
-  width: 248px;
-}
-
-.RaSidebar-closed .RaSidebar-fixed {
-  width: 64px;
-}
-
-.RaSidebar-fixed .MuiPaper-root,
-.RaSidebar-docked .MuiPaper-root {
-  background: #172033;
-}
-
-.RaMenuItemLink-root {
-  color: #d5dce6 !important;
-  margin: 2px 10px;
-  border-radius: 10px;
-  min-height: 40px;
-}
-
-/* MUI's ListItemIcon defaults to a 56px min-width, which doesn't fit a
-   64px rail (and shoves the icon off-center). Collapse it to the icon. */
-.RaSidebar-closed .RaMenuItemLink-root {
-  margin-left: 8px;
-  margin-right: 8px;
-  padding-left: 8px;
-  padding-right: 8px;
-  justify-content: center;
-}
-
-.RaSidebar-closed .RaMenuItemLink-icon {
-  min-width: 0;
-  justify-content: center;
-}
-
-.RaMenuItemLink-root .MuiTypography-root {
-  font-family: "Figtree", sans-serif;
-  font-weight: 500;
-}
-
-/*
- * The icon is wrapped in MUI's `ListItemIcon`, which sets its own default
- * `color` from the theme (`action.active`) regardless of what we set on
- * the link itself — so unlike the label text above (fixed via
- * `.RaMenuItemLink-root`'s `color`), the icon would otherwise flip between
- * near-black (light theme) and white (dark theme). The sidebar keeps a
- * permanently dark background either way, so the icon shouldn't change
- * with the theme any more than the text does.
- */
-.RaMenuItemLink-icon,
-.RaMenuItemLink-icon .MuiSvgIcon-root {
-  color: #d5dce6 !important;
-}
-
-.RaMenuItemLink-active {
-  background: #243049 !important;
-  color: #ffffff !important;
-}
-
-.RaMenuItemLink-active .RaMenuItemLink-icon,
-.RaMenuItemLink-active .RaMenuItemLink-icon .MuiSvgIcon-root {
-  color: #ffffff !important;
-}
-
-.RaLayout-content {
-  background: var(--content-bg);
-  padding: 8px 20px 28px;
-}
-
-.RaList-main,
-.RaEdit-main,
-.RaCreate-main {
-  margin-top: 8px;
-}
-
-.RaList-content {
-  border-radius: 16px;
-  border: 1px solid var(--surface-border);
-  box-shadow: none;
-  overflow: hidden;
-}
-
-.RaDatagrid-root {
-  border: none;
-}
-
-.RaDatagrid-rowCell,
-.RaDatagrid-headerCell {
-  padding-top: 14px;
-  padding-bottom: 14px;
-}
-
-.home {
-  padding: 12px 8px 32px;
-  max-width: 720px;
-}
-
-.home-head {
-  padding: 32px 4px 8px;
-}
-
-.home-head h1 {
-  margin: 4px 0 0;
-  font-family: "Outfit", sans-serif;
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-}
-
-.home-hint {
-  margin: 8px 0 0;
-  color: var(--text-muted);
-}
-
-.eyebrow {
-  margin: 0;
-  color: #3157e8;
-  font-family: "Outfit", sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.activity-panel {
-  margin-top: 24px;
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 16px;
-  padding: 20px 24px 8px;
-}
-
-.activity-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.activity-panel h2 {
-  margin: 0;
-  font-family: "Outfit", sans-serif;
-  font-size: 1.05rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.activity-all {
-  flex: none;
-  color: #3157e8;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.activity-all:hover {
-  text-decoration: underline;
-}
-
-.activity-empty {
-  color: var(--text-muted);
-  padding: 8px 0 16px;
-}
-
-.activity-list {
-  list-style: none;
-  margin: 8px 0 0;
-  padding: 0;
-}
-
-.activity-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 0;
-  border-top: 1px solid var(--divider);
-}
-
-.activity-item:first-child {
-  border-top: none;
-}
-
-.activity-icon {
-  flex: none;
-  width: 8px;
-  height: 8px;
-  margin-top: 7px;
-  border-radius: 999px;
-  background: #5c6b7a;
-}
-
-.activity-icon-create {
-  background: #0f9f6e;
-}
-
-.activity-icon-update {
-  background: #3157e8;
-}
-
-.activity-icon-delete {
-  background: #c2414a;
-}
-
-.activity-body {
-  min-width: 0;
-}
-
-.activity-body p {
-  margin: 0;
-  color: var(--text-primary);
-}
-
-.activity-actor {
-  font-weight: 600;
-}
-
-.activity-target {
-  color: var(--text-muted);
-}
-
-.activity-meta {
-  color: #93a0b3;
-  font-size: 0.8rem;
-}
-
-.user-menu-trigger {
-  border: none;
-  background: transparent;
-  padding: 4px;
-  margin-left: 4px;
-  border-radius: 999px;
-  cursor: pointer;
-  display: inline-flex;
-}
-
-.user-menu-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 16px 12px;
-  min-width: 220px;
-}
-
-.user-menu-name {
-  font-weight: 600;
-}
-
-.user-menu-email {
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-.avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
-  display: grid;
-  place-items: center;
-  color: #ffffff;
-  font-family: "Outfit", sans-serif;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-}
-
-.avatar.lg {
-  width: 64px;
-  height: 64px;
-  border-radius: 18px;
-  font-size: 1.25rem;
-  flex: none;
-}
-
-.avatar.sm {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  flex: none;
-}
-
-.user-email {
-  margin: 2px 0 8px;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
-.pill {
-  border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.pill.on {
-  background: var(--pill-on-bg);
-  color: var(--pill-on-fg);
-}
-
-.pill.off {
-  background: var(--pill-off-bg);
-  color: var(--pill-off-fg);
-}
-
-.user-profile {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.profile-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 16px;
-  padding: 20px 24px;
-}
-
-.profile-identity {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 0;
-}
-
-.profile-identity h2 {
-  margin: 0;
-  font-family: "Outfit", sans-serif;
-  letter-spacing: -0.03em;
-}
-
-.password-panel {
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 16px;
-  padding: 20px 24px;
-  display: grid;
-  gap: 12px;
-}
-
-.password-panel h3 {
-  margin: 0;
-  font-family: "Outfit", sans-serif;
-}
-
-.password-panel label {
-  display: grid;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.password-panel input {
-  border: 1px solid var(--input-border);
-  border-radius: 10px;
-  padding: 10px 12px;
-  font: inherit;
-  background: var(--input-bg);
-  color: var(--text-primary);
-}
-
-.password-error {
-  margin: 0;
-  color: #c2414a;
-}
-
-.password-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.user-edit .RaEdit-main,
-.user-create .RaCreate-main {
-  background: transparent;
-  box-shadow: none;
-}
-
-.user-edit .RaEdit-card,
-.user-create .RaCreate-card {
-  background: transparent;
-  box-shadow: none;
-}
-
-.user-edit .RaSimpleForm-root,
-.user-create form {
-  background: var(--surface);
-  border: 1px solid var(--surface-border);
-  border-radius: 16px;
-  width: 100%;
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  font-family: Figtree, ui-sans-serif, system-ui, sans-serif;
+  color: #152033;
 }

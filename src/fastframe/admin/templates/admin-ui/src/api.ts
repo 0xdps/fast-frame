@@ -27,6 +27,8 @@ export interface FieldSchema {
   choices?: FieldChoice[];
   reference?: string;
   relationshipName?: string | null;
+  many?: boolean;
+  editable?: boolean;
   default?: unknown;
 }
 
