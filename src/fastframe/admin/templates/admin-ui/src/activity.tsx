@@ -9,6 +9,9 @@ const ACTION_LABEL: Record<string, string> = {
   delete: "deleted",
 };
 
+/** Dashboard preview only — the full table lives at `/auditlog`. */
+const PREVIEW_SIZE = 5;
+
 /**
  * The API serializes datetimes without a timezone suffix (naive, but
  * actually UTC — see `serialize_value`/`DateTimeField.auto_now_add`).
@@ -42,10 +45,12 @@ function relativeTime(iso: string): string {
 }
 
 /**
- * "Recent activity" dashboard panel, sourced from `AuditLog` — the same
- * model that already records every admin/API create/update/delete (see
- * `fastframe.admin.audit`). Renders nothing if the current user can't view
- * audit entries, or if `AuditLog` isn't registered at all.
+ * Short "Recent activity" preview on the dashboard, sourced from
+ * `AuditLog`. Each row is just who did what, and when — the full table
+ * (filters, search, source, exact timestamps) is one link away at
+ * `/auditlog`, which is intentionally not listed in the sidebar.
+ * Renders nothing if the current user can't view audit entries, or if
+ * `AuditLog` isn't registered at all.
  */
 export function RecentActivity({ models }: { models: ModelSchema[] }) {
   const auditModel = models.find((model) => model.resource === "auditlog");
@@ -53,7 +58,7 @@ export function RecentActivity({ models }: { models: ModelSchema[] }) {
 
   const { data, isPending, error } = useGetList(
     "auditlog",
-    { pagination: { page: 1, perPage: 8 }, sort: { field: "created_at", order: "DESC" }, filter: {} },
+    { pagination: { page: 1, perPage: PREVIEW_SIZE }, sort: { field: "created_at", order: "DESC" }, filter: {} },
     { enabled: canView },
   );
 
@@ -61,7 +66,12 @@ export function RecentActivity({ models }: { models: ModelSchema[] }) {
 
   return (
     <section className="activity-panel">
-      <h2>Recent activity</h2>
+      <div className="activity-head">
+        <h2>Recent activity</h2>
+        <Link to="/auditlog" className="activity-all">
+          View full history
+        </Link>
+      </div>
       {isPending ? <p className="activity-empty">Loading…</p> : null}
       {error ? <p className="activity-empty">Couldn't load recent activity.</p> : null}
       {!isPending && !error && (!data || data.length === 0) ? (
@@ -70,22 +80,17 @@ export function RecentActivity({ models }: { models: ModelSchema[] }) {
       {data && data.length ? (
         <ul className="activity-list">
           {data.map((row) => {
-            const modelName = String(row.model_name ?? "").toLowerCase();
-            const resource = models.find((model) => model.resource === modelName);
-            const target = resource && row.object_id ? `/${resource.resource}/${row.object_id}` : undefined;
             const action = String(row.action ?? "");
-            const body = (
-              <>
-                <span className="activity-actor">{String(row.username || "System")}</span>{" "}
-                {ACTION_LABEL[action] ?? action}{" "}
-                <span className="activity-target">{String(row.object_repr || row.model_name || "")}</span>
-              </>
-            );
+            const target = String(row.object_repr || row.model_name || "");
             return (
               <li key={String(row.id)} className="activity-item">
                 <span className={`activity-icon activity-icon-${action}`} aria-hidden="true" />
                 <div className="activity-body">
-                  <p>{target ? <Link to={target}>{body}</Link> : body}</p>
+                  <p>
+                    <span className="activity-actor">{String(row.username || "System")}</span>{" "}
+                    {ACTION_LABEL[action] ?? action}
+                    {target ? <span className="activity-target"> {target}</span> : null}
+                  </p>
                   <span className="activity-meta">{relativeTime(String(row.created_at ?? ""))}</span>
                 </div>
               </li>

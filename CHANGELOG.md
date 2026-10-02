@@ -23,6 +23,21 @@ feature bumps the minor version.
   out") backed by `/me` and `/logout`. A matching dark theme was added
   alongside the existing light one.
 
+### Changed
+
+- Admin: the Audit Log is no longer a sidebar entry. The dashboard's
+  Recent activity panel shows a short preview (who, what, when) and is
+  the only place that links to the full audit history.
+- Admin: collapsing the sidebar no longer lets the "FastFrame" wordmark
+  spill out of the 64px rail. The closed state shows only the mark,
+  centered, and menu icons are centered in the rail as well.
+- Migrations: `makemigrations` writes each app's changes into that app's
+  `migrations` directory. A change to one app is no longer appended to
+  whichever installed app happens to be first. Framework apps such as
+  `fastframe.contrib.auth` go to `config/migrations` instead, since they
+  are not a directory in the project. `showmigrations` groups files by
+  the app that owns them.
+
 ### Fixed
 
 - `GET /counts` (`/api/admin/counts` and `/api/v1/counts`) now applies the
