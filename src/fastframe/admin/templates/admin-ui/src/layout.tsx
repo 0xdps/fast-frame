@@ -17,6 +17,17 @@ import ViewListOutlinedIcon from "@mui/icons-material/ViewListOutlined";
 import type { ModelSchema } from "./api";
 import { makeUserMenu } from "./userMenu";
 
+/**
+ * Audit history is reached from the dashboard's "Recent activity" panel,
+ * not from the model list — it's a log of other models, not a model you
+ * manage alongside them.
+ */
+const HIDDEN_FROM_SIDEBAR = new Set(["auditlog"]);
+
+function sidebarModels(models: ModelSchema[]): ModelSchema[] {
+  return models.filter((model) => !HIDDEN_FROM_SIDEBAR.has(model.resource));
+}
+
 function groupByApp(models: ModelSchema[]): Map<string, ModelSchema[]> {
   const grouped = new Map<string, ModelSchema[]>();
   for (const model of models) {
@@ -88,10 +99,11 @@ function AppSection({
 }
 
 function makeFrameMenu(models: ModelSchema[]) {
+  const menuModels = sidebarModels(models);
   return function FrameMenu() {
     const [query, setQuery] = useState("");
     const [sidebarOpen] = useSidebarState();
-    const grouped = groupByApp(models);
+    const grouped = groupByApp(menuModels);
     const searching = query.trim().length > 0;
 
     let filtered = grouped;
@@ -109,10 +121,12 @@ function makeFrameMenu(models: ModelSchema[]) {
           <span className="frame-mark" aria-hidden="true">
             Ff
           </span>
-          <div>
-            <div className="frame-name">FastFrame</div>
-            <div className="frame-sub">Admin</div>
-          </div>
+          {sidebarOpen ? (
+            <div>
+              <div className="frame-name">FastFrame</div>
+              <div className="frame-sub">Admin</div>
+            </div>
+          ) : null}
         </div>
 
         {sidebarOpen ? (
@@ -141,7 +155,7 @@ function makeFrameMenu(models: ModelSchema[]) {
           // Collapsed (icon-only) sidebar: skip grouping/search, just list every model.
           <MenuList className="frame-menu-scroll">
             <DashboardMenuItem primaryText="Overview" />
-            {models.map((model) => (
+            {menuModels.map((model) => (
               <ModelLink key={model.resource} model={model} />
             ))}
           </MenuList>

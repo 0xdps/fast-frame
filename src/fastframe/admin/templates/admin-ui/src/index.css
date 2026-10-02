@@ -185,6 +185,9 @@ body {
      just grows past the viewport instead of scrolling internally, taking
      the brand/search header along with it. */
   height: 100%;
+  /* Clip anything wider than the rail. The collapsed sidebar is only 64px,
+     and without this the brand name paints out over the page. */
+  overflow: hidden;
   background: #172033;
 }
 
@@ -194,6 +197,16 @@ body {
   gap: 12px;
   padding: 18px 16px 12px;
   color: #f4f7fb;
+}
+
+/* Closed rail is 64px (theme.sidebar.closedWidth). Drop the name and
+   center the mark — 16px of side padding plus the wordmark is wider
+   than the rail and spills into the page. */
+.RaSidebar-closed .frame-brand {
+  justify-content: center;
+  gap: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .frame-mark {
@@ -345,6 +358,21 @@ body {
   min-height: 40px;
 }
 
+/* MUI's ListItemIcon defaults to a 56px min-width, which doesn't fit a
+   64px rail (and shoves the icon off-center). Collapse it to the icon. */
+.RaSidebar-closed .RaMenuItemLink-root {
+  margin-left: 8px;
+  margin-right: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  justify-content: center;
+}
+
+.RaSidebar-closed .RaMenuItemLink-icon {
+  min-width: 0;
+  justify-content: center;
+}
+
 .RaMenuItemLink-root .MuiTypography-root {
   font-family: "Figtree", sans-serif;
   font-weight: 500;
@@ -442,12 +470,31 @@ body {
   padding: 20px 24px 8px;
 }
 
+.activity-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .activity-panel h2 {
-  margin: 0 0 4px;
+  margin: 0;
   font-family: "Outfit", sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+.activity-all {
+  flex: none;
+  color: #3157e8;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.activity-all:hover {
+  text-decoration: underline;
 }
 
 .activity-empty {
@@ -501,15 +548,6 @@ body {
 .activity-body p {
   margin: 0;
   color: var(--text-primary);
-}
-
-.activity-body a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.activity-body a:hover {
-  text-decoration: underline;
 }
 
 .activity-actor {
