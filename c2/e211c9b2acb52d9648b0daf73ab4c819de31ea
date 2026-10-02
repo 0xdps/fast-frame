@@ -1,0 +1,21 @@
+pyproject.toml
+  s_8de26d66febf8a::t_ffb1b16439c8ed 3
+CHANGELOG.md
+  s_8de26d66febf8a::t_bb0eb4e1c38029 15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "c2e211c9b2acb52d9648b0daf73ab4c819de31ea",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
