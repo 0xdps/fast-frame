@@ -4,6 +4,7 @@ on:
   push:
     branches: [trunk, staging]
   pull_request:
+  workflow_call:
 
 jobs:
   test:

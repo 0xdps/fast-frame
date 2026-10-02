@@ -10,7 +10,13 @@ permissions:
   contents: read
 
 jobs:
+  test:
+    uses: ./.github/workflows/pylint.yml
+    permissions:
+      contents: read
+
   publish:
+    needs: test
     runs-on: ubuntu-latest
     environment: pypi
     steps:
