@@ -12,6 +12,12 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Added
+
+- A pre-commit hook formats Python with Ruff and lints with Ruff and
+  Pylint. Enable it with `pre-commit install` after
+  `pip install -e ".[dev]"`.
+
 ## [0.1.3] - 2026-10-02
 
 ### Added

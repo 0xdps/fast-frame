@@ -8,9 +8,9 @@ Thank you for your interest in FastFrame. This project is in early stages; conve
 2. For architectural or API changes, add or update an [ADR](docs/adr/README.md).
 3. Keep v0.1 scope small — see [docs/mvp-v0.1.md](docs/mvp-v0.1.md).
 
-## Development setup (when implementation exists)
+## Development setup
 
-Instructions will live in [docs/development.md](docs/development.md). Until then, this repo holds documentation and project metadata only.
+See [docs/development.md](docs/development.md). After `pip install -e ".[dev]"`, install the format and lint hook with `pre-commit install`.
 
 ## Pull requests
 
