@@ -13,28 +13,9 @@ class UserAdmin(ModelAdmin):
     list_filter = ["is_active", "date_joined"]
     search_fields = ["username", "email", "first_name", "last_name"]
     list_per_page = 50
-    
-    # Form configuration
-    # password field is write_only, so it won't appear in edit forms
-    # This is intentional - use the change password action instead
-    
-    def get_queryset(self, request):
-        """Default queryset for user list."""
-        return super().get_queryset(request)
-    
-    def get_search_results(self, qs, search_term):
-        """Custom search to include name fields."""
-        if search_term:
-            return qs.filter(
-                username__icontains=search_term
-            ) | qs.filter(
-                email__icontains=search_term
-            ) | qs.filter(
-                first_name__icontains=search_term
-            ) | qs.filter(
-                last_name__icontains=search_term
-            )
-        return qs
+
+    # password is write_only, so it is omitted from edit forms.
+    # Change it through the profile "Change password" action.
 
 
 class GroupAdmin(ModelAdmin):

@@ -24,7 +24,7 @@ Start here:
 16. [Auth](auth.md) — user model and `AUTH_USER_MODEL`
 17. [Admin deployment](admin-deployment.md) — static, custom, or none
 18. [Admin setup](admin-setup.md) — walkthrough for adding admin to an app
-19. [Admin customization](admin-customization.md) — React admin source
+19. [Admin customization](admin-customization.md) — admin UI source, including why the sidebar stays expanded
 20. [Admin security warning](ADMIN_SECURITY_WARNING.md) — auth model and current limits
 21. [Models & fields design](models-fields-design.md) — field types, relationships, `ManyToManyField`
 22. [REST API](rest-api.md) — opt-in, token-authenticated CRUD over registered models

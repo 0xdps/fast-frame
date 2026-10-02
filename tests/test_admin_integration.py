@@ -96,6 +96,22 @@ def test_admin_api_list_users(client):
     assert any(row["username"] == "testuser" for row in data["data"])
 
 
+def test_admin_api_search_users(client):
+    """Search must OR the user search fields without crashing.
+
+    Querysets cannot be combined with ``|``; that raised TypeError inside
+    the request and Starlette reported it as an ExceptionGroup.
+    """
+    response = client.get("/api/admin/user", params={"q": "admin", "sortField": "date_joined", "sortOrder": "DESC"})
+    assert response.status_code == 200
+    data = response.json()
+    assert any(row["username"] == "admin" for row in data["data"])
+
+    missing = client.get("/api/admin/user", params={"q": "dps"})
+    assert missing.status_code == 200
+    assert missing.json()["total"] == 0
+
+
 def test_admin_api_create_user(client):
     """Admin API should create users."""
     _prepare_auth_tables()

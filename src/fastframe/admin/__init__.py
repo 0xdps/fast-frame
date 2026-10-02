@@ -5,7 +5,7 @@ Provides automatic CRUD interface for your models with:
 - Create/Edit forms with validation
 - Delete confirmations
 - Performance optimizations (auto select_related, limits)
-- A bundled React admin UI (react-admin), talking to the REST API below
+- A bundled React admin UI (Tailwind), talking to the REST API below
 
 Usage:
     # In your app's admin.py

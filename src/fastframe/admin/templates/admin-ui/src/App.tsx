@@ -1,13 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import { Admin, Resource } from "react-admin";
+import { useEffect, useState } from "react";
+import { HashRouter, Route, Routes } from "react-router-dom";
 
+import { AdminProvider } from "./admin-context";
 import { API_URL, type ModelSchema, type SchemaResponse } from "./api";
-import { dataProvider } from "./dataProvider";
-import { makeDashboard } from "./dashboard";
-import { makeFrameLayout } from "./layout";
-import { buildResourceViews } from "./resources";
-import { darkTheme, theme } from "./theme";
-import { buildUserViews, isUserModel } from "./users";
+import { Overview } from "./pages/overview";
+import { ResourceForm } from "./pages/resource-form";
+import { ResourceList } from "./pages/resource-list";
+import { Shell } from "./shell";
 
 export default function App() {
   const [models, setModels] = useState<ModelSchema[] | null>(null);
@@ -28,26 +27,12 @@ export default function App() {
       .catch((err: unknown) => {
         if (cancelled) return;
         const message = err instanceof Error ? err.message : String(err);
-        setError(
-          `${message}. Start the API, then reload. The admin reads ${API_URL}/schema.`,
-        );
+        setError(`${message}. Start the API, then reload. The admin reads ${API_URL}/schema.`);
       });
     return () => {
       cancelled = true;
     };
   }, []);
-
-  const resources = useMemo(
-    () =>
-      (models ?? []).map((model) => ({
-        model,
-        views: isUserModel(model) ? buildUserViews(model, models ?? []) : buildResourceViews(model, models ?? []),
-      })),
-    [models],
-  );
-
-  const Dashboard = useMemo(() => (models ? makeDashboard(models) : undefined), [models]);
-  const FrameLayout = useMemo(() => (models ? makeFrameLayout(models) : undefined), [models]);
 
   if (error) {
     return (
@@ -58,30 +43,22 @@ export default function App() {
     );
   }
 
-  if (!models || !Dashboard || !FrameLayout) {
+  if (!models) {
     return <p className="boot-message">Loading FastFrame Admin…</p>;
   }
 
   return (
-    <Admin
-      dataProvider={dataProvider}
-      dashboard={Dashboard}
-      layout={FrameLayout}
-      theme={theme}
-      darkTheme={darkTheme}
-      title="FastFrame Admin"
-    >
-      {resources.map(({ model, views }) => (
-        <Resource
-          key={model.resource}
-          name={model.resource}
-          options={{ label: model.labelPlural }}
-          list={views.list}
-          edit={views.edit}
-          create={views.create}
-          recordRepresentation={views.recordRepresentation}
-        />
-      ))}
-    </Admin>
+    <AdminProvider models={models}>
+      <HashRouter>
+        <Routes>
+          <Route element={<Shell />}>
+            <Route index element={<Overview />} />
+            <Route path=":resource/create" element={<ResourceForm mode="create" />} />
+            <Route path=":resource/:id" element={<ResourceForm mode="edit" />} />
+            <Route path=":resource" element={<ResourceList />} />
+          </Route>
+        </Routes>
+      </HashRouter>
+    </AdminProvider>
   );
 }

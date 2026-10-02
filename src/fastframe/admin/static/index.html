@@ -11,8 +11,20 @@
       rel="stylesheet"
     />
     <title>FastFrame Admin</title>
-    <script type="module" crossorigin src="/admin/assets/index-C3X-PAcw.js"></script>
-    <link rel="stylesheet" crossorigin href="/admin/assets/index-tNenh0u4.css">
+    <script>
+      try {
+        var saved = localStorage.getItem("frame.theme");
+        var theme =
+          saved === "dark" || saved === "light"
+            ? saved
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
+    <script type="module" crossorigin src="/admin/assets/index-ColhTGTK.js"></script>
+    <link rel="stylesheet" crossorigin href="/admin/assets/index-DwvDlOZ3.css">
   </head>
   <body>
     <div id="root"></div>
