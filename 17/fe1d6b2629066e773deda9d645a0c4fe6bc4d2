@@ -1,0 +1,31 @@
+CONTRIBUTING.md
+  s_8de26d66febf8a::t_b4e17f81dd821e 11,13
+scripts/pylint-check.sh
+  s_8de26d66febf8a::t_0f38a6f7945cd3 1-16
+.github/workflows/pylint.yml
+  s_8de26d66febf8a::t_d174720c3ec82d 28
+docs/development.md
+  s_8de26d66febf8a::t_70458a877bab3d 25-33
+.pre-commit-config.yaml
+  s_8de26d66febf8a::t_e20e33839aea48 1-16
+pyproject.toml
+  s_8de26d66febf8a::t_c221ac0d9bcf72 38
+CHANGELOG.md
+  s_8de26d66febf8a::t_65a78e5b84eb3e 15-20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "17fe1d6b2629066e773deda9d645a0c4fe6bc4d2",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
