@@ -22,8 +22,15 @@ Instructions for contributing to the **FastFrame framework** repository.
 
    ```text
    ruff check src tests
-   pylint src/fastframe --fail-on=E,F
-   # Exit 4 or 6 means warnings only. CI fails on exit 2, or on an E/F message.
+   scripts/pylint-check.sh
+   ```
+
+   Pylint warnings (exit 4 or 6) are allowed. The script fails on exit 2, or on an E/F message.
+
+6. Install the pre-commit hook. It formats staged Python with Ruff, applies Ruff lint fixes, and runs the same Pylint check when a framework source file is staged:
+
+   ```text
+   pre-commit install
    ```
 
 ## Fixture project

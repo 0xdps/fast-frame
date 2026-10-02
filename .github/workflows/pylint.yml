@@ -25,15 +25,6 @@ jobs:
       - name: Ruff
         run: ruff check src tests
       - name: Pylint
-        run: |
-          set +e
-          pylint src/fastframe --fail-on=E,F --output-format=text > pylint.txt
-          code=$?
-          cat pylint.txt
-          # 0 = clean. 4 = warnings, 6 = warnings plus a non-zero score.
-          # Neither is an error. 2 = a real error or fatal.
-          if [ "$code" -eq 2 ] || grep -E ': [EF][0-9]{4}:' pylint.txt; then
-            exit 2
-          fi
+        run: scripts/pylint-check.sh
       - name: Pytest
         run: pytest
