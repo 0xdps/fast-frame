@@ -12,6 +12,8 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-10-02
+
 ### Added
 
 - Admin dashboard redesign: the model-tile grid is gone, replaced by a
