@@ -3,6 +3,20 @@
 `python manage.py startadmin` copies the admin UI into `admin-ui/`
 (pass another directory as the first argument, or `--force` to replace it).
 
+## Header
+
+Set these in your settings module. The shipped admin reads them from
+`GET /api/admin/schema` (`site.title` and `site.header`). You do not copy
+the UI to rename it.
+
+```python
+ADMIN_SITE_HEADER = "Episodes"
+ADMIN_SITE_TITLE = "Episode Admin"
+```
+
+`ADMIN_SITE_HEADER` is the sidebar name. `ADMIN_SITE_TITLE` is the browser
+tab title and the line under that name. The sign-in page uses the title too.
+
 ## Sidebar
 
 The sidebar does not collapse. Every model uses the same list icon, so a
@@ -16,6 +30,20 @@ sidebar.
 
 See [ADR 0011](adr/0011-admin-sidebar-stays-expanded.md).
 
+## Record page
+
+Opening a record shows the same form with every field disabled, so the
+label stays outside the box and the value stays inside it. **Edit**
+unlocks the fields. **Save** writes them and returns to the read-only
+page. **Cancel** drops unsaved changes. Creating a record still opens
+the form directly.
+
+A foreign key is the related object's name, in the list and on the record,
+and that name links to the related record. The list includes foreign-key
+columns even when `list_display` leaves them out, unless that relationship
+is already one of the columns. Many-to-many values are names that link to
+each related record; they stay read-only.
+
 ## What to edit
 
 | File | Change |
@@ -23,7 +51,7 @@ See [ADR 0011](adr/0011-admin-sidebar-stays-expanded.md).
 | `src/shell.tsx` | Sidebar and top bar. The sidebar stays expanded; see [Sidebar](#sidebar). |
 | `src/pages/overview.tsx` | The Overview page: a short greeting and recent activity when the current user can view `AuditLog`. |
 | `src/pages/resource-list.tsx` | Schema-driven list: search, sort, pagination, bulk delete. |
-| `src/pages/resource-form.tsx` | Schema-driven create and edit forms, including the user profile and change-password panel. |
+| `src/pages/resource-form.tsx` | Schema-driven create and record pages, including the user profile and change-password panel. |
 | `src/admin-state.ts` | Theme and refresh. Dark mode is a `data-theme` attribute on `<html>`. |
 | `src/currentUser.ts` | `useCurrentUser()` — fetches `GET /me` for the user menu. |
 | `src/index.css` | Theme tokens, the fixed app shell, and scrollbars. |

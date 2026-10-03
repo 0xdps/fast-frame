@@ -1,9 +1,17 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 
-import type { ModelSchema } from "./api";
+import type { ModelSchema, SiteBranding } from "./api";
 import { AdminContext, initialTheme, type ThemeName } from "./admin-state";
 
-export function AdminProvider({ models, children }: { models: ModelSchema[]; children: ReactNode }) {
+export function AdminProvider({
+  models,
+  site,
+  children,
+}: {
+  models: ModelSchema[];
+  site: SiteBranding;
+  children: ReactNode;
+}) {
   const [theme, setThemeState] = useState<ThemeName>(initialTheme);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -14,6 +22,7 @@ export function AdminProvider({ models, children }: { models: ModelSchema[]; chi
   const value = useMemo(
     () => ({
       models,
+      site,
       theme,
       setTheme: (next: ThemeName) => {
         setThemeState(next);
@@ -26,7 +35,7 @@ export function AdminProvider({ models, children }: { models: ModelSchema[]; chi
       refreshKey,
       refresh: () => setRefreshKey((key) => key + 1),
     }),
-    [models, theme, refreshKey],
+    [models, site, theme, refreshKey],
   );
 
   return <AdminContext.Provider value={value}>{children}</AdminContext.Provider>;

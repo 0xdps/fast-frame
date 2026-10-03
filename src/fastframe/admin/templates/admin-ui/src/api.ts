@@ -60,6 +60,17 @@ export interface CountsResponse {
   counts: Record<string, number>;
 }
 
+export interface SiteBranding {
+  title: string;
+  header: string;
+}
+
 export interface SchemaResponse {
   models: ModelSchema[];
+  site?: SiteBranding;
 }
+
+export const DEFAULT_SITE: SiteBranding = {
+  title: "FastFrame Admin",
+  header: "Administration",
+};

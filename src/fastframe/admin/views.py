@@ -9,6 +9,7 @@ Both talk to the same JSON REST API in ``fastframe.admin.api``.
 
 from __future__ import annotations
 
+import html
 import json
 
 # Templates directory
@@ -45,7 +46,7 @@ def _admin_api_prefix() -> str:
 
 
 _LOGIN_PAGE_TEMPLATE = """<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><title>FastFrame Admin — Sign in</title>
+<html lang="en"><head><meta charset="utf-8"><title>__SITE_TITLE__ — Sign in</title>
 <style>
 body{font-family:system-ui,sans-serif;max-width:22rem;margin:6rem auto;padding:0 1rem;color:#172033}
 h1{font-size:1.25rem}
@@ -58,7 +59,7 @@ button:disabled{opacity:.6;cursor:default}
 #error{color:#dc2626;font-size:.875rem;margin-top:.75rem;display:none}
 </style></head>
 <body>
-<h1>FastFrame Admin</h1>
+<h1>__SITE_TITLE__</h1>
 <form id="login-form">
   <label>Username
     <input type="text" name="username" autocomplete="username" required>
@@ -113,8 +114,11 @@ def _login_page_html(api_prefix: str) -> str:
     Posts credentials to ``{api_prefix}/login`` and reloads on success so the
     server can serve the real admin content once the session cookie is set.
     """
+    from fastframe.admin.api import _admin_site_branding
+
     login_url = json.dumps(f"{api_prefix}/login")
-    return _LOGIN_PAGE_TEMPLATE.replace("__API_LOGIN_URL__", login_url)
+    title = html.escape(_admin_site_branding()["title"])
+    return _LOGIN_PAGE_TEMPLATE.replace("__API_LOGIN_URL__", login_url).replace("__SITE_TITLE__", title)
 
 
 def _admin_login_redirect(request: Request) -> HTMLResponse | None:

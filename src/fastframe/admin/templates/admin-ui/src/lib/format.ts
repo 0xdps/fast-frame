@@ -27,13 +27,72 @@ export function relativeTime(iso: string): string {
   return rtf.format(Math.round(diff), "years");
 }
 
+export function relationKey(field: FieldSchema): string {
+  if (field.relationshipName) return field.relationshipName;
+  if (field.name.endsWith("_id")) return field.name.slice(0, -3);
+  return `${field.name}_rel`;
+}
+
+export function fieldForColumn(model: ModelSchema, name: string): FieldSchema | undefined {
+  return (
+    model.fields.find((field) => field.name === name) ??
+    model.fields.find((field) => field.reference && relationKey(field) === name)
+  );
+}
+
+export interface RelatedObject {
+  id: string;
+  label: string;
+}
+
+export function relatedObjects(record: Record<string, unknown>, field: FieldSchema): RelatedObject[] {
+  if (field.many) {
+    const raw = record[field.name];
+    if (!Array.isArray(raw)) return [];
+    return raw.flatMap((item) => {
+      if (item && typeof item === "object" && "id" in item) {
+        const related = item as { id?: unknown; display?: unknown };
+        if (related.id == null || related.id === "") return [];
+        const id = String(related.id);
+        const label = related.display == null || related.display === "" ? `#${id}` : String(related.display);
+        return [{ id, label }];
+      }
+      if (item == null || item === "") return [];
+      const id = String(item);
+      return [{ id, label: `#${id}` }];
+    });
+  }
+
+  const nested = record[relationKey(field)];
+  if (nested && typeof nested === "object" && !Array.isArray(nested) && "id" in nested) {
+    const related = nested as { id?: unknown; display?: unknown };
+    if (related.id == null || related.id === "") return [];
+    const id = String(related.id);
+    const label = related.display == null || related.display === "" ? `#${id}` : String(related.display);
+    return [{ id, label }];
+  }
+
+  const raw = record[field.name];
+  if (raw == null || raw === "") return [];
+  const id = String(raw);
+  return [{ id, label: `#${id}` }];
+}
+
+export function resourceForReference(
+  models: ModelSchema[],
+  reference: string | undefined,
+  current: ModelSchema,
+): string | undefined {
+  if (!reference || reference === "self") return current.resource;
+  const name = reference.includes(".") ? reference.slice(reference.lastIndexOf(".") + 1) : reference;
+  return models.find((model) => model.name === name)?.resource;
+}
+
 export function formatCell(record: Record<string, unknown>, fieldName: string, model: ModelSchema): string {
-  const field = model.fields.find((item) => item.name === fieldName);
-  if (field?.relationshipName) {
-    const related = record[field.relationshipName];
-    if (related && typeof related === "object" && "display" in related) {
-      return String((related as { display?: unknown }).display ?? "—");
-    }
+  const field = fieldForColumn(model, fieldName);
+  if (field?.reference) {
+    const related = relatedObjects(record, field);
+    return related.length ? related.map((item) => item.label).join(", ") : "—";
   }
   const value = record[fieldName];
   if (value == null || value === "") return "—";
@@ -65,13 +124,21 @@ export function sortFromOrdering(ordering: string[]): { field: string; order: "A
 export function listColumns(model: ModelSchema): { name: string; label: string; sortable: boolean }[] {
   const names = (model.listDisplay.length ? model.listDisplay : ["id"]).filter((name) => name !== "__str__");
   const columns = names.map((name) => {
-    const field = model.fields.find((item) => item.name === name);
+    const field = fieldForColumn(model, name);
+    const isColumn = model.fields.some((item) => item.name === name);
     return {
       name,
       label: field?.label ?? name,
-      sortable: !field?.relationshipName,
+      sortable: isColumn && !field?.many,
     };
   });
+  const shown = new Set(columns.map((column) => column.name));
+  for (const field of model.fields) {
+    if (!field.reference || field.many || field.writeOnly) continue;
+    if (shown.has(field.name) || shown.has(relationKey(field))) continue;
+    columns.push({ name: field.name, label: field.label, sortable: true });
+    shown.add(field.name);
+  }
   return columns.length ? columns : [{ name: "id", label: "Id", sortable: true }];
 }
 

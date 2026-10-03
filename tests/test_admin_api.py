@@ -111,9 +111,7 @@ def client(miniproject_env, monkeypatch):
         admin_user.save()
 
     test_client = TestClient(app)
-    login = test_client.post(
-        "/api/admin/login", json={"username": "admin", "password": "s3cret-pass"}
-    )
+    login = test_client.post("/api/admin/login", json={"username": "admin", "password": "s3cret-pass"})
     assert login.status_code == 200
     return test_client
 
@@ -155,6 +153,17 @@ def test_schema_includes_field_metadata(client):
     ]
     assert book["permissions"]["create"] is True
     assert book["listDisplay"] == ["title", "status", "pages"]
+
+
+def test_schema_includes_site_branding(client, monkeypatch):
+    """The admin UI reads its title and header from the schema payload."""
+    from fastframe.conf import settings
+
+    monkeypatch.setattr(settings, "ADMIN_SITE_TITLE", "Episode Admin")
+    monkeypatch.setattr(settings, "ADMIN_SITE_HEADER", "Episodes")
+    resp = client.get("/api/admin/schema")
+    assert resp.status_code == 200
+    assert resp.json()["site"] == {"title": "Episode Admin", "header": "Episodes"}
 
 
 def test_schema_has_no_total(client):
@@ -365,9 +374,7 @@ def test_bulk_delete(client, seeded):
 
 
 def test_create_writes_audit_log_attributed_to_admin_user(client):
-    resp = client.post(
-        "/api/admin/apiauthor", json={"name": "Dana", "email": "dana@example.com"}
-    )
+    resp = client.post("/api/admin/apiauthor", json={"name": "Dana", "email": "dana@example.com"})
     author_id = resp.json()["data"]["id"]
 
     with session_scope():

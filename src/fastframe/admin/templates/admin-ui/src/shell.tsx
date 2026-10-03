@@ -31,6 +31,12 @@ function groupByApp(models: ModelSchema[]): Map<string, ModelSchema[]> {
   return grouped;
 }
 
+function brandMark(header: string): string {
+  const words = header.trim().split(/\s+/).filter(Boolean);
+  if (words.length >= 2) return `${words[0]?.[0] ?? ""}${words[1]?.[0] ?? ""}`.toUpperCase();
+  return (words[0] ?? "A").slice(0, 2).toUpperCase();
+}
+
 function pageTitle(pathname: string, models: ModelSchema[]): string {
   const parts = pathname.split("/").filter(Boolean);
   if (parts.length === 0) return "Overview";
@@ -169,7 +175,7 @@ function UserMenu({ models }: { models: ModelSchema[] }) {
 }
 
 export function Shell() {
-  const { models, refresh } = useAdmin();
+  const { models, site, refresh } = useAdmin();
   const { pathname } = useLocation();
   const [query, setQuery] = useState("");
   const [collapsedApps, setCollapsedApps] = useState<string[]>(() => {
@@ -183,8 +189,8 @@ export function Shell() {
   });
 
   useEffect(() => {
-    document.title = `${pageTitle(pathname, models)} · FastFrame`;
-  }, [pathname, models]);
+    document.title = `${pageTitle(pathname, models)} · ${site.title}`;
+  }, [pathname, models, site.title]);
 
   const menuModels = useMemo(
     () => models.filter((model) => !HIDDEN_FROM_SIDEBAR.has(model.resource)),
@@ -229,11 +235,13 @@ export function Shell() {
           aria-label="Dashboard"
         >
           <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-[#3157e8] text-xs font-semibold text-white">
-            Ff
+            {brandMark(site.header)}
           </span>
           <span className="min-w-0">
-            <span className="block font-display text-sm font-semibold tracking-tight text-white">FastFrame</span>
-            <span className="block text-[11px] text-[#8b98ab]">Admin</span>
+            <span className="block truncate font-display text-sm font-semibold tracking-tight text-white">{site.header}</span>
+            {site.title !== site.header ? (
+              <span className="block truncate text-[11px] text-[#8b98ab]">{site.title}</span>
+            ) : null}
           </span>
         </NavLink>
 

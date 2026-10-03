@@ -8,10 +8,11 @@ import { Button } from "../components/ui/button";
 import { ConfirmDialog } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { SelectField, type SelectOption } from "../components/ui/select";
 import { Switch } from "../components/ui/switch";
 import { Textarea } from "../components/ui/textarea";
 import { ApiError, createRecord, deleteRecord, fieldChoices, getRecord, updateRecord, type Choice } from "../lib/client";
-import { fieldShown, initials, isUserModel, toneFor } from "../lib/format";
+import { fieldShown, initials, isUserModel, relatedObjects, resourceForReference, toneFor } from "../lib/format";
 
 function createDefaults(model: ModelSchema): Record<string, unknown> {
   const values: Record<string, unknown> = {};
@@ -106,15 +107,19 @@ function buildPayload(model: ModelSchema, values: Record<string, unknown>, isCre
 }
 
 function ReferenceInput({
-  resource,
+  model,
+  models,
   field,
   value,
+  record,
   disabled,
   onChange,
 }: {
-  resource: string;
+  model: ModelSchema;
+  models: ModelSchema[];
   field: FieldSchema;
   value: string;
+  record: Record<string, unknown> | null;
   disabled: boolean;
   onChange: (value: string) => void;
 }) {
@@ -124,7 +129,7 @@ function ReferenceInput({
   useEffect(() => {
     let cancelled = false;
     const timer = window.setTimeout(() => {
-      fieldChoices(resource, field.name, q)
+      fieldChoices(model.resource, field.name, q)
         .then((next) => {
           if (!cancelled) setOptions(next);
         })
@@ -136,58 +141,120 @@ function ReferenceInput({
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [resource, field.name, q]);
+  }, [model.resource, field.name, q]);
 
   const known = options.some((option) => String(option.value) === value);
+  const knownLabel = options.find((option) => String(option.value) === value)?.label;
+  const fromRecord = record ? relatedObjects(record, field).find((item) => item.id === value) : undefined;
+  const label = knownLabel || fromRecord?.label;
+  const target = resourceForReference(models, field.reference, model);
+  const choices: SelectOption[] = [
+    ...(q ? [] : [{ value: "", label: field.required ? "Select…" : "None" }]),
+    ...(!q && !known && value ? [{ value, label: label || `#${value}` }] : []),
+    ...options.map((option) => ({ value: String(option.value), label: option.label })),
+  ];
   return (
     <div className="flex flex-col gap-2">
-      <Input
-        type="search"
-        value={q}
-        disabled={disabled}
-        placeholder="Search…"
-        aria-label={`Search ${field.label}`}
-        onChange={(event) => setQ(event.target.value)}
-      />
-      <select
-        className="h-9 w-full rounded-lg border border-input bg-card px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+      <SelectField
+        ariaLabel={field.label}
         value={value}
+        options={choices}
         disabled={disabled}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="">{field.required ? "Select…" : "None"}</option>
-        {!known && value ? <option value={value}>{value}</option> : null}
-        {options.map((option) => (
-          <option key={String(option.value)} value={String(option.value)}>
-            {option.label}
-          </option>
-        ))}
-      </select>
+        searchable
+        query={q}
+        onQueryChange={setQ}
+        onChange={onChange}
+      />
+      {value && target && label ? (
+        <Link to={`/${target}/${value}`} className="text-sm font-medium text-primary hover:underline">
+          {label}
+        </Link>
+      ) : null}
     </div>
+  );
+}
+
+function RelatedLinks({
+  model,
+  models,
+  field,
+  record,
+}: {
+  model: ModelSchema;
+  models: ModelSchema[];
+  field: FieldSchema;
+  record: Record<string, unknown> | null;
+}) {
+  const related = record ? relatedObjects(record, field) : [];
+  const [labels, setLabels] = useState<Record<string, string>>({});
+  const unresolved = field.many && related.some((item) => item.label === `#${item.id}`);
+
+  useEffect(() => {
+    if (!unresolved) return;
+    let cancelled = false;
+    fieldChoices(model.resource, field.name)
+      .then((options) => {
+        if (cancelled) return;
+        const next: Record<string, string> = {};
+        for (const option of options) next[String(option.value)] = option.label;
+        setLabels(next);
+      })
+      .catch(() => {
+        if (!cancelled) setLabels({});
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [unresolved, model.resource, field.name]);
+
+  if (!related.length) return <p className="text-sm text-muted-foreground">—</p>;
+  const target = resourceForReference(models, field.reference, model);
+  return (
+    <p className="flex flex-wrap gap-x-3 gap-y-1 text-sm">
+      {related.map((item) => {
+        const label = labels[item.id] || item.label;
+        if (!target) return <span key={item.id}>{label}</span>;
+        return (
+          <Link key={item.id} to={`/${target}/${item.id}`} className="font-medium text-primary hover:underline">
+            {label}
+          </Link>
+        );
+      })}
+    </p>
   );
 }
 
 function FieldControl({
   model,
+  models,
   field,
   value,
+  record,
+  viewing,
   disabled,
   error,
   onChange,
 }: {
   model: ModelSchema;
+  models: ModelSchema[];
   field: FieldSchema;
   value: unknown;
+  record: Record<string, unknown> | null;
+  viewing: boolean;
   disabled: boolean;
   error?: string;
   onChange: (value: unknown) => void;
 }) {
   const text = value == null ? "" : String(value);
-  const locked = disabled || Boolean(field.readOnly) || Boolean(field.primaryKey) || field.editable === false;
+  const locked = viewing || disabled || Boolean(field.readOnly) || Boolean(field.primaryKey) || field.editable === false;
 
   let control;
   if (field.many && field.editable === false) {
-    control = <p className="text-sm text-muted-foreground">{text || "—"}</p>;
+    control = (
+      <div className="flex min-h-9 flex-wrap items-center rounded-lg border border-input bg-muted px-3 py-1.5">
+        <RelatedLinks model={model} models={models} field={field} record={record} />
+      </div>
+    );
   } else if (field.writeOnly) {
     control = (
       <Input
@@ -201,32 +268,31 @@ function FieldControl({
   } else if (field.reference && !field.many) {
     control = (
       <ReferenceInput
-        resource={model.resource}
+        model={model}
+        models={models}
         field={field}
         value={text}
+        record={record}
         disabled={locked}
         onChange={onChange}
       />
     );
   } else if (field.choices?.length) {
     control = (
-      <select
-        className="h-9 w-full rounded-lg border border-input bg-card px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-60"
+      <SelectField
+        ariaLabel={field.label}
         value={text}
         disabled={locked}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        <option value="">{field.required ? "Select…" : "None"}</option>
-        {field.choices.map((choice) => (
-          <option key={String(choice.value)} value={String(choice.value)}>
-            {choice.label}
-          </option>
-        ))}
-      </select>
+        onChange={(next) => onChange(next)}
+        options={[
+          { value: "", label: field.required ? "Select…" : "None" },
+          ...field.choices.map((choice) => ({ value: String(choice.value), label: choice.label })),
+        ]}
+      />
     );
   } else if (field.type === "BooleanField") {
     control = (
-      <div className="flex items-center justify-between rounded-lg border border-input px-3 py-2">
+      <div className={`flex items-center justify-between rounded-lg border border-input px-3 py-2 ${locked ? "bg-muted" : ""}`}>
         <span className="text-sm text-muted-foreground">{value ? "Yes" : "No"}</span>
         <Switch checked={Boolean(value)} disabled={locked} onCheckedChange={onChange} aria-label={field.label} />
       </div>
@@ -374,7 +440,6 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
   const navigate = useNavigate();
   const isCreate = mode === "create";
   const userModel = model ? isUserModel(model) : false;
-  const omitPrimaryKey = userModel && !isCreate;
 
   const [values, setValues] = useState<Record<string, unknown>>({});
   const [record, setRecord] = useState<Record<string, unknown> | null>(null);
@@ -383,6 +448,7 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [pending, setPending] = useState(!isCreate);
   const [saving, setSaving] = useState(false);
+  const [editing, setEditing] = useState(isCreate);
   const [changingPassword, setChangingPassword] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -395,6 +461,7 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
     setFormError(null);
     setNotice(null);
     setChangingPassword(false);
+    setEditing(isCreate);
     if (isCreate) {
       setValues(createDefaults(model));
       setRecord(null);
@@ -429,7 +496,18 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
   }
 
   const editable = isCreate ? model.permissions.create : model.permissions.edit;
-  const fields = model.fields.filter((field) => fieldShown(field, isCreate, omitPrimaryKey));
+  const viewing = !isCreate && !editing;
+  const fields = model.fields
+    .filter((field) => fieldShown(field, isCreate, false))
+    .toSorted((a, b) => Number(b.primaryKey) - Number(a.primaryKey));
+
+  const cancelEdit = () => {
+    if (record) setValues(valuesFromRecord(model, record));
+    setFieldErrors({});
+    setFormError(null);
+    setNotice(null);
+    setEditing(false);
+  };
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -461,6 +539,7 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
         const updated = await updateRecord(model.resource, id, payload);
         setRecord(updated);
         setValues(valuesFromRecord(model, updated));
+        setEditing(false);
         setNotice("Saved.");
       }
     } catch (err: unknown) {
@@ -494,7 +573,7 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
     <div className="flex flex-col gap-5 p-6">
       <div>
         <Link to={`/${model.resource}`} className="text-sm text-muted-foreground hover:text-foreground">
-          ← {model.labelPlural}
+          ← Back
         </Link>
         <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
           {isCreate ? `Add ${model.label}` : model.label}
@@ -536,17 +615,36 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
             <FieldControl
               key={field.name}
               model={model}
+              models={models}
               field={field}
               value={values[field.name]}
+              record={record}
+              viewing={viewing}
               disabled={!editable}
               error={fieldErrors[field.name]}
               onChange={(next) => setValues((current) => ({ ...current, [field.name]: next }))}
             />
           ))}
           <div className="flex flex-wrap gap-2 pt-2">
-            {editable ? (
+            {editable && viewing ? (
+              <Button
+                type="button"
+                onClick={() => {
+                  setNotice(null);
+                  setEditing(true);
+                }}
+              >
+                Edit
+              </Button>
+            ) : null}
+            {editable && !viewing ? (
               <Button type="submit" disabled={saving}>
                 {saving ? "Saving…" : "Save"}
+              </Button>
+            ) : null}
+            {editable && editing && !isCreate ? (
+              <Button type="button" variant="outline" onClick={cancelEdit} disabled={saving}>
+                Cancel
               </Button>
             ) : null}
             {!isCreate && model.permissions.delete ? (

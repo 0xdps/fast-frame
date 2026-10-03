@@ -1,13 +1,60 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
+import type { ModelSchema } from "../api";
 import { useAdmin } from "../admin-state";
 import { Button } from "../components/ui/button";
 import { ConfirmDialog } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
 import { deleteRecords, listRecords } from "../lib/client";
 import { cn } from "../lib/cn";
-import { formatCell, listColumns, recordId, sortFromOrdering } from "../lib/format";
+import {
+  fieldForColumn,
+  formatCell,
+  listColumns,
+  recordId,
+  relatedObjects,
+  resourceForReference,
+  sortFromOrdering,
+} from "../lib/format";
+
+function RecordCell({
+  row,
+  column,
+  model,
+  models,
+}: {
+  row: Record<string, unknown>;
+  column: string;
+  model: ModelSchema;
+  models: ModelSchema[];
+}) {
+  const field = fieldForColumn(model, column);
+  if (!field?.reference) return formatCell(row, column, model);
+  const related = relatedObjects(row, field);
+  if (!related.length) return "—";
+  const resource = resourceForReference(models, field.reference, model);
+  return (
+    <span className="inline-flex max-w-full flex-wrap gap-x-2">
+      {related.map((item) =>
+        resource ? (
+          <Link
+            key={item.id}
+            to={`/${resource}/${item.id}`}
+            className="truncate font-medium text-primary hover:underline"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {item.label}
+          </Link>
+        ) : (
+          <span key={item.id} className="truncate">
+            {item.label}
+          </span>
+        ),
+      )}
+    </span>
+  );
+}
 
 export function ResourceList() {
   const { resource = "" } = useParams();
@@ -229,7 +276,7 @@ export function ResourceList() {
                     ) : null}
                     {columns.map((column) => (
                       <td key={column.name} className="truncate px-3 py-3">
-                        {formatCell(row, column.name, model)}
+                        <RecordCell row={row} column={column.name} model={model} models={models} />
                       </td>
                     ))}
                   </tr>

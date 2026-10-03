@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 
 import { AdminProvider } from "./admin-context";
-import { API_URL, type ModelSchema, type SchemaResponse } from "./api";
+import { API_URL, DEFAULT_SITE, type ModelSchema, type SchemaResponse, type SiteBranding } from "./api";
 import { Overview } from "./pages/overview";
 import { ResourceForm } from "./pages/resource-form";
 import { ResourceList } from "./pages/resource-list";
@@ -10,6 +10,7 @@ import { Shell } from "./shell";
 
 export default function App() {
   const [models, setModels] = useState<ModelSchema[] | null>(null);
+  const [site, setSite] = useState<SiteBranding>(DEFAULT_SITE);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -22,7 +23,10 @@ export default function App() {
         return (await response.json()) as SchemaResponse;
       })
       .then((body) => {
-        if (!cancelled) setModels(body.models);
+        if (!cancelled) {
+          setModels(body.models);
+          if (body.site?.title && body.site.header) setSite(body.site);
+        }
       })
       .catch((err: unknown) => {
         if (cancelled) return;
@@ -48,7 +52,7 @@ export default function App() {
   }
 
   return (
-    <AdminProvider models={models}>
+    <AdminProvider models={models} site={site}>
       <HashRouter>
         <Routes>
           <Route element={<Shell />}>
