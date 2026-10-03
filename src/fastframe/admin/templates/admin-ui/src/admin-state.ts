@@ -1,11 +1,12 @@
 import { createContext, useContext } from "react";
 
-import type { ModelSchema } from "./api";
+import type { ModelSchema, SiteBranding } from "./api";
 
 export type ThemeName = "light" | "dark";
 
 export interface AdminContextValue {
   models: ModelSchema[];
+  site: SiteBranding;
   theme: ThemeName;
   setTheme: (theme: ThemeName) => void;
   refreshKey: number;

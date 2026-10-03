@@ -21,11 +21,11 @@ def test_db():
     import fastframe.db.session as session_module
 
     original_get = session_module.get_current_session
-    
+
     # Create a session and set it in the context
     session = Session()
     session_module._session_ctx.set(session)
-    
+
     # Also patch the function
     session_module.get_current_session = lambda: session
 
@@ -50,7 +50,7 @@ def test_foreignkey_creates_relationship_attribute(test_db):
 
     # Check that relationship attribute exists
     assert hasattr(Book, "author")
-    
+
     # Check that it's a relationship
     assert "author" in [r.key for r in Book.__mapper__.relationships]
 
@@ -208,3 +208,30 @@ def test_foreignkey_related_name_stored():
 
     field = Employee._meta["fields"]["company_id"]
     assert field.related_name == "employees"
+
+
+def test_foreignkey_admin_uses_a_readable_label(test_db):
+    """Admin schema and payloads name a foreign key by the related object."""
+    from fastframe.admin.serializers import model_schema, serialize_instance
+
+    class ReadableAuthor(Model):
+        __tablename__ = "readable_authors"
+        name = fields.CharField(max_length=100)
+
+    class ReadablePost(Model):
+        __tablename__ = "readable_posts"
+        title = fields.CharField(max_length=100)
+        author_id = fields.ForeignKey("ReadableAuthor")
+
+    schema = model_schema(ReadablePost)
+    author_field = next(field for field in schema["fields"] if field["name"] == "author_id")
+    assert author_field["label"] == "Author"
+    assert author_field["relationshipName"] == "author"
+
+    Model.metadata.create_all(test_db.get_bind())
+    writer = ReadableAuthor.objects.create(name="Ada Lovelace")
+    post = ReadablePost.objects.create(title="Notes", author_id=writer.id)
+    test_db.flush()
+
+    data = serialize_instance(post)
+    assert data["author"] == {"id": writer.id, "display": "Ada Lovelace"}

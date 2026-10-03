@@ -12,6 +12,20 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Changed
+
+- `ADMIN_SITE_TITLE` and `ADMIN_SITE_HEADER` set the admin sidebar, browser
+  tab, and sign-in heading. The UI reads them from `GET /api/admin/schema`.
+- A record opens read-only, with the same fields disabled. Edit turns
+  them on, and Save returns to the read-only page.
+- Choice and foreign-key fields use an in-app menu, and scrollbars use
+  the admin's own thumb instead of the browser default. Foreign-key
+  search lives inside that menu.
+- The record page link back to the list is a static Back control, and the
+  primary key is the first field on every model.
+- Foreign keys show the related object's name in the list and on the record,
+  and that name links to the related record.
+
 ### Added
 
 - A pre-commit hook formats Python with Ruff and lints with Ruff and

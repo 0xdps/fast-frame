@@ -13,7 +13,9 @@ reachable from both — but are gated by different auth dependencies:
   any active user (see :mod:`fastframe.api.auth`).
 
 Endpoints (relative to whichever prefix the router is mounted at):
-    GET    /schema                      All registered models + field schemas
+    GET    /schema                      All registered models + field schemas.
+                                 The admin response also includes ``site``
+                                 (``ADMIN_SITE_TITLE`` / ``ADMIN_SITE_HEADER``).
     GET    /counts                      Per-model row counts (single query)
     GET    /{resource}                  List (paging, sort, search, filters)
     GET    /{resource}/{id}             Retrieve one
@@ -43,6 +45,7 @@ from sqlalchemy.exc import IntegrityError
 from fastframe.admin.auth import require_admin_user
 from fastframe.admin.serializers import (
     deserialize_payload,
+    display_label,
     get_pk_name,
     model_schema,
     resource_name,
@@ -52,6 +55,19 @@ from fastframe.admin.serializers import (
 from fastframe.admin.site import ModelAdmin, admin_site
 from fastframe.db.session import _get_session_factory, _session_ctx
 from fastframe.models.exceptions import DoesNotExist, ValidationError
+
+
+def _admin_site_branding() -> dict[str, str]:
+    """Title and header the admin UI shows, from settings."""
+    try:
+        from fastframe.conf import settings
+
+        title = getattr(settings, "ADMIN_SITE_TITLE", "FastFrame Admin")
+        header = getattr(settings, "ADMIN_SITE_HEADER", "Administration")
+    except (ImportError, AttributeError):
+        title = "FastFrame Admin"
+        header = "Administration"
+    return {"title": str(title), "header": str(header)}
 
 
 def _admin_session():
@@ -151,12 +167,12 @@ def _build_crud_router(
         were added or removed.
         """
         registry = admin_site.get_registry()
-        return {
-            "models": [
-                model_schema(model, model_admin, current_user)
-                for model, model_admin in registry.items()
-            ]
+        payload: dict[str, Any] = {
+            "models": [model_schema(model, model_admin, current_user) for model, model_admin in registry.items()]
         }
+        if source == "admin":
+            payload["site"] = _admin_site_branding()
+        return payload
 
     # ------------------------------------------------------------------
     # Counts
@@ -213,9 +229,7 @@ def _build_crud_router(
 
         # Field filters: any query param matching a field (supports __lookups)
         reserved = {"page", "perPage", "sortField", "sortOrder", "q"}
-        filter_kwargs = {
-            key: value for key, value in request.query_params.items() if key not in reserved
-        }
+        filter_kwargs = {key: value for key, value in request.query_params.items() if key not in reserved}
         if filter_kwargs:
             qs = qs.filter(**filter_kwargs)
 
@@ -286,8 +300,7 @@ def _build_crud_router(
                 qs = qs.filter(combined)
 
         options = [
-            {"value": serialize_value(getattr(obj, target_pk)), "label": str(obj)}
-            for obj in qs.limit(limit)
+            {"value": serialize_value(getattr(obj, target_pk)), "label": display_label(obj)} for obj in qs.limit(limit)
         ]
         return {"data": options}
 
@@ -441,9 +454,7 @@ def _build_crud_router(
             session.rollback()
             raise HTTPException(
                 status_code=409,
-                detail=_integrity_error_detail(
-                    "Cannot delete: other records reference this object"
-                ),
+                detail=_integrity_error_detail("Cannot delete: other records reference this object"),
             ) from e
 
         _audit(
@@ -499,9 +510,7 @@ def _build_crud_router(
             session.rollback()
             raise HTTPException(
                 status_code=409,
-                detail=_integrity_error_detail(
-                    "Cannot delete: other records reference these objects"
-                ),
+                detail=_integrity_error_detail("Cannot delete: other records reference these objects"),
             ) from e
 
         return {"data": deleted}
@@ -543,9 +552,7 @@ def _audit(
         user=user,
         action=action,
         model_name=model_name or model.__name__,
-        object_id=object_id
-        if object_id is not None
-        else str(getattr(instance, get_pk_name(model), "") or ""),
+        object_id=object_id if object_id is not None else str(getattr(instance, get_pk_name(model), "") or ""),
         object_repr=object_repr if object_repr is not None else str(instance)[:255],
         changes=changes,
         source=source,
@@ -557,9 +564,7 @@ def _audit(
 # ----------------------------------------------------------------------
 
 
-def _resource_counts(
-    session: Any, registry: dict[type, Any], current_user: Any, request: Any = None
-) -> dict[str, int]:
+def _resource_counts(session: Any, registry: dict[type, Any], current_user: Any, request: Any = None) -> dict[str, int]:
     """Return ``{resource: row_count}`` for every model the caller may view.
 
     Two rules, matching ``/{resource}`` (the list endpoint) exactly:
@@ -612,9 +617,7 @@ def _resource_counts(
 
     if labeled_tables:
         statements = [
-            select(literal(label).label("resource"), func.count().label("total")).select_from(
-                table
-            )
+            select(literal(label).label("resource"), func.count().label("total")).select_from(table)
             for label, table in labeled_tables
         ]
         combined = union_all(*statements)

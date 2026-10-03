@@ -24,10 +24,10 @@ their routers automatically for whatever's installed):
 
 ```python
 INSTALLED_APPS = [
-    "fastframe.health",       # GET /health
+    "fastframe.health",  # GET /health
     "fastframe.contrib.auth",  # User/Group models + general session auth
-    "fastframe.admin",         # admin UI + API (requires the line above)
-    "fastframe.api",           # token-authenticated generic REST API
+    "fastframe.admin",  # admin UI + API (requires the line above)
+    "fastframe.api",  # token-authenticated generic REST API
     "myapp",
 ]
 ```
@@ -56,8 +56,8 @@ the default.
 | `ADMIN_MODE` | `"static"` | `"static"` serves the compiled React UI shipped with FastFrame. `"custom"` serves `admin-ui/dist` (built via `manage.py startadmin`). The admin UI is React-only — there is no server-rendered mode. |
 | `ADMIN_PREFIX` | `"/admin"` | UI URL prefix. |
 | `ADMIN_API_PREFIX` | `"/api/admin"` | REST API prefix. |
-| `ADMIN_SITE_TITLE` | `"FastFrame Admin"` | Title used by project code and docs. |
-| `ADMIN_SITE_HEADER` | `"Administration"` | Header label. |
+| `ADMIN_SITE_TITLE` | `"FastFrame Admin"` | Browser tab title, login page heading, and the small line under the sidebar brand. The admin UI reads this from `GET /api/admin/schema`. |
+| `ADMIN_SITE_HEADER` | `"Administration"` | Sidebar brand. The admin UI reads this from the same schema response. |
 
 Admin authentication is always required — there is no setting to disable
 it. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md). Per-model

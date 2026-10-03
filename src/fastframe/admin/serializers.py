@@ -46,6 +46,55 @@ def get_pk_name(model: type[Model]) -> str:
     return "id"
 
 
+def relationship_attr(field_name: str, field: Any) -> str:
+    """Attribute that holds the related object (``author_id`` -> ``author``)."""
+    name = getattr(field, "relationship_name", None)
+    if name:
+        return name
+    if field_name.endswith("_id"):
+        return field_name[:-3]
+    return f"{field_name}_rel"
+
+
+_PREFERRED_LABELS = ("name", "title", "username", "email", "slug", "label")
+
+
+def display_label(instance: Any) -> str:
+    """Short label for a related object in the admin.
+
+    Uses the model's own ``__str__`` when it defines one. Otherwise the first
+    recognizable text field, so a post's author reads as a name rather than
+    an id or a repr.
+    """
+    from fastframe.models.base import Model as ModelBase
+
+    for cls in type(instance).__mro__:
+        if cls is ModelBase or cls is object:
+            break
+        if "__str__" in cls.__dict__:
+            text = str(instance).strip()
+            if text:
+                return text
+            break
+
+    for name in _PREFERRED_LABELS:
+        value = getattr(instance, name, None)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    fields = getattr(instance, "_meta", {}).get("fields", {})
+    for field_name, field in fields.items():
+        if getattr(field, "write_only", False) or getattr(field, "primary_key", False):
+            continue
+        if field.__class__.__name__ not in ("CharField", "TextField", "EmailField"):
+            continue
+        value = getattr(instance, field_name, None)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+
+    return f"#{getattr(instance, get_pk_name(instance.__class__), '')}"
+
+
 def serialize_instance(instance: Model, *, include_relations: bool = True) -> dict[str, Any]:
     """Serialize a model instance to a JSON-safe dict.
 
@@ -66,19 +115,14 @@ def serialize_instance(instance: Model, *, include_relations: bool = True) -> di
             # Serialize as a list of related-object PKs (React Admin's
             # reference-array convention), not the raw ORM collection.
             related_objs = getattr(instance, field_name, None) or []
-            data[field_name] = [
-                serialize_value(getattr(obj, get_pk_name(type(obj)), None))
-                for obj in related_objs
-            ]
+            data[field_name] = [serialize_value(getattr(obj, get_pk_name(type(obj)), None)) for obj in related_objs]
             continue
 
         value = getattr(instance, field_name, None)
         data[field_name] = serialize_value(value)
 
         if include_relations and isinstance(field, f.ForeignKey) and value is not None:
-            rel_name = field.relationship_name or (
-                field_name[:-3] if field_name.endswith("_id") else field_name + "_rel"
-            )
+            rel_name = relationship_attr(field_name, field)
             try:
                 related = getattr(instance, rel_name, None)
             except Exception:
@@ -87,7 +131,7 @@ def serialize_instance(instance: Model, *, include_relations: bool = True) -> di
                 rel_pk = get_pk_name(related.__class__)
                 data[rel_name] = {
                     "id": serialize_value(getattr(related, rel_pk, None)),
-                    "display": str(related),
+                    "display": display_label(related),
                 }
 
     # React Admin requires an "id" attribute on every record
@@ -215,10 +259,16 @@ def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) 
     readonly_field_names = set(getattr(model_admin, "readonly_fields", []) or [])
 
     for field_name, field in model._meta["fields"].items():
+        label = field.verbose_name or field_name.replace("_", " ").title()
+        # ``author_id`` would otherwise be labeled "Author Id".
+        if isinstance(field, f.ForeignKey) and field_name.endswith("_id"):
+            generated = field_name.replace("_", " ").title()
+            if label == generated:
+                label = field_name[:-3].replace("_", " ").title()
         schema: dict[str, Any] = {
             "name": field_name,
             "type": field.__class__.__name__,
-            "label": field.verbose_name or field_name.replace("_", " ").title(),
+            "label": label,
             "required": not field.null and not field.blank and field.default is f.NOT_PROVIDED,
             "nullable": field.null,
             "helpText": field.help_text or "",
@@ -231,7 +281,7 @@ def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) 
             schema["choices"] = [{"value": v, "label": label} for v, label in field.choices]
         if isinstance(field, f.ForeignKey):
             schema["reference"] = field.to if isinstance(field.to, str) else field.to.__name__
-            schema["relationshipName"] = field.relationship_name
+            schema["relationshipName"] = relationship_attr(field_name, field)
         if isinstance(field, f.ManyToManyField):
             schema["reference"] = field.to if isinstance(field.to, str) else field.to.__name__
             schema["relationshipName"] = field.relationship_name
