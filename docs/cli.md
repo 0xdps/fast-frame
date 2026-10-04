@@ -155,10 +155,10 @@ Third-party and local apps will eventually register commands under:
 <app>/management/commands/<command_name>.py
 ```
 
-This is **deferred past v0.2** — `docs/roadmap.md` places the "custom
-management commands ecosystem" at v0.6+, alongside background tasks, email,
-caching, and the other later batteries. Exact discovery mechanism still TBD
-when that lands; path follows Django familiarity.
+This stays **planned**, after background jobs. The jobs app
+([ADR 0012](adr/0012-background-jobs.md)) does not include a command
+loader. Exact discovery for app commands is still TBD; the path follows
+Django familiarity.
 
 ### `createadminuser`
 

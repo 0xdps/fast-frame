@@ -14,6 +14,15 @@ feature bumps the minor version.
 
 ### Changed
 
+- Background jobs are the next battery ([ADR 0012](docs/adr/0012-background-jobs.md)):
+  an optional `fastframe.tasks` app on Celery. Redis is the documented
+  broker. `manage.py work` starts a worker and `manage.py beat` starts
+  the scheduler. Email and object storage are out of scope, including
+  `FileField` / `ImageField`. Templates, caching, signals, and app
+  management commands stay planned and are not part of the jobs app.
+- The admin has no Jinja UI, and Phase 5 will not add one. Templates in
+  that phase are for app views. ADR 0007 no longer lists the admin as the
+  first Jinja consumer.
 - Docs describe the 0.1.3 tree. ADR 0007 and ADR 0008 keep their original
   decisions and add a note on later moves: SSR was dropped, then the
   bundled admin left React Admin for the Tailwind UI.

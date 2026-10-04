@@ -9,8 +9,11 @@ release is **0.1.3**. Commit messages that say `v0.2.0`, `v0.3.0`, or
 `v0.4.0` are pre-release working names, not package versions — see
 [CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).
 Fixes bump the patch version and a new feature bumps the minor version.
-Phase 5 has not started. Work listed under `[Unreleased]` in the
-changelog is on trunk and is not in 0.1.3 yet.
+The next work is background jobs ([ADR 0012](adr/0012-background-jobs.md)).
+Templates, caching, signals, and a custom management-command loader stay
+planned and come later. Email and object storage are out of scope, not a
+later phase. Work listed under `[Unreleased]` in the changelog is on trunk
+and is not in 0.1.3 yet.
 
 | Phase | Theme | Status |
 | --- | --- | --- |
@@ -19,8 +22,9 @@ changelog is on trunk and is not in 0.1.3 yet.
 | Phase 3 | Admin, relationships, session auth | ✅ Shipped (0.1.x) |
 | Phase 4 | Harden auth & authorization | ✅ Shipped (0.1.x) |
 | Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (0.1.x) |
-| Phase 5 | Templates and static files | 🔜 Next |
-| Phase 6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
+| Phase 5 | Templates and static files | 📋 Planned |
+| Phase 6 | Background jobs | 🔜 Next |
+| Later | Caching, signals, custom management commands, observability | 📋 Planned |
 | Phase 7 | Production-ready platform | 📋 Planned |
 
 ## Phase 1 — Core loop ✅
@@ -116,14 +120,20 @@ for the up-to-date list of what's still open.
   instead of trying to create a literal directory named that at the
   project root.
 
-## Phase 5 — Templates and static files 🔜
+## Phase 5 — Templates and static files 📋
 
-- Jinja2 templates and discovery for app-defined views (independent of the admin, which stays React-only)
+- Jinja2 templates and discovery for app-defined views
 - Static file handling and `collectstatic` for production
 
-## Phase 6+ — Additional batteries 📋
+The admin is not part of this phase. It stays the bundled React UI. There is no Jinja admin. This phase waits while background jobs are built.
 
-Background tasks, email, caching, storage (unlocks `FileField`/`ImageField`), signals/events, custom management commands ecosystem, observability, production checks, deployment helpers.
+## Phase 6 — Background jobs 🔜
+
+Optional app `fastframe.tasks`, off unless listed in `INSTALLED_APPS`. Tasks are Celery `@shared_task` functions. `.delay()` publishes to a broker. Redis is the documented default. `python manage.py work` starts a worker. `python manage.py beat` starts Celery Beat, which only enqueues periodic tasks. Tests use Celery's eager mode and do not start a worker.
+
+FastFrame does not wrap Celery and does not keep a second queue in the database. The decision and the limits are [ADR 0012](adr/0012-background-jobs.md).
+
+Email and object storage are not a phase. FastFrame will not ship them, and it will not ship `FileField` or `ImageField`. Caching, signals, a custom management-command loader, and observability helpers stay planned. They are later than this phase, and they are not part of `fastframe.tasks`.
 
 ## Phase 7 — Production-ready platform 📋
 

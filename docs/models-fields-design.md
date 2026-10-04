@@ -13,9 +13,10 @@ from sqlalchemy import String, Boolean, DateTime
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
 
+
 class Todo(Model):
     __tablename__ = "todos"
-    
+
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String(200))
     done: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -33,10 +34,11 @@ class Todo(Model):
 ```python
 from fastframe.models import Model, fields
 
+
 class Todo(Model):
     class Meta:
         db_table = "todos"  # replaces __tablename__
-    
+
     id = fields.AutoField(primary_key=True)  # Optional - auto-added if missing
     title = fields.CharField(max_length=200)
     done = fields.BooleanField(default=False)
@@ -144,8 +146,8 @@ post.tags.add(tag1, tag2)
 post.tags.remove(tag1)
 post.tags.clear()
 post.tags.set([tag2])
-post.tags.all()          # -> [Tag, ...]
-tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
+post.tags.all()  # -> [Tag, ...]
+tag.posts.all()  # -> [Post, ...] (reverse side, via related_name)
 ```
 - `related_name`: reverse accessor name (defaults to `"{model}_set"`)
 - `db_table`: override the auto-generated join table name
@@ -164,7 +166,7 @@ tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
 **UUIDField** - UUID primary/foreign keys
 **JSONField** - Native JSON/JSONB
 
-**FileField / ImageField** - Deferred until the storage layer exists (Phase 6+, see the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md))
+**FileField / ImageField** - Not planned. FastFrame will not ship a storage layer ([ADR 0012](adr/0012-background-jobs.md)). Store a path or URL on a `CharField` or `URLField`.
 
 ---
 
@@ -173,10 +175,10 @@ tag.posts.all()           # -> [Post, ...] (reverse side, via related_name)
 ```python
 class Todo(Model):
     title = fields.CharField(max_length=200)
-    
+
     class Meta:
-        db_table = "todos"              # replaces __tablename__
-        ordering = ["-created_at"]       # default QuerySet ordering
+        db_table = "todos"  # replaces __tablename__
+        ordering = ["-created_at"]  # default QuerySet ordering
         unique_together = [["user", "slug"]]  # composite unique
         indexes = [
             {"fields": ["created_at"], "name": "idx_created"},
@@ -202,9 +204,10 @@ class Todo(Model):
 ```python
 # fastframe/models/fields.py
 
+
 class Field:
     """Base class for all model fields."""
-    
+
     def __init__(
         self,
         *,
@@ -231,20 +234,20 @@ class Field:
         self.verbose_name = verbose_name
         self.validators = validators or []
         self.extra_kwargs = kwargs
-        
+
         self.name = None  # Set by __set_name__
         self.model = None  # Set by ModelMeta
-    
+
     def __set_name__(self, owner, name):
         """Called when field is assigned to a class."""
         self.name = name
         if self.verbose_name is None:
             self.verbose_name = name.replace("_", " ").title()
-    
+
     def to_sqlalchemy_column(self):
         """Convert to SQLAlchemy mapped_column()."""
         raise NotImplementedError
-    
+
     def get_type_annotation(self):
         """Return Mapped[...] type for this field."""
         raise NotImplementedError
@@ -255,42 +258,43 @@ class Field:
 ```python
 # fastframe/models/base.py
 
+
 class ModelMeta(type):
     """Metaclass that processes Field declarations."""
-    
+
     def __new__(mcs, name, bases, namespace, **kwargs):
         # Extract Meta class
         meta = namespace.pop("Meta", None)
-        
+
         # Collect fields
         fields = {}
         for key, value in list(namespace.items()):
             if isinstance(value, Field):
                 fields[key] = value
                 value.model = name
-        
+
         # Auto-add primary key if not present
         if not any(f.primary_key for f in fields.values()):
             if "id" not in fields:
                 fields["id"] = AutoField(primary_key=True)
-        
+
         # Convert fields to SQLAlchemy mapped_column
         for field_name, field in fields.items():
             # Set type annotation
             namespace["__annotations__"][field_name] = field.get_type_annotation()
             # Set mapped_column
             namespace[field_name] = field.to_sqlalchemy_column()
-        
+
         # Process Meta options
         if meta:
             if hasattr(meta, "db_table"):
                 namespace["__tablename__"] = meta.db_table
             if hasattr(meta, "ordering"):
                 namespace["_meta_ordering"] = meta.ordering
-        
+
         # Store field metadata for admin introspection
         namespace["_meta_fields"] = fields
-        
+
         return super().__new__(mcs, name, bases, namespace, **kwargs)
 ```
 
@@ -299,17 +303,18 @@ class ModelMeta(type):
 ```python
 # fastframe/models/fields.py
 
+
 class CharField(Field):
     def __init__(self, max_length, **kwargs):
         if max_length is None:
             raise ValueError("CharField requires max_length")
         self.max_length = max_length
         super().__init__(**kwargs)
-    
+
     def to_sqlalchemy_column(self):
         from sqlalchemy import String
         from sqlalchemy.orm import mapped_column
-        
+
         return mapped_column(
             String(self.max_length),
             primary_key=self.primary_key,
@@ -318,9 +323,10 @@ class CharField(Field):
             default=self.default if self.default is not NOT_PROVIDED else None,
             server_default=self.db_default,
         )
-    
+
     def get_type_annotation(self):
         from sqlalchemy.orm import Mapped
+
         return Mapped[str]
 ```
 
@@ -336,9 +342,11 @@ class CharField(Field):
 class Book(Model):
     title = fields.CharField(max_length=200)
 
+
 # Should be equivalent to:
 class Book(Model):
     title: Mapped[str] = mapped_column(String(200))
+
 
 # Alembic sees the same metadata in both cases
 ```
@@ -423,7 +431,7 @@ class BookAdmin(ModelAdmin):
 Everything above shipped in v0.1.0. What's still open:
 
 - `ManyToManyField(through=...)` — custom columns on the join table (deferred, see the [roadmap](https://github.com/0xdps/fast-frame/blob/trunk/docs/roadmap.md))
-- `FileField` / `ImageField` — blocked on a storage layer (Phase 6+)
+- `FileField` / `ImageField` — not planned. No storage battery ([ADR 0012](adr/0012-background-jobs.md))
 - Per-model permissions are now per-request and opt-in
   (`ModelAdmin.enforce_permissions`, see [permissions.md](permissions.md)),
   and `readonly_fields` is enforced on write — but there's still no true

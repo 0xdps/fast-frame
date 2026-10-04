@@ -49,9 +49,12 @@ create/update/delete, `get_or_create()`/`update_or_create()`,
 `values()`/`values_list()`, `only()`/`defer()`, and an `atomic()`
 transaction helper — see [docs/orm-features.md](docs/orm-features.md).
 
-See [docs/roadmap.md](docs/roadmap.md) for what's next (templates and
-static files, then additional batteries). [docs/mvp-v0.1.md](docs/mvp-v0.1.md)
-is the original first-release cut, not the current product.
+See [docs/roadmap.md](docs/roadmap.md) for what's next: background jobs
+([docs/adr/0012-background-jobs.md](docs/adr/0012-background-jobs.md)).
+Templates, caching, signals, and app management commands stay planned for
+later. Email and object storage are out of scope.
+[docs/mvp-v0.1.md](docs/mvp-v0.1.md) is the original first-release cut, not
+the current product.
 
 ## What FastFrame is (and is not)
 
@@ -60,7 +63,7 @@ is the original first-release cut, not the current product.
 | `manage.py`-style project workflow | Django-style views or URL dispatch |
 | Apps, settings, and extension hooks | A full query-algebra ORM (no `annotate()`, no subquery/window functions) |
 | Rich-enough model helpers: `filter`/`Q`/`F`, eager loading, bulk ops, `values()`, `atomic()`, … (see [docs/orm-features.md](docs/orm-features.md)) | Hiding SQLAlchemy for complex queries — it's always one import away |
-| Migrations (Alembic, convention-driven) | Templates, static files (next up — see [roadmap](docs/roadmap.md)) |
+| Migrations (Alembic, convention-driven) | Templates and static files (planned), email, object storage, `FileField` |
 | Shell, runserver, test integration | Replacing FastAPI routing or Pydantic |
 | Admin, general auth, REST API — opt-in via `INSTALLED_APPS` | CSRF tokens beyond `SameSite=Lax`, per-object permissions |
 | Opt-in, per-model permissions (`ModelAdmin.enforce_permissions`) | `ManyToManyField(through=...)` (deferred) |

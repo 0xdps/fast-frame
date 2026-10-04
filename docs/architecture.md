@@ -95,13 +95,11 @@ project explicitly installs them — to avoid the application factory
 slowly becoming the monolith the [design principles](design-principles.md)
 warn against:
 
-- Templates (e.g. Jinja2) and static/media files — next up, see [roadmap.md](roadmap.md)
-- Background tasks
-- Caching
-- Email
-- Storage
-- Signals / events (only if justified)
-- Observability helpers
+- Background jobs (`fastframe.tasks`, Celery, Redis by default) — next, see [ADR 0012](adr/0012-background-jobs.md)
+- Templates (Jinja2) and static files for app views — planned, after jobs. Not an admin UI
+- Caching, signals, a custom management-command loader, observability helpers — planned, after jobs
+
+Email and object storage are not future components. [ADR 0012](adr/0012-background-jobs.md) keeps them out.
 
 ## Modularity model
 
@@ -126,12 +124,12 @@ Always available (not gated by INSTALLED_APPS)
 └── Shell
 
 Future, opt-in from the start (not yet built)
+├── Tasks (fastframe.tasks) — next, ADR 0012
 ├── Templates
 ├── Static
-├── Tasks
 ├── Cache
-├── Email
-└── Storage
+├── Signals
+└── App management commands
 ```
 
 Enabling/disabling any of these components — shipped or future — is
