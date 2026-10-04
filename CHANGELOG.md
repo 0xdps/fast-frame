@@ -14,6 +14,9 @@ feature bumps the minor version.
 
 ### Changed
 
+- Docs describe the 0.1.3 tree. ADR 0007 and ADR 0008 keep their original
+  decisions and add a note on later moves: SSR was dropped, then the
+  bundled admin left React Admin for the Tailwind UI.
 - `ADMIN_SITE_TITLE` and `ADMIN_SITE_HEADER` set the admin sidebar, browser
   tab, and sign-in heading. The UI reads them from `GET /api/admin/schema`.
 - A record opens read-only, with the same fields disabled. Edit turns

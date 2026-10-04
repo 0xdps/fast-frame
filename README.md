@@ -12,8 +12,9 @@ FastFrame aims to provide a **Django-like developer experience** from initial de
 
 ## Status
 
-**v0.1.0.** This tree is
-still under test. The core development loop — `fastframe startproject`,
+**0.1.3** is the latest package release (`pyproject.toml`). The tree is
+still pre-alpha. `fastframe.__version__` is still `0.1.0`, and that is
+what `fastframe version` and `manage.py --version` print. The core development loop — `fastframe startproject`,
 `manage.py` (`runserver`, `migrate`, `shell`, `test`, `startapp`), thin
 models with a chainable `QuerySet`, and Alembic migrations — is
 implemented and validated end-to-end against a real app (see
@@ -23,7 +24,7 @@ lifecycle hooks, `.env` support, test utilities).
 
 On top of that: a Django-style admin (declarative `fields.*` with
 automatic `ForeignKey`/`ManyToManyField` relationship generation, a REST
-admin API, and a bundled React admin UI); a generic, token-authenticated
+admin API, and a bundled Tailwind admin UI); a generic, token-authenticated
 REST API over the same registered models; an audit log; and a built-in
 `User` model with **session-based login/logout** (`can_access_admin`-gated
 for the admin by default), **opt-in per-model permissions** (`Group`,
@@ -32,8 +33,8 @@ permission strings — see [docs/permissions.md](docs/permissions.md)),
 login/token endpoints, session revocation, and CORS/security headers.
 Admin, general auth, the token REST API, and Swagger
 (`fastframe.docs`) are **batteries you opt into via `INSTALLED_APPS`**.
-A freshly generated project installs none of them. Your own endpoints
-live in `<app>.api` as a `FastFrameAPI`, imported from `fastframe.http`.
+A freshly generated project includes `fastframe.health` and none of those.
+Your own endpoints live in `<app>.api` as a `FastFrameAPI`, imported from `fastframe.http`.
 Request models are `BaseModel` and `Field` from `fastframe.schemas`
 (Pydantic, re-exported, not wrapped). A native `APIRouter` in `urls.py`
 still works. See [docs/api-layer.md](docs/api-layer.md) and
@@ -48,9 +49,9 @@ create/update/delete, `get_or_create()`/`update_or_create()`,
 `values()`/`values_list()`, `only()`/`defer()`, and an `atomic()`
 transaction helper — see [docs/orm-features.md](docs/orm-features.md).
 
-See [docs/development.md](docs/development.md), [docs/mvp-v0.1.md](docs/mvp-v0.1.md),
-and [docs/roadmap.md](docs/roadmap.md) for what's next (templates/static
-files, then additional batteries).
+See [docs/roadmap.md](docs/roadmap.md) for what's next (templates and
+static files, then additional batteries). [docs/mvp-v0.1.md](docs/mvp-v0.1.md)
+is the original first-release cut, not the current product.
 
 ## What FastFrame is (and is not)
 
@@ -95,8 +96,8 @@ Documentation: [fast-frame.readthedocs.io](https://fast-frame.readthedocs.io/). 
 | [Vision & thesis](docs/vision-and-thesis.md) | Product direction and positioning |
 | [Design principles](docs/design-principles.md) | How we make tradeoffs |
 | [Architecture](docs/architecture.md) | Components and dependencies |
-| [MVP v0.1](docs/mvp-v0.1.md) | First release scope and success criteria |
-| [Roadmap](docs/roadmap.md) | Direction beyond the first release |
+| [MVP v0.1](docs/mvp-v0.1.md) | Original first-release cut (historical) |
+| [Roadmap](docs/roadmap.md) | What shipped, and what is next |
 | [Non-goals](docs/non-goals.md) | What we explicitly drop or defer |
 | [App contract](docs/app-contract.md) | Installed apps and extension points |
 | [ORM features](docs/orm-features.md) | `Q`/`F`, eager loading, bulk ops, `values()`, `atomic()`, … |
@@ -128,4 +129,4 @@ MIT — see [LICENSE](LICENSE).
 ## Links
 
 - Repository: [github.com/0xdps/fast-frame](https://github.com/0xdps/fast-frame)
-- PyPI package name (planned): **fastframe**
+- PyPI distribution: **fast-frame** (`pip install fast-frame`). The import and the `fastframe` command use the name `fastframe`.

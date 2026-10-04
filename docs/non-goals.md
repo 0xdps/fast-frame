@@ -1,6 +1,6 @@
 # Non-goals
 
-Explicit boundaries help keep FastFrame coherent. This list applies especially to **v0.1**; some items may become optional apps later.
+Explicit boundaries help keep FastFrame coherent. They still hold. Some rows in the last table have since shipped as optional apps; that table says which.
 
 ## Not a Django clone
 
@@ -41,10 +41,11 @@ Explicit boundaries help keep FastFrame coherent. This list applies especially t
 
 ## Deferred features (not rejected forever)
 
-| Feature | Intent |
+| Feature | Now |
 | --- | --- |
-| Admin | Optional app, Django-admin-like UX |
-| Auth | Optional app |
-| Templates / static | Optional; Jinja2 likely |
-| Signals | Only if hooks + `ready()` are insufficient |
-| Full backend protocols | Auth/storage/cache backends after second implementations exist |
+| Admin | Shipped as `fastframe.admin`. Still not part of core. The UI is the bundled Tailwind app, not React Admin — see the Addition on [ADR 0008](adr/0008-rest-api-react-admin.md) |
+| Auth | Shipped as `fastframe.contrib.auth`. Still not part of core |
+| Templates / static | Not started. Phase 5. Jinja2 for app views; the admin stays React-only |
+| Signals | Still deferred. Only if hooks and `ready()` are insufficient |
+| Full backend protocols | Still deferred. Auth, storage, and cache backends after a second implementation exists |
+| CSRF tokens, per-object permissions, `ManyToManyField(through=...)` | Still deferred. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md) |

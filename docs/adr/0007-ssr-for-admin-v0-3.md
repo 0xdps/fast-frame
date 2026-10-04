@@ -8,6 +8,10 @@ the admin is React-only. "v0.3" in the title is a pre-release working name,
 not a package version. Kept for historical context on why SSR was tried
 first.
 
+## Addition (2026-10-04)
+
+The Context and Decision below are the original proposal. They are unchanged. Status above is what happened to that proposal. A later [Addition on ADR 0008](0008-rest-api-react-admin.md) records a further move, off React Admin onto the bundled Tailwind UI. That move is not written back into this file.
+
 ## Context
 
 FastFrame v0.3 aims to provide a Django-admin-like interface. Must decide between:

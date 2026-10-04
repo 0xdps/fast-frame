@@ -1,6 +1,6 @@
 # Repository layout
 
-This document describes the **FastFrame framework repository** ([0xdps/fast-frame](https://github.com/0xdps/fast-frame)) and the **Python package layout**, as of v0.1.0.
+This document describes the **FastFrame framework repository** ([0xdps/fast-frame](https://github.com/0xdps/fast-frame)) and the **Python package layout**, as of package release 0.1.3.
 
 ## Repository root
 
@@ -30,11 +30,14 @@ src/fastframe/
 │   ├── manage.py             # `manage.py` command dispatcher
 │   ├── scaffold.py           # project/app template rendering
 │   └── commands/             # runserver, check, makemigrations, migrate,
-│                              # shell, test, startapp
+│                              # showmigrations, dbshell, shell, test,
+│                              # startapp, createadminuser, startadmin, buildadmin
+├── conf/
+│   └── global_settings.py     # default settings values
 ├── core/
 │   ├── apps.py                # AppConfig, AppsRegistry, populate_apps()
 │   ├── bootstrap.py           # bootstrap(), get_apps_registry(), reset_bootstrap()
-│   ├── settings.py            # settings module loading (FASTFRAME_SETTINGS_MODULE)
+│   ├── settings.py            # loads the project settings module
 │   └── checks.py              # CheckMessage, run_checks(); backs `manage.py check`
 ├── http/
 │   └── asgi.py                 # get_asgi_application(), session middleware,
@@ -45,8 +48,16 @@ src/fastframe/
 │   └── init.py                 # create_tables() (dev/test convenience)
 ├── models/
 │   ├── base.py                  # Model (DeclarativeBase) with `objects`, save/delete
+│   ├── fields.py                # declarative fields (CharField, ForeignKey, ...)
 │   ├── manager.py               # Manager + QuerySet (filter/exclude/order_by/...)
+│   ├── query.py                 # Q(), F(), lookups
 │   └── exceptions.py            # DoesNotExist, MultipleObjectsReturned
+├── admin/                       # opt-in Tailwind UI + /api/admin
+├── api/                         # opt-in token CRUD at /api/v1
+├── contrib/auth/                # User, Group, session auth
+├── health/                      # GET /health; on by default in a new project
+├── docs/                        # opt-in Swagger (/docs, /redoc, /openapi.json)
+├── middleware/                  # CORS and security headers
 ├── migrations/
 │   ├── paths.py, runner.py, runtime.py   # Alembic integration
 │   └── templates/                        # env.py / script.py.mako for new projects
@@ -68,12 +79,11 @@ Module boundaries to preserve:
 
 ## Not (yet) present
 
-A few structures sketched in earlier drafts of this doc were never built and are not currently planned as separate concepts:
+Still not built:
 
-- A standalone `conf/` package — settings loading lives in `core/settings.py`.
-- `fastframe.contrib.*` optional in-repo apps — no contrib apps exist yet.
-- `models/fields.py` ergonomic field helpers — deferred; use SQLAlchemy's `mapped_column()` directly (see [public-api-v0.1.md](public-api-v0.1.md)).
 - Custom management command auto-discovery (`<app>/management/commands/`) — planned (see [app-contract.md](app-contract.md), [roadmap.md](roadmap.md)).
+
+`conf/global_settings.py` holds defaults. `core/settings.py` loads the project settings module. `fastframe.contrib.auth` and `models/fields.py` exist. Earlier drafts of this file said they did not.
 
 ## Naming
 

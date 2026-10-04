@@ -6,6 +6,7 @@ We use ADRs to capture significant technical decisions: context, decision, and c
 
 - One file per decision: `NNNN-short-title.md`
 - Status: Proposed | Accepted | Deprecated | Superseded
+- When the implementation moves without rejecting the decision, append an Addition dated at the top. Leave the original context, decision, and consequences in place. Supersede the ADR only when the decision itself no longer holds.
 
 ## Index
 
@@ -18,7 +19,7 @@ We use ADRs to capture significant technical decisions: context, decision, and c
 | [0005](0005-extensibility-via-installed-apps.md) | Extensibility via installed apps | Accepted |
 | [0006](0006-sync-sqlalchemy-for-v0-1.md) | Sync SQLAlchemy for v0.1 | Accepted |
 | [0007](0007-ssr-for-admin-v0-3.md) | Server-side rendering for admin (v0.3) | Superseded by 0008 |
-| [0008](0008-rest-api-react-admin.md) | REST API + React admin | Accepted |
+| [0008](0008-rest-api-react-admin.md) | REST API + React admin | Accepted; Addition records the move off React Admin |
 | [0009](0009-fastframe-api.md) | FastFrameAPI routing facade | Accepted |
 | [0010](0010-curated-reexports.md) | Curated re-exports, not wrapped engines | Accepted |
 | [0011](0011-admin-sidebar-stays-expanded.md) | Admin sidebar stays expanded | Accepted |

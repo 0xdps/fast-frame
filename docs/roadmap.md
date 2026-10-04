@@ -4,20 +4,21 @@ Direction beyond the first release. Dates aren't fixed; scope shifts as
 real usage informs priorities.
 
 Phases below are development milestones, not package version numbers.
-Everything through **Phase 4.5** is in the unreleased **v0.1.0**
-candidate. Commit messages that say `v0.2.0`, `v0.3.0`, or `v0.4.0` are
-pre-release working names, not package versions — see
-[CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md). After `0.1.0` is released, fixes bump
-the patch version and a new feature bumps the minor version. Phase 5
-has not started.
+Phases 1 through 4.5 shipped in the 0.1.x releases. The latest package
+release is **0.1.3**. Commit messages that say `v0.2.0`, `v0.3.0`, or
+`v0.4.0` are pre-release working names, not package versions — see
+[CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).
+Fixes bump the patch version and a new feature bumps the minor version.
+Phase 5 has not started. Work listed under `[Unreleased]` in the
+changelog is on trunk and is not in 0.1.3 yet.
 
 | Phase | Theme | Status |
 | --- | --- | --- |
-| Phase 1 | Core loop — `startproject` → `manage.py` → migrate → shell | ✅ Shipped (v0.1.0) |
-| Phase 2 | Developer experience polish | ✅ Shipped (v0.1.0) |
-| Phase 3 | Admin, relationships, session auth | ✅ Shipped (v0.1.0) |
-| Phase 4 | Harden auth & authorization | ✅ Shipped (v0.1.0) |
-| Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (v0.1.0) |
+| Phase 1 | Core loop — `startproject` → `manage.py` → migrate → shell | ✅ Shipped (0.1.x) |
+| Phase 2 | Developer experience polish | ✅ Shipped (0.1.x) |
+| Phase 3 | Admin, relationships, session auth | ✅ Shipped (0.1.x) |
+| Phase 4 | Harden auth & authorization | ✅ Shipped (0.1.x) |
+| Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (0.1.x) |
 | Phase 5 | Templates and static files | 🔜 Next |
 | Phase 6+ | Additional batteries (tasks, cache, email, storage, …) | 📋 Planned |
 | Phase 7 | Production-ready platform | 📋 Planned |
@@ -34,7 +35,7 @@ has not started.
 
 - **Declarative fields** (`fields.CharField`, `IntegerField`, `BooleanField`, `DateTimeField`, `DecimalField`, `EmailField`, `URLField`, `UUIDField`, `JSONField`, …) — see [models-fields-design.md](models-fields-design.md).
 - **Auto relationships**: `ForeignKey` and `ManyToManyField` (incl. self-referential) generate their SQLAlchemy `relationship()`/join tables automatically; Django-style `RelatedList` helpers (`.add()`, `.remove()`, `.set()`, `.clear()`, `.all()`).
-- **Admin**: REST API (`get_admin_api_router()`) + a bundled React admin UI (Tailwind) built on top of it. The admin is **React-only** — an SSR/Jinja2 mode was tried (see [ADR 0007](adr/0007-ssr-for-admin-v0-3.md)) and replaced by the REST + React approach (see [ADR 0008](adr/0008-rest-api-react-admin.md)); the SSR code path has since been removed entirely. The UI no longer uses react-admin.
+- **Admin**: REST API (`get_admin_api_router()`) + a bundled Tailwind React UI. The admin is **React-only**. An SSR/Jinja2 mode was tried ([ADR 0007](adr/0007-ssr-for-admin-v0-3.md)) and replaced by a REST API plus a React UI ([ADR 0008](adr/0008-rest-api-react-admin.md)); the SSR path is gone. ADR 0008's original UI choice was React Admin. The bundled UI left that library later; the Addition on that ADR says why, and the decision text there is unchanged. The UI reads `ADMIN_SITE_TITLE` and `ADMIN_SITE_HEADER` from `GET /api/admin/schema`.
 - **Session authentication**: signed-cookie login/logout for the admin, always required (`can_access_admin` — no setting disables it), plus a built-in `User` model with password hashing. Details and current gaps: [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md).
 - **Generic REST API**: token-authenticated CRUD (`/api/v1/{resource}`) over the same registered models, for non-browser clients (mobile apps, scripts, integrations). Opt in by adding `"fastframe.api"` to `INSTALLED_APPS` (Phase 4.5). There is no `ENABLE_REST_API` setting.
 - **Audit log**: every create/update/delete through either surface is recorded in `AuditLog` (who, what, when, old→new values), viewable read-only in the admin.

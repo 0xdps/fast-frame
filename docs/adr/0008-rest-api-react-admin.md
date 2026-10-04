@@ -1,5 +1,17 @@
 # FastFrame Admin - REST API + React Admin Architecture
 
+## Addition (2026-10-04)
+
+The sections below are the original decision. They are unchanged.
+
+What still holds: admin operations are a JSON API under `/api/admin`, and the UI is a React single-page app that calls that API. The server-rendered admin from ADR 0007 was not brought back.
+
+What moved: the bundled UI is not React Admin. It is the Tailwind app in `src/fastframe/admin/templates/admin-ui`, compiled into `src/fastframe/admin/static` and served when `ADMIN_MODE` is `"static"`. React Admin was the shortest path to a CRUD screen, and the sketch below assumes its data provider and routes such as `/models` and `/{model}/schema`. Those routes are not what shipped. One `GET /api/admin/schema` describes every registered model. For the admin caller that payload also includes `site`, from `ADMIN_SITE_TITLE` and `ADMIN_SITE_HEADER`. Lists and records are `/{resource}` and `/{resource}/{id}`.
+
+The UI left React Admin because it has to follow that schema — permissions, relationship labels, a read-only record, menus drawn by the app — without a data-provider layer in between, and because renaming the admin is two settings, not a copied frontend. This note records that move. Rewriting the decision below would hide why the REST API was chosen in the first place.
+
+Current behavior is in [admin setup](../admin-setup.md), [admin customization](../admin-customization.md), and [settings](../settings.md).
+
 ## Decision: Switch from SSR to CSR with REST API
 
 ### Context
@@ -66,25 +78,28 @@ router = APIRouter(prefix="/api/admin", tags=["admin-api"])
 
 # === Schema Endpoints ===
 
+
 @router.get("/models")
 async def list_models():
     """Get all registered models with metadata."""
     registry = admin_site.get_registry()
-    
+
     models = []
     for model, model_admin in registry.items():
-        models.append({
-            "name": model.__name__,
-            "label": model._meta.get("verbose_name", model.__name__),
-            "labelPlural": model._meta.get("verbose_name_plural", f"{model.__name__}s"),
-            "appLabel": model._meta.get("app_label", "app"),
-            "listDisplay": model_admin.list_display,
-            "searchFields": model_admin.search_fields,
-            "canCreate": model_admin.has_add_permission,
-            "canEdit": model_admin.has_change_permission,
-            "canDelete": model_admin.has_delete_permission,
-        })
-    
+        models.append(
+            {
+                "name": model.__name__,
+                "label": model._meta.get("verbose_name", model.__name__),
+                "labelPlural": model._meta.get("verbose_name_plural", f"{model.__name__}s"),
+                "appLabel": model._meta.get("app_label", "app"),
+                "listDisplay": model_admin.list_display,
+                "searchFields": model_admin.search_fields,
+                "canCreate": model_admin.has_add_permission,
+                "canEdit": model_admin.has_change_permission,
+                "canDelete": model_admin.has_delete_permission,
+            }
+        )
+
     return {"models": models}
 
 
@@ -92,7 +107,7 @@ async def list_models():
 async def get_model_schema(model_name: str):
     """Get field schema for a model."""
     model = _find_model_by_name(model_name)
-    
+
     fields = []
     for field_name, field in model._meta.get("fields", {}).items():
         field_schema = {
@@ -102,26 +117,25 @@ async def get_model_schema(model_name: str):
             "required": not field.null and field.default is field.NOT_PROVIDED,
             "helpText": field.help_text,
         }
-        
+
         # Add type-specific metadata
         if hasattr(field, "max_length"):
             field_schema["maxLength"] = field.max_length
-        
+
         if hasattr(field, "choices") and field.choices:
-            field_schema["choices"] = [
-                {"value": v, "label": l} for v, l in field.choices
-            ]
-        
+            field_schema["choices"] = [{"value": v, "label": l} for v, l in field.choices]
+
         if hasattr(field, "to"):  # ForeignKey
             field_schema["reference"] = field.to
             field_schema["relationshipName"] = field.relationship_name
-        
+
         fields.append(field_schema)
-    
+
     return {"fields": fields}
 
 
 # === CRUD Endpoints ===
+
 
 @router.get("/models/{model_name}")
 async def list_instances(
@@ -136,47 +150,48 @@ async def list_instances(
     """List model instances with pagination and search."""
     model = _find_model_by_name(model_name)
     model_admin = admin_site.get_model_admin(model)
-    
+
     # Set session context
     from fastframe.db.session import _session_ctx
+
     _session_ctx.set(session)
-    
+
     # Get queryset
     qs = model_admin.get_queryset(None)
-    
+
     # Apply search
     if search:
         qs = model_admin.get_search_results(qs, search)
-    
+
     # Get total count
     total = len(list(qs))
-    
+
     # Apply sorting (TODO: implement in QuerySet)
-    
+
     # Apply pagination
     offset = (page - 1) * per_page
-    results = list(qs)[offset:offset + per_page]
-    
+    results = list(qs)[offset : offset + per_page]
+
     # Serialize instances
     data = []
     for instance in results:
         item = {"id": instance.id if hasattr(instance, "id") else None}
-        
+
         # Get all field values
         for field_name in model._meta.get("fields", {}).keys():
             value = getattr(instance, field_name, None)
-            
+
             # Handle special types
             if hasattr(value, "isoformat"):  # datetime/date
                 value = value.isoformat()
             elif hasattr(value, "__str__") and not isinstance(value, (str, int, float, bool, type(None))):
                 # ForeignKey or related object
                 value = {"id": value.id if hasattr(value, "id") else None, "display": str(value)}
-            
+
             item[field_name] = value
-        
+
         data.append(item)
-    
+
     return {
         "data": data,
         "total": total,
@@ -193,14 +208,15 @@ async def get_instance(
 ):
     """Get a single instance."""
     model = _find_model_by_name(model_name)
-    
+
     from fastframe.db.session import _session_ctx
+
     _session_ctx.set(session)
-    
+
     instance = model.objects.get(id)
     if not instance:
         raise HTTPException(404, "Not found")
-    
+
     # Serialize instance (same as list_instances)
     data = {"id": instance.id if hasattr(instance, "id") else None}
     for field_name in model._meta.get("fields", {}).keys():
@@ -210,7 +226,7 @@ async def get_instance(
         elif hasattr(value, "__str__") and not isinstance(value, (str, int, float, bool, type(None))):
             value = {"id": value.id if hasattr(value, "id") else None, "display": str(value)}
         data[field_name] = value
-    
+
     return {"data": data}
 
 
@@ -223,24 +239,28 @@ async def create_instance(
     """Create a new instance."""
     model = _find_model_by_name(model_name)
     model_admin = admin_site.get_model_admin(model)
-    
+
     if not model_admin.has_add_permission:
         raise HTTPException(403, "Permission denied")
-    
+
     from fastframe.db.session import _session_ctx
+
     _session_ctx.set(session)
-    
+
     try:
         # Create instance
         instance = model(**data)
-        
+
         # Validate
         instance.full_clean()
-        
+
         # Save
         instance.save()
-        
-        return {"data": {"id": instance.id}, "message": f"{model._meta.get('verbose_name', model.__name__)} created successfully"}
+
+        return {
+            "data": {"id": instance.id},
+            "message": f"{model._meta.get('verbose_name', model.__name__)} created successfully",
+        }
     except Exception as e:
         raise HTTPException(400, str(e))
 
@@ -255,30 +275,34 @@ async def update_instance(
     """Update an existing instance."""
     model = _find_model_by_name(model_name)
     model_admin = admin_site.get_model_admin(model)
-    
+
     if not model_admin.has_change_permission:
         raise HTTPException(403, "Permission denied")
-    
+
     from fastframe.db.session import _session_ctx
+
     _session_ctx.set(session)
-    
+
     instance = model.objects.get(id)
     if not instance:
         raise HTTPException(404, "Not found")
-    
+
     try:
         # Update fields
         for field_name, value in data.items():
             if hasattr(instance, field_name):
                 setattr(instance, field_name, value)
-        
+
         # Validate
         instance.full_clean()
-        
+
         # Save
         instance.save()
-        
-        return {"data": {"id": instance.id}, "message": f"{model._meta.get('verbose_name', model.__name__)} updated successfully"}
+
+        return {
+            "data": {"id": instance.id},
+            "message": f"{model._meta.get('verbose_name', model.__name__)} updated successfully",
+        }
     except Exception as e:
         raise HTTPException(400, str(e))
 
@@ -292,21 +316,22 @@ async def delete_instance(
     """Delete an instance."""
     model = _find_model_by_name(model_name)
     model_admin = admin_site.get_model_admin(model)
-    
+
     if not model_admin.has_delete_permission:
         raise HTTPException(403, "Permission denied")
-    
+
     from fastframe.db.session import _session_ctx
+
     _session_ctx.set(session)
-    
+
     instance = model.objects.get(id)
     if not instance:
         raise HTTPException(404, "Not found")
-    
+
     try:
         session.delete(instance)
         session.commit()
-        
+
         return {"message": f"{model._meta.get('verbose_name', model.__name__)} deleted successfully"}
     except Exception as e:
         raise HTTPException(400, str(e))
@@ -314,14 +339,15 @@ async def delete_instance(
 
 # === Helper Functions ===
 
+
 def _find_model_by_name(model_name: str):
     """Find model by name across all registered models."""
     registry = admin_site.get_registry()
-    
+
     for model in registry:
         if model.__name__.lower() == model_name.lower():
             return model
-    
+
     raise HTTPException(404, f"Model {model_name} not found")
 ```
 

@@ -65,9 +65,9 @@ python manage.py test
 ## Documentation changes
 
 - Product docs live in `docs/`.
-- Architectural decisions: add an ADR under `docs/adr/` for significant choices.
+- Architectural decisions: add an ADR under `docs/adr/` for significant choices. If the implementation moves without rejecting the decision, append an Addition and leave the original text in place.
 - Keep [public-api-v0.1.md](public-api-v0.1.md) in sync when stabilizing APIs.
 
-## Release process (future)
+## Release process
 
-Not defined for 0.0.0 scaffolding. Pre-1.0 releases will follow SemVer with changelog entries in [CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).
+Releases are tagged and published to PyPI as the distribution `fast-frame`. The current package release is **0.1.3**. Pre-1.0 releases follow SemVer with changelog entries in [CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md). `fastframe.__version__` is still `0.1.0`; the version commands print that string.
