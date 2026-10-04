@@ -155,7 +155,7 @@ def _build_crud_router(
     ) -> dict[str, Any]:
         """Return metadata for every registered model.
 
-        The React admin uses this single call to auto-configure resources,
+        The bundled admin UI uses this single call to auto-configure resources,
         forms, list columns, filters, and permissions. It is purely
         descriptor data — no database queries per model, and it is stable
         for the lifetime of the process (models are registered at import

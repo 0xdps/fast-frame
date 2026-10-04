@@ -44,7 +44,7 @@ Models are SQLAlchemy models with a **thin manager** (`filter`, `get`, `save`, �
 
 ## Shipped components ("batteries" — not core, opt-in like any other app)
 
-Admin, auth, and the generic REST API attach via the *exact same*
+Admin, auth, the generic REST API, OpenAPI docs, and the health check attach via the *exact same*
 app-registry mechanism as a project's own apps: they ship inside
 `fastframe` itself (not a separate package), but nothing about them
 runs — no import, no router, no side effect — unless a project lists
@@ -52,9 +52,11 @@ them in `INSTALLED_APPS`:
 
 ```python
 INSTALLED_APPS = [
+    "fastframe.health",  # GET /health — a new project includes this one
     "fastframe.contrib.auth",  # User/Group models + /api/auth/*
-    "fastframe.admin",         # /admin UI + /api/admin/*
-    "fastframe.api",           # token-authenticated /api/v1/*
+    "fastframe.admin",  # /admin UI + /api/admin/*
+    "fastframe.api",  # token-authenticated /api/v1/*
+    "fastframe.docs",  # /docs, /redoc, /openapi.json
     "myapp",
 ]
 ```
@@ -63,7 +65,7 @@ Each exposes an `AppConfig` (`ready()` for import-time side effects,
 `get_routers()` for the routers it wants mounted — see
 [app-contract.md](app-contract.md)), resolved the same way as any other
 `INSTALLED_APPS` entry. A freshly generated project (`fastframe
-startproject`) does **not** include any of them by default — you add
+startproject`) includes `fastframe.health` and none of the others — you add
 what you want, the same way you'd add any other app. This closes a
 previous, deliberate-but-unwanted departure from "batteries included,
 not forced": earlier versions mounted admin/auth via dedicated
@@ -71,9 +73,11 @@ not forced": earlier versions mounted admin/auth via dedicated
 (opt-out, not opt-in) inside an undocumented second app factory. That
 mechanism is gone; `INSTALLED_APPS` membership is now the *only* switch.
 
-- Admin (`fastframe.admin`)
+- Admin (`fastframe.admin`) — Tailwind UI plus `/api/admin`. `GET /api/admin/schema` includes `site` from `ADMIN_SITE_TITLE` and `ADMIN_SITE_HEADER`
 - Authentication / authorization (`fastframe.contrib.auth`)
 - Generic REST API (`fastframe.api`)
+- OpenAPI docs (`fastframe.docs`)
+- Health check (`fastframe.health`) — included in a new project's `INSTALLED_APPS`
 - Audit log (`fastframe.admin.audit`) — registered as a side effect of installing admin or the REST API, whichever runs first
 
 Note: the compiled admin UI static assets are still force-included in
@@ -109,10 +113,12 @@ Core
 ├── Routing discovery (installed-app routers + ROOT_URLCONF)
 └── CLI (fastframe + manage.py)
 
-Shipped, opt-in via INSTALLED_APPS (not installed by default)
+Shipped, opt-in via INSTALLED_APPS
+├── Health (fastframe.health) — on in a new project
 ├── Admin (fastframe.admin)
 ├── Auth & permissions (fastframe.contrib.auth)
-└── Generic REST API (fastframe.api)
+├── Generic REST API (fastframe.api)
+└── OpenAPI docs (fastframe.docs)
 
 Always available (not gated by INSTALLED_APPS)
 ├── Models / ORM helpers

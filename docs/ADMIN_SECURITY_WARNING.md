@@ -1,6 +1,6 @@
 # ⚠️ Admin Security Notes
 
-**Current as of FastFrame v0.1.0**
+**Current as of FastFrame 0.1.3**
 
 ---
 
@@ -203,8 +203,9 @@ implemented. See [permissions.md](permissions.md).
 
 ## Security Roadmap
 
-Everything below marked "Released" shipped together in **v0.1.0**, the
-first tagged release — see [CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).
+Everything below marked "Released" is in the 0.1.x releases, starting
+with **0.1.0**. The current package is **0.1.3** — see
+[CHANGELOG.md](https://github.com/0xdps/fast-frame/blob/trunk/CHANGELOG.md).
 
 | Feature | Status |
 |---------|--------|
@@ -249,9 +250,9 @@ If you discover a security issue in FastFrame:
 
 ---
 
-**FastFrame v0.1.0 admin requires login by default and supports opt-in,
+**The FastFrame 0.1.3 admin requires login by default and supports opt-in,
 per-request permissions, rate limiting, session revocation, and
 CORS/security headers. CSRF tokens and per-object permissions are still on
 the roadmap — see the Security Roadmap above.**
 
-*Updated: 2026-09-26*
+*Updated: 2026-10-04*

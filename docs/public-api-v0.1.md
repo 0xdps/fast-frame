@@ -1,15 +1,15 @@
 # Public API (v0.1)
 
-Surfaces intended to remain **stable** across minor releases. Everything else is experimental until documented here. Headings marked "v0.2" below are pre-release working names for work that shipped in v0.1.0, not a later package version.
+Surfaces intended to remain **stable** across minor releases. Everything else is experimental until documented here. Headings marked "v0.2" below are pre-release working names for work that shipped in the 0.1.x releases, not a later package version. The latest package release is **0.1.3**. `fastframe.__version__` is still `0.1.0`; `fastframe version` and `manage.py --version` print that string.
 
 ## Global CLI (`fastframe`)
 
 | Command | Description |
 | --- | --- |
 | `fastframe startproject <name>` | Create project directory and files |
-| (optional) `fastframe startapp <name>` | Create app inside project — may live only on `manage.py` |
+| `fastframe version` | Print `fastframe.__version__` |
 
-Entry point (future): `fastframe = fastframe.cli.main:main`
+`startapp` is a `manage.py` command, not a `fastframe` command. The console script is `fastframe = "fastframe.cli.main:main"` in `pyproject.toml`. The PyPI distribution name is `fast-frame`.
 
 ## Project CLI (`manage.py`)
 
@@ -24,7 +24,10 @@ Entry point (future): `fastframe = fastframe.cli.main:main`
 | `test` | Run pytest with app context; forwards flags straight through, no `--` needed |
 | `check` / `check --database` | Structural + optional DB/migration checks (`fastframe.core.checks`) |
 | `startapp <name>` | Scaffold app package |
-| `--version` | Print the installed FastFrame version |
+| `createadminuser` | Create a superuser who can sign in to the admin |
+| `startadmin` | Copy the admin UI into the project (default `admin-ui/`) |
+| `buildadmin` | Compile the React admin into the static directory |
+| `--version` | Print `fastframe.__version__` (`0.1.0` today, not the `pyproject.toml` release) |
 
 ## Settings
 
@@ -49,7 +52,7 @@ Exact names will match implementation; breaking renames require CHANGELOG + ADR.
 
 ## Apps and routing (v0.2)
 
-- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, `fastframe.docs`, and any project app. There is no `ENABLE_*` setting for turning one on. `fastframe.docs` mounts `/docs`, `/redoc`, and `/openapi.json`.
+- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, `fastframe.docs`, `fastframe.health`, and any project app. There is no `ENABLE_*` setting for turning one on. `fastframe.docs` mounts `/docs`, `/redoc`, and `/openapi.json`. `fastframe.health` mounts `GET /health` (path overridable with `HEALTH_PATH`). A new project lists `fastframe.health` and none of the others.
 - `AppConfig.get_routers()` — optional hook returning `list[APIRouter]`, built at mount time. Collected in `INSTALLED_APPS` order and mounted beside `<app>.api` and the `urls.py` → `router` convention. See [app-contract.md](app-contract.md#router-discovery).
 
 ## Database

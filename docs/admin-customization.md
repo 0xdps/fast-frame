@@ -23,7 +23,7 @@ The sidebar does not collapse. Every model uses the same list icon, so a
 narrow icon rail cannot tell one model from another. The sidebar stays at
 its open width and shows each model's name. There is no collapse control.
 
-The FastFrame header at the top of the sidebar opens the dashboard
+The site header at the top of the sidebar (`ADMIN_SITE_HEADER`) opens the dashboard
 (Overview). App groups inside the sidebar can still be collapsed; those
 groups keep the model names when they are open. Model search lives in the
 sidebar.

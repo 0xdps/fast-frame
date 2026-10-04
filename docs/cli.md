@@ -6,7 +6,7 @@ FastFrame uses a **two-level CLI**, similar in spirit to Django's `django-admin`
 
 Used **before** a project exists or from outside the project tree.
 
-Primary job in v0.1:
+Primary job:
 
 ```text
 fastframe startproject myproject
@@ -17,13 +17,13 @@ Creates:
 - Project directory with `manage.py`, `config/`, and `tests/`
 - `pyproject.toml` depending on `fastframe`
 
-Install via:
+Install the PyPI distribution `fast-frame`:
 
 ```text
-pip install fastframe
+pip install fast-frame
 ```
 
-(When published; not yet on PyPI during scaffolding phase.)
+The import and the `fastframe` command use the name `fastframe`. `fastframe version` prints `fastframe.__version__`, which is still `0.1.0`. The package release in `pyproject.toml` is `0.1.3`.
 
 ## Project-local: `manage.py`
 
@@ -82,6 +82,7 @@ Apps add their own checks via `AppConfig.checks()`:
 
 ```python
 from fastframe.core.checks import CheckMessage, WARNING
+
 
 class BillingConfig(AppConfig):
     def checks(self) -> list[CheckMessage]:

@@ -1,8 +1,24 @@
 # MVP v0.1
 
+This file records the **original first-release cut**. It is not a description of the current tree. Current behavior is the [README](../README.md) and the [roadmap](roadmap.md). The latest package release is **0.1.3**.
+
+## Current status
+
+| Feature | Now |
+| --- | --- |
+| FastAPI, project and app scaffold, settings, routing, models, migrations, shell, runserver, tests | Shipped |
+| Admin, authentication, permissions, token REST API, audit log | Shipped. Opt in with `INSTALLED_APPS`. A new project includes `fastframe.health` only |
+| `Q()`, `F()`, eager loading, bulk operations, `atomic()` | Shipped. The original cut below listed a full queryset algebra as out of scope |
+| Templates, static files | Not started. Roadmap Phase 5. The admin stays React-only |
+| Background jobs, caching, email, storage | Not started. Roadmap Phase 6 |
+
+The sections below are that original cut, kept so the first target stays readable.
+
+## Original cut
+
 The first version stays deliberately small. Objective: **prove the FastFrame development loop** before expanding toward a broader Django-like feature set.
 
-## Feature status
+## Feature status (original target)
 
 | Feature | v0.1 target |
 | --- | --- |
