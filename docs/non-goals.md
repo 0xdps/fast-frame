@@ -39,13 +39,23 @@ Explicit boundaries help keep FastFrame coherent. They still hold. Some rows in 
 - No FastFrame-branded `APIRouter`, `Query`, or SQLAlchemy `select` unless proven necessary.
 - Integration wrappers only: app factory, session dependency, model discovery, migrations, CLI.
 
+## Not shipping
+
+Decided in [ADR 0012](adr/0012-background-jobs.md). These are not deferred.
+
+- Email. No mail backend, no `send_mail`. A project calls its own mail library.
+- Object storage, `FileField`, and `ImageField`. A project stores a path or URL on a normal field and uses its own file library.
+
 ## Deferred features (not rejected forever)
 
 | Feature | Now |
 | --- | --- |
 | Admin | Shipped as `fastframe.admin`. Still not part of core. The UI is the bundled Tailwind app, not React Admin — see the Addition on [ADR 0008](adr/0008-rest-api-react-admin.md) |
 | Auth | Shipped as `fastframe.contrib.auth`. Still not part of core |
-| Templates / static | Not started. Phase 5. Jinja2 for app views; the admin stays React-only |
-| Signals | Still deferred. Only if hooks and `ready()` are insufficient |
-| Full backend protocols | Still deferred. Auth, storage, and cache backends after a second implementation exists |
+| Templates / static | Planned, not next. Phase 5, for app views only. The admin has no Jinja UI |
+| Background jobs | Next. Phase 6. See [ADR 0012](adr/0012-background-jobs.md) |
+| Signals | Still planned, later. Only if hooks and `ready()` are insufficient. Not part of the jobs app |
+| Caching | Still planned, later. Not part of the jobs app |
+| Custom management commands | Still planned, later. Apps registering `<app>/management/commands/`. Not part of the jobs app |
+| Full backend protocols | Cache backends stay planned with caching. Storage backends will not be added. Auth backends beyond the shipped session and token auth stay planned for later |
 | CSRF tokens, per-object permissions, `ManyToManyField(through=...)` | Still deferred. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md) |

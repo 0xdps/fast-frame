@@ -12,6 +12,8 @@ first.
 
 The Context and Decision below are the original proposal. They are unchanged. Status above is what happened to that proposal. A later [Addition on ADR 0008](0008-rest-api-react-admin.md) records a further move, off React Admin onto the bundled Tailwind UI. That move is not written back into this file.
 
+There is no Jinja admin. That code, and the `jinja2` dependency, were removed before the first release. It is not coming back in Phase 5. Templates in that phase are for application views. The related-decisions line that called the admin the first Jinja2 consumer is withdrawn.
+
 ## Context
 
 FastFrame v0.3 aims to provide a Django-admin-like interface. Must decide between:
@@ -105,4 +107,4 @@ ADR 0008 already chose React Admin as the admin UI.
 
 - ADR 0003: Thin ORM (admin needs field introspection)
 - Upcoming: Field API design (admin auto-generates forms from it)
-- v0.5: Templates/static (admin is the first Jinja2 consumer)
+- Templates and static files are roadmap Phase 5, for application views. The admin does not use Jinja.
