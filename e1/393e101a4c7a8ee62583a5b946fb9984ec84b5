@@ -1,0 +1,77 @@
+docs/cli.md
+  s_8de26d66febf8a::t_d5733b8068d438 9,20,23,26
+  s_8de26d66febf8a::t_88ce5d6b1637fa 86
+docs/non-goals.md
+  s_8de26d66febf8a::t_5a9d24e4ad3da5 44,46-51
+  s_8de26d66febf8a::t_4bc2673d720791 3
+docs/adr/0008-rest-api-react-admin.md
+  s_8de26d66febf8a::t_8a0db95c612fcd 3-14
+  s_8de26d66febf8a::t_a9712430a510f0 81,86,89-102,110,120,124,126-127,131,133,139,153,156,158,161,165,168,170,173-174,179,183,190,192,194,211,213,215,219,229,242,245,247,249,253,256,259-263,278,281,283,285,289,295,298,301-305,319,322,324,326,330,334,342,346,350
+docs/mvp-v0.1.md
+  s_8de26d66febf8a::t_a81951c43ece74 3-18,21
+docs/ADMIN_SECURITY_WARNING.md
+  s_8de26d66febf8a::t_ab143bc49fdfbe 206-208
+  s_8de26d66febf8a::t_b50128fa2269c9 253,258
+  s_8de26d66febf8a::t_f059f9d2d58a55 3
+docs/adr/0007-ssr-for-admin-v0-3.md
+  s_8de26d66febf8a::t_560a3bfbe2c160 11-14
+docs/admin-customization.md
+  s_8de26d66febf8a::t_7bdc9166c7b39d 26
+docs/public-api-v0.1.md
+  s_8de26d66febf8a::t_e91a1a06cbad24 10,12
+  s_8de26d66febf8a::t_7f809d56e8e95a 3
+  s_8de26d66febf8a::t_0c87661acf60fe 30
+  s_8de26d66febf8a::t_500ac6e7d1931b 55
+  s_8de26d66febf8a::t_fa96afb3542a68 27-29
+docs/architecture.md
+  s_8de26d66febf8a::t_fe360f5e069d43 47
+  s_8de26d66febf8a::t_64ddc7899f3e4f 68
+  s_8de26d66febf8a::t_74315e72261dc1 55,57-59
+  s_8de26d66febf8a::t_0695025e79d7c5 76,79-80
+  s_8de26d66febf8a::t_b4f92099165fa3 116-117,120-121
+docs/roadmap.md
+  s_8de26d66febf8a::t_e40739d47af5d3 38
+  s_8de26d66febf8a::t_d36de9993cfd1c 7-13
+  s_8de26d66febf8a::t_18c30ded3ff43b 17-21
+docs/development.md
+  s_8de26d66febf8a::t_8a7cba1d506851 71,73
+  s_8de26d66febf8a::t_7eeaa395f41fe0 68
+docs/adr/README.md
+  s_8de26d66febf8a::t_5cce72cf46cd86 22
+  s_8de26d66febf8a::t_1341c6b5401505 9
+README.md
+  s_8de26d66febf8a::t_aac1da1d44a5ae 27
+  s_8de26d66febf8a::t_eb1927929cde7e 37
+  s_8de26d66febf8a::t_b86185d302670d 52-54
+  s_8de26d66febf8a::t_8d293c138fb769 99-100
+  s_8de26d66febf8a::t_a576e474755725 36
+  s_8de26d66febf8a::t_325f2b5719accf 132
+  s_8de26d66febf8a::t_cb1d578eb463e8 15-17
+docs/repository-layout.md
+  s_8de26d66febf8a::t_a8252e41b28475 35-36,40
+  s_8de26d66febf8a::t_52b4bc12256f5c 82,86
+  s_8de26d66febf8a::t_238269327dcc2e 3
+  s_8de26d66febf8a::t_a6d455a073f990 51,53,55-60
+  s_8de26d66febf8a::t_3bccfcdcdd6f61 33-34
+  s_8de26d66febf8a::t_21cd11ca615d5d 87
+CHANGELOG.md
+  s_8de26d66febf8a::t_4369cf79dbc0a4 17-19
+src/fastframe/admin/api.py
+  s_8de26d66febf8a::t_a862335a051556 158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "e1393e101a4c7a8ee62583a5b946fb9984ec84b5",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
