@@ -41,6 +41,9 @@ feature bumps the minor version.
   `manage.py work` starts a worker and `manage.py beat` starts the
   scheduler. `manage.py showtasks` lists Beat schedules and registered
   task names. Each task runs in its own database session.
+- Installed apps can add `manage.py` commands. A module at
+  `<app>/management/commands/<name>.py` defines `execute(args)` and an
+  optional `add_arguments(parser)`. See [docs/cli.md](docs/cli.md).
 - A pre-commit hook formats Python with Ruff and lints with Ruff and
   Pylint. Enable it with `pre-commit install` after
   `pip install -e ".[dev]"`.

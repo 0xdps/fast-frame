@@ -28,10 +28,9 @@ src/fastframe/
 ├── cli/
 │   ├── main.py               # `fastframe` entry (startproject, version)
 │   ├── manage.py             # `manage.py` command dispatcher
+│   ├── discovery.py          # commands from <app>/management/commands/
 │   ├── scaffold.py           # project/app template rendering
-│   └── commands/             # runserver, check, makemigrations, migrate,
-│                              # showmigrations, dbshell, shell, test,
-│                              # startapp, createadminuser, startadmin, buildadmin
+│   └── commands/             # built-in commands, including work, beat, showtasks
 ├── conf/
 │   └── global_settings.py     # default settings values
 ├── core/
@@ -77,13 +76,7 @@ Module boundaries to preserve:
 - **db / models / migrations** — the data layer.
 - **project_template** — what gets copied into a *generated user project*; not imported by the framework itself at runtime.
 
-## Not (yet) present
-
-Still not built:
-
-- Custom management command auto-discovery (`<app>/management/commands/`) — planned (see [app-contract.md](app-contract.md), [roadmap.md](roadmap.md)).
-
-`conf/global_settings.py` holds defaults. `core/settings.py` loads the project settings module. `fastframe.contrib.auth` and `models/fields.py` exist. Earlier drafts of this file said they did not.
+`conf/global_settings.py` holds defaults. `core/settings.py` loads the project settings module. `fastframe.contrib.auth` and `models/fields.py` exist. Earlier drafts of this file said they did not. App `manage.py` commands are loaded by `cli/discovery.py`.
 
 ## Naming
 

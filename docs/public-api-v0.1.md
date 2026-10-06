@@ -31,6 +31,9 @@ Surfaces intended to remain **stable** across minor releases. Everything else is
 | `beat` | Start Celery Beat, which enqueues periodic tasks |
 | `showtasks` | List Beat schedules and registered task names |
 | `--version` | Print `fastframe.__version__` (`0.1.0` today, not the `pyproject.toml` release) |
+| `<app command>` | Module at `<app>/management/commands/<name>.py` with `execute(args)` |
+
+An installed app's command name is the module file name. `add_arguments(parser)` is optional. Two apps, or an app and a built-in command, cannot share a name. See [cli.md](cli.md#app-commands).
 
 ## Settings
 
@@ -125,7 +128,6 @@ Re-exports are not wrappers; they do not change behavior.
 
 - Internal Alembic layout — currently a single combined revision chain (see [app-contract.md](app-contract.md)), may change
 - Migration file naming beyond "works for standard apps"
-- Custom management command auto-discovery (`<app>/management/commands/`) — deferred to v0.6+, not implemented
 
 ## Versioning
 

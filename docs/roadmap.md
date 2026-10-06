@@ -11,9 +11,9 @@ release is **0.1.3**. Commit messages that say `v0.2.0`, `v0.3.0`, or
 Fixes bump the patch version and a new feature bumps the minor version.
 Background jobs are implemented on trunk
 ([ADR 0012](adr/0012-background-jobs.md), [tasks.md](tasks.md)) and are not
-in the 0.1.3 release. The next unbuilt work is templates and static files.
-Caching, signals, and a custom management-command loader stay planned and
-come later. Email and object storage are out of scope, not a
+in the 0.1.3 release. Installed apps can add `manage.py` commands. The next
+unbuilt work is templates and static files. Caching and signals stay planned
+and come later. Email and object storage are out of scope, not a
 later phase. Work listed under `[Unreleased]` in the changelog is on trunk
 and is not in 0.1.3 yet.
 
@@ -26,7 +26,7 @@ and is not in 0.1.3 yet.
 | Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (0.1.x) |
 | Phase 5 | Templates and static files | 🔜 Next |
 | Phase 6 | Background jobs | ✅ Implemented (unreleased) |
-| Later | Caching, signals, custom management commands, observability | 📋 Planned |
+| Later | Caching, signals, observability | 📋 Planned |
 | Phase 7 | Production-ready platform | 📋 Planned |
 
 ## Phase 1 — Core loop ✅
@@ -135,7 +135,7 @@ Optional app `fastframe.tasks`, off unless listed in `INSTALLED_APPS`. Tasks are
 
 FastFrame does not wrap Celery and does not keep a second queue in the database. See [tasks.md](tasks.md) and [ADR 0012](adr/0012-background-jobs.md).
 
-Email and object storage are not a phase. FastFrame will not ship them, and it will not ship `FileField` or `ImageField`. Caching, signals, a custom management-command loader, and observability helpers stay planned. They are later than this phase, and they are not part of `fastframe.tasks`.
+Email and object storage are not a phase. FastFrame will not ship them, and it will not ship `FileField` or `ImageField`. Caching, signals, and observability helpers stay planned. They are later than this phase, and they are not part of `fastframe.tasks`. Installed apps register `manage.py` commands on their own. See [cli.md](cli.md#app-commands).
 
 ## Phase 7 — Production-ready platform 📋
 
