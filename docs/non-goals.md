@@ -53,7 +53,7 @@ Decided in [ADR 0012](adr/0012-background-jobs.md). These are not deferred.
 | Admin | Shipped as `fastframe.admin`. Still not part of core. The UI is the bundled Tailwind app, not React Admin — see the Addition on [ADR 0008](adr/0008-rest-api-react-admin.md) |
 | Auth | Shipped as `fastframe.contrib.auth`. Still not part of core |
 | Templates / static | Planned, not next. Phase 5, for app views only. The admin has no Jinja UI |
-| Background jobs | Next. Phase 6. See [ADR 0012](adr/0012-background-jobs.md) |
+| Background jobs | Implemented. Opt in with `fastframe.tasks`. See [tasks.md](tasks.md) |
 | Signals | Still planned, later. Only if hooks and `ready()` are insufficient. Not part of the jobs app |
 | Caching | Still planned, later. Not part of the jobs app |
 | Custom management commands | Still planned, later. Apps registering `<app>/management/commands/`. Not part of the jobs app |

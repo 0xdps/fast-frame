@@ -27,6 +27,9 @@ Surfaces intended to remain **stable** across minor releases. Everything else is
 | `createadminuser` | Create a superuser who can sign in to the admin |
 | `startadmin` | Copy the admin UI into the project (default `admin-ui/`) |
 | `buildadmin` | Compile the React admin into the static directory |
+| `work` | Start a Celery worker (`fastframe.tasks` must be installed) |
+| `beat` | Start Celery Beat, which enqueues periodic tasks |
+| `showtasks` | List Beat schedules and registered task names |
 | `--version` | Print `fastframe.__version__` (`0.1.0` today, not the `pyproject.toml` release) |
 
 ## Settings
@@ -52,7 +55,7 @@ Exact names will match implementation; breaking renames require CHANGELOG + ADR.
 
 ## Apps and routing (v0.2)
 
-- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, `fastframe.docs`, `fastframe.health`, and any project app. There is no `ENABLE_*` setting for turning one on. `fastframe.docs` mounts `/docs`, `/redoc`, and `/openapi.json`. `fastframe.health` mounts `GET /health` (path overridable with `HEALTH_PATH`). A new project lists `fastframe.health` and none of the others.
+- `INSTALLED_APPS` membership is what mounts a battery — `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, `fastframe.docs`, `fastframe.health`, `fastframe.tasks`, and any project app. `fastframe.tasks` needs `pip install "fast-frame[tasks]"` (Celery). See [tasks.md](tasks.md). There is no `ENABLE_*` setting for turning one on. `fastframe.docs` mounts `/docs`, `/redoc`, and `/openapi.json`. `fastframe.health` mounts `GET /health` (path overridable with `HEALTH_PATH`). A new project lists `fastframe.health` and none of the others.
 - `AppConfig.get_routers()` — optional hook returning `list[APIRouter]`, built at mount time. Collected in `INSTALLED_APPS` order and mounted beside `<app>.api` and the `urls.py` → `router` convention. See [app-contract.md](app-contract.md#router-discovery).
 
 ## Database

@@ -14,12 +14,6 @@ feature bumps the minor version.
 
 ### Changed
 
-- Background jobs are the next battery ([ADR 0012](docs/adr/0012-background-jobs.md)):
-  an optional `fastframe.tasks` app on Celery. Redis is the documented
-  broker. `manage.py work` starts a worker and `manage.py beat` starts
-  the scheduler. Email and object storage are out of scope, including
-  `FileField` / `ImageField`. Templates, caching, signals, and app
-  management commands stay planned and are not part of the jobs app.
 - The admin has no Jinja UI, and Phase 5 will not add one. Templates in
   that phase are for app views. ADR 0007 no longer lists the admin as the
   first Jinja consumer.
@@ -40,6 +34,13 @@ feature bumps the minor version.
 
 ### Added
 
+- Background jobs ([ADR 0012](docs/adr/0012-background-jobs.md),
+  [docs/tasks.md](docs/tasks.md)). Add `"fastframe.tasks"` to
+  `INSTALLED_APPS` and install Celery with `pip install "fast-frame[tasks]"`.
+  Tasks are Celery's `@shared_task`. Redis is the default broker.
+  `manage.py work` starts a worker and `manage.py beat` starts the
+  scheduler. `manage.py showtasks` lists Beat schedules and registered
+  task names. Each task runs in its own database session.
 - A pre-commit hook formats Python with Ruff and lints with Ruff and
   Pylint. Enable it with `pre-commit install` after
   `pip install -e ".[dev]"`.

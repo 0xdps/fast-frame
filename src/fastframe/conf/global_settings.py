@@ -79,6 +79,17 @@ DATABASE_URL = "sqlite:///./db.sqlite3"
 # ===== Apps =====
 INSTALLED_APPS = []
 
+# ===== Background jobs =====
+# Whether Celery is configured at all is controlled by ``INSTALLED_APPS``
+# (add ``"fastframe.tasks"``) — not a setting here. See docs/tasks.md.
+# Celery is not part of the base install. ``pip install "fast-frame[tasks]"``.
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND: str | None = None
+CELERY_TASK_ALWAYS_EAGER = False
+# Celery Beat schedule. Values are Celery beat entries (a number of seconds
+# or a ``celery.schedules.crontab``). Beat enqueues them. It does not run them.
+CELERY_BEAT_SCHEDULE: dict = {}
+
 # ===== Health check =====
 # Whether the /health endpoint is mounted at all is controlled by
 # ``INSTALLED_APPS`` (add ``"fastframe.health"``) — not a setting here.

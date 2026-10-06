@@ -23,6 +23,7 @@ Import by area: `fastframe.http`, `fastframe.schemas`, `fastframe.models`. Admin
 - [Auth](auth.md) and [permissions](permissions.md)
 - [Admin](admin-setup.md), [deploying it](admin-deployment.md), and [security limits](ADMIN_SECURITY_WARNING.md)
 - [REST API](rest-api.md) for non-browser clients
+- [Background jobs](tasks.md) with Celery
 
 ## Reference
 
