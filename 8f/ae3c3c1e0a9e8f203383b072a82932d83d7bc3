@@ -1,0 +1,58 @@
+docs/architecture.md
+  s_8de26d66febf8a::t_433034bfb6461f 112
+  s_8de26d66febf8a::t_13a65094b49341 131
+  s_8de26d66febf8a::t_91dc44e9b48350 100
+tests/test_app_commands.py
+  s_8de26d66febf8a::t_4882d9ad5baa3a 1-17,21-40,43-78,80-144
+  s_8de26d66febf8a::t_811c5ae4c8baf0 18-20
+  s_8de26d66febf8a::t_7cbc0ca9326ba4 41-42
+  s_8de26d66febf8a::t_6208399c1209cc 79
+docs/app-contract.md
+  s_8de26d66febf8a::t_c4eb7646541bb7 40
+  s_8de26d66febf8a::t_fe1f8d1c5840fe 97-99
+docs/adr/0012-background-jobs.md
+  s_8de26d66febf8a::t_58c4d01fe59fd0 11-14
+docs/repository-layout.md
+  s_8de26d66febf8a::t_d43028e5c32e50 31,33
+  s_8de26d66febf8a::t_08bb4c3da707ba 79
+docs/mvp-v0.1.md
+  s_8de26d66febf8a::t_656db341fcf1c6 14-15
+README.md
+  s_8de26d66febf8a::t_1d38d992697b2e 54
+  s_8de26d66febf8a::t_43e3f8ae3a47de 55-56
+CHANGELOG.md
+  s_8de26d66febf8a::t_c82231a36956d7 44-46
+src/fastframe/cli/manage.py
+  s_8de26d66febf8a::t_ed4603a446056a 50-55,68,75-79
+  s_8de26d66febf8a::t_ad3729deb51131 25
+  s_8de26d66febf8a::t_03b665492b2256 87-112
+docs/non-goals.md
+  s_8de26d66febf8a::t_f2b5621a4d7cfd 59
+docs/public-api-v0.1.md
+  s_8de26d66febf8a::t_881abe4c3f91b9 34-36
+docs/roadmap.md
+  s_8de26d66febf8a::t_3b528eb8a44ddf 138
+  s_8de26d66febf8a::t_ac2614e7843689 29
+  s_8de26d66febf8a::t_241b625543b15c 14-16
+src/fastframe/cli/discovery.py
+  s_8de26d66febf8a::t_c66fe76fa0b537 1-43,45,47-83
+  s_8de26d66febf8a::t_6208399c1209cc 44,46
+docs/cli.md
+  s_8de26d66febf8a::t_326098e006766b 196-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "8fae3c3c1e0a9e8f203383b072a82932d83d7bc3",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
