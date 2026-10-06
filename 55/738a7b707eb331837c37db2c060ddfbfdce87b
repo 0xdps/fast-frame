@@ -1,0 +1,107 @@
+README.md
+  s_8de26d66febf8a::t_f014771f978c0a 52-56
+src/fastframe/tasks/celery.py
+  s_8de26d66febf8a::t_79f4d2826a677d 1-14,16-61
+  s_8de26d66febf8a::t_4b575be62c52d4 15
+src/fastframe/cli/commands/work.py
+  s_8de26d66febf8a::t_70ab4436fdc7dd 1-15
+src/fastframe/conf/global_settings.py
+  s_8de26d66febf8a::t_046269a13f9ad4 82-92
+  s_8de26d66febf8a::t_d4fd9e13df7064 111
+docs/session-lifecycle.md
+  s_8de26d66febf8a::t_7e39f72cf8b9ac 31-34
+  s_8de26d66febf8a::t_2bcf13b7764056 52
+src/fastframe/cli/manage.py
+  s_8de26d66febf8a::t_651222674b7da0 19
+  s_8de26d66febf8a::t_e52e0f1dfd068b 39-40
+  s_8de26d66febf8a::t_01e4d04db02949 9,23
+  s_8de26d66febf8a::t_f20fe251c2d473 41
+docs/architecture.md
+  s_8de26d66febf8a::t_b298202fb34868 100
+  s_8de26d66febf8a::t_2ddbb076899415 99
+  s_8de26d66febf8a::t_44924154f59131 82
+  s_8de26d66febf8a::t_d6bd0a052c81a2 119
+  s_8de26d66febf8a::t_cbcb979895c974 120
+src/fastframe/tasks/listing.py
+  s_8de26d66febf8a::t_3314bcb880870e 1-90
+docs/cli.md
+  s_8de26d66febf8a::t_98f6afc30785bf 47-48
+  s_8de26d66febf8a::t_c9cc1e58d7efa5 166-170,174-175,177
+  s_8de26d66febf8a::t_085b60307b4c8e 171-173,176
+  s_8de26d66febf8a::t_e81817b15feb34 49
+docs/adr/README.md
+  s_8de26d66febf8a::t_3a7f0584cf2979 26
+tests/test_tasks.py
+  s_8de26d66febf8a::t_76e001f295e527 1-5,7-10,13-17,31-37,49-56,60,64,67-68,73,75,81,86-87,91,95-96,98-100,104-105,107-109,113-117,121-123,126,128,132,134,137
+  s_8de26d66febf8a::t_d42fd5117f3691 6,11-12,18-30,38-48
+  s_8de26d66febf8a::t_7481cb903149bf 57-59,61-63,65-66,69-71,74,76-80,82-85,88-90,92-94,97,101-103,106,110-112,118-120,124-125,127,129-131,133,135-136,138-143
+  s_8de26d66febf8a::t_14750641b59584 144-217
+  s_8de26d66febf8a::t_5e43cc9625d8ce 72
+src/fastframe/tasks/runtime.py
+  s_8de26d66febf8a::t_040811915ee3b4 1-30
+docs/settings.md
+  s_8de26d66febf8a::t_e79c9e46f581d9 41-53,55
+  s_8de26d66febf8a::t_186d521aad7048 18
+  s_8de26d66febf8a::t_91021946c729c2 54
+  s_8de26d66febf8a::t_07f9e9e8d0279c 31
+mkdocs.yml
+  s_8de26d66febf8a::t_1e6ae8b2fa8fdd 63
+src/fastframe/cli/commands/beat.py
+  s_8de26d66febf8a::t_77f2f6a8b8d459 1-15
+docs/index.md
+  s_8de26d66febf8a::t_d347832cc06b19 26
+src/fastframe/cli/commands/showtasks.py
+  s_8de26d66febf8a::t_e063fbaffb655b 1-15
+src/fastframe/tasks/__init__.py
+  s_8de26d66febf8a::t_6d3c52e415fc45 1-6
+  s_8de26d66febf8a::t_da5bef56e1db43 7-17
+docs/mvp-v0.1.md
+  s_8de26d66febf8a::t_124d3963b11367 12-13
+docs/adr/0005-extensibility-via-installed-apps.md
+  s_8de26d66febf8a::t_67a43d6a7c450d 9
+docs/roadmap.md
+  s_8de26d66febf8a::t_38df72b459aa18 125
+  s_8de26d66febf8a::t_5aebe97747b934 12-16
+  s_8de26d66febf8a::t_6f4bb23d3b3dad 27-28
+  s_8de26d66febf8a::t_60fb07e91ef48e 130,132,136
+  s_8de26d66febf8a::t_d14eabafe9bb30 134
+docs/tasks.md
+  s_8de26d66febf8a::t_a2f46115827a8c 1-57,59-78,93-95
+  s_8de26d66febf8a::t_5438323420d85d 58
+  s_8de26d66febf8a::t_2877587cdee1ab 79-92
+docs/public-api-v0.1.md
+  s_8de26d66febf8a::t_c0dd6219776ac3 32
+  s_8de26d66febf8a::t_4bc60730081bfb 30-31
+  s_8de26d66febf8a::t_1a06427d63c4a9 58
+docs/app-contract.md
+  s_8de26d66febf8a::t_6b926edf315a5c 37
+docs/adr/0012-background-jobs.md
+  s_8de26d66febf8a::t_1a07e8e2f7686d 7-9
+  s_8de26d66febf8a::t_5a173b4582e5aa 5
+  s_8de26d66febf8a::t_7eae4dc2df9d1b 6
+src/fastframe/tasks/apps.py
+  s_8de26d66febf8a::t_394c7514d09663 1-41
+CHANGELOG.md
+  s_8de26d66febf8a::t_37c84bc3d09316 37-41
+  s_8de26d66febf8a::t_d2cd3f7f8e1782 42-43
+pyproject.toml
+  s_8de26d66febf8a::t_0e36ecca420a59 33-35,42
+docs/non-goals.md
+  s_8de26d66febf8a::t_bb49ec81e34b99 56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "55738a7b707eb331837c37db2c060ddfbfdce87b",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
