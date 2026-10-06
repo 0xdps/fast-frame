@@ -150,19 +150,6 @@ Every command that needs the app context should:
 
 Commands like `runserver` and `shell` need full initialization; `startapp` may need less.
 
-## Extensibility
-
-Third-party and local apps will eventually register commands under:
-
-```text
-<app>/management/commands/<command_name>.py
-```
-
-This stays **planned**, after background jobs. The jobs app
-([ADR 0012](adr/0012-background-jobs.md)) does not include a command
-loader. Exact discovery for app commands is still TBD; the path follows
-Django familiarity.
-
 ### `work` and `beat`
 
 Require `"fastframe.tasks"` in `INSTALLED_APPS` and `pip install "fast-frame[tasks]"`.
@@ -206,8 +193,30 @@ python manage.py buildadmin
 python manage.py buildadmin --source admin-ui --output admin-ui/dist
 ```
 
+## App commands
+
+An installed app adds a `manage.py` command by shipping a module. The file name is the command name:
+
+```text
+users/management/commands/greet.py
+```
+
+```python
+def add_arguments(parser) -> None:
+    parser.add_argument("name")
+
+
+def execute(args) -> None:
+    print(f"hello {args.name}")
+```
+
+`python manage.py greet ada` calls `execute`. `add_arguments` is optional. The module docstring's first line is the help text.
+
+FastFrame loads these modules from each entry in `INSTALLED_APPS`. An app that is not installed contributes nothing. A missing `management/commands` package is normal. A command module must define `execute(args)`.
+
+A command name that matches a built-in command, or the same name from two installed apps, is an error. Built-in commands stay the ones that ship with FastFrame.
+
 ## Future
 
 - `check --deploy`
 - `collectstatic` when static files exist
-- Custom management command auto-discovery (v0.6+, see above)

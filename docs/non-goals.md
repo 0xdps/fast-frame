@@ -56,6 +56,6 @@ Decided in [ADR 0012](adr/0012-background-jobs.md). These are not deferred.
 | Background jobs | Implemented. Opt in with `fastframe.tasks`. See [tasks.md](tasks.md) |
 | Signals | Still planned, later. Only if hooks and `ready()` are insufficient. Not part of the jobs app |
 | Caching | Still planned, later. Not part of the jobs app |
-| Custom management commands | Still planned, later. Apps registering `<app>/management/commands/`. Not part of the jobs app |
+| Custom management commands | Implemented. An installed app ships `<app>/management/commands/<name>.py`. See [cli.md](cli.md#app-commands) |
 | Full backend protocols | Cache backends stay planned with caching. Storage backends will not be added. Auth backends beyond the shipped session and token auth stay planned for later |
 | CSRF tokens, per-object permissions, `ManyToManyField(through=...)` | Still deferred. See [ADMIN_SECURITY_WARNING.md](ADMIN_SECURITY_WARNING.md) |

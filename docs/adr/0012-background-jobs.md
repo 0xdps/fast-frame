@@ -8,6 +8,10 @@ Accepted. Implemented. See [tasks.md](../tasks.md).
 
 `python manage.py showtasks` prints the Beat schedule and the registered task names from this process. It does not start a worker or Beat, and it does not connect to the broker. The processes below are unchanged: one Beat process enqueues, and any number of workers run the tasks.
 
+## Addition (2026-10-06) — command loader
+
+The consequence that leaves a custom management-command loader planned is done. Installed apps register `manage.py` commands under `<app>/management/commands/<name>.py`. That loader is not part of `fastframe.tasks`. Caching and signals stay planned.
+
 ## Context
 
 Phases 1 through 4.5 shipped the project loop, admin, auth, and the token API. The old Phase 6 list bundled background tasks with email, caching, and storage (`FileField` / `ImageField`).

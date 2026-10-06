@@ -37,7 +37,7 @@ Each app is a Python package. Conventional files FastFrame **may** auto-discover
 | `tasks.py` | Celery tasks, imported when `fastframe.tasks` is installed |
 | `api.py` → `api` | `FastFrameAPI` (or a native `APIRouter`) mounted for this app |
 | `urls.py` → `router` | FastAPI `APIRouter`, aggregated by `config/urls.py` |
-| `management/commands/` | Custom `manage.py` commands |
+| `management/commands/<name>.py` | A `manage.py` command named `<name>` |
 | `AppConfig.checks()` | Hook returning `list[CheckMessage]` for `manage.py check` |
 
 Apps **must not** be required to implement every file. Missing modules are skipped.
@@ -94,7 +94,9 @@ This is also what makes FastFrame's own batteries opt-in: `fastframe.admin`, `fa
 
 ## Management commands
 
-Custom commands live under `app/management/commands/<name>.py` (Django-familiar path) unless we choose a flatter layout in implementation.
+An installed app registers commands under `<app>/management/commands/<name>.py`. The module name is the command name. `execute(args)` is required. `add_arguments(parser)` is optional and receives the command's argument parser. The same shape is what FastFrame's own commands use.
+
+FastFrame imports these modules while building `manage.py`'s command list. A missing `management` package is skipped. A name that matches a built-in command, or the same name in two installed apps, is an error. See [cli.md](cli.md#app-commands).
 
 ## Third-party apps
 

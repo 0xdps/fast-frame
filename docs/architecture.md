@@ -97,7 +97,7 @@ slowly becoming the monolith the [design principles](design-principles.md)
 warn against:
 
 - Templates (Jinja2) and static files for app views — next. Not an admin UI
-- Caching, signals, a custom management-command loader, observability helpers — planned, later
+- Caching, signals, observability helpers — planned, later
 
 Email and object storage are not future components. [ADR 0012](adr/0012-background-jobs.md) keeps them out.
 
@@ -109,7 +109,7 @@ Core
 ├── Configuration (settings module, INSTALLED_APPS)
 ├── App registry (AppConfig.ready()/get_routers()/checks()/shutdown())
 ├── Routing discovery (installed-app routers + ROOT_URLCONF)
-└── CLI (fastframe + manage.py)
+└── CLI (fastframe + manage.py, including app commands)
 
 Shipped, opt-in via INSTALLED_APPS
 ├── Health (fastframe.health) — on in a new project
@@ -128,8 +128,7 @@ Future, opt-in from the start (not yet built)
 ├── Templates
 ├── Static
 ├── Cache
-├── Signals
-└── App management commands
+└── Signals
 ```
 
 Enabling/disabling any of these components — shipped or future — is

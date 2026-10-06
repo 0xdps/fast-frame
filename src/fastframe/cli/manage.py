@@ -22,6 +22,7 @@ from fastframe.cli.commands import (
     testcmd,
     work,
 )
+from fastframe.cli.discovery import CommandError
 
 COMMANDS = {
     "runserver": runserver,
@@ -46,6 +47,12 @@ def execute_from_command_line(argv: Sequence[str] | None = None) -> None:
     argv = list(argv if argv is not None else sys.argv)
     prog = argv[0] if argv else "manage.py"
 
+    try:
+        commands = _available_commands()
+    except CommandError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        raise SystemExit(1) from exc
+
     # `test` forwards arbitrary flags straight through to pytest (-v, -k,
     # --pdb, ...). argparse subparsers can't reliably pass through
     # dash-prefixed tokens immediately after the subcommand name even with
@@ -58,21 +65,49 @@ def execute_from_command_line(argv: Sequence[str] | None = None) -> None:
         pytest_args = argv[2:]
         if pytest_args and pytest_args[0] == "--":
             pytest_args = pytest_args[1:]
-        _run(testcmd, argparse.Namespace(pytest_args=pytest_args))
+        _run(commands["test"], argparse.Namespace(pytest_args=pytest_args))
         return
 
     parser = argparse.ArgumentParser(prog=prog, description="FastFrame management utility")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    for name, module in COMMANDS.items():
-        sub = subparsers.add_parser(name, help=name)
-        module.add_arguments(sub)
+    for name, module in commands.items():
+        sub = subparsers.add_parser(name, help=_command_help(name, module))
+        add_arguments = getattr(module, "add_arguments", None)
+        if add_arguments is not None:
+            add_arguments(sub)
         sub.set_defaults(_command_module=module)
 
     args = parser.parse_args(argv[1:])
     module = args._command_module
     _run(module, args)
+
+
+def _available_commands() -> dict[str, object]:
+    """Built-in commands plus modules from installed apps.
+
+    With no settings module configured, only the built-in commands are
+    available. ``--version`` and ``test`` keep working outside a project.
+    """
+    from fastframe.cli.discovery import discover_app_commands
+    from fastframe.core.settings import SettingsError
+
+    commands: dict[str, object] = dict(COMMANDS)
+    try:
+        commands.update(discover_app_commands())
+    except SettingsError:
+        return commands
+    return commands
+
+
+def _command_help(name: str, module: object) -> str:
+    if name in COMMANDS:
+        return name
+    doc = (getattr(module, "__doc__", None) or "").strip()
+    if not doc:
+        return name
+    return doc.splitlines()[0]
 
 
 def _run(module: object, args: argparse.Namespace) -> None:
