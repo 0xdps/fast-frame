@@ -6,6 +6,7 @@ from collections.abc import Sequence
 
 from fastframe.__version__ import __version__
 from fastframe.cli.commands import (
+    beat,
     buildadmin,
     check,
     createadminuser,
@@ -15,9 +16,11 @@ from fastframe.cli.commands import (
     runserver,
     shell,
     showmigrations,
+    showtasks,
     startadmin,
     startapp,
     testcmd,
+    work,
 )
 
 COMMANDS = {
@@ -33,6 +36,9 @@ COMMANDS = {
     "createadminuser": createadminuser,
     "startadmin": startadmin,
     "buildadmin": buildadmin,
+    "work": work,
+    "beat": beat,
+    "showtasks": showtasks,
 }
 
 

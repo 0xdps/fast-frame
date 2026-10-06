@@ -28,6 +28,10 @@ Synchronous SQLAlchemy session per request — the only supported mode in v0.1/v
 2. Route handlers and `Model.objects.*` use that session via `get_current_session()` / `Depends(get_session)`.
 3. **On success: commit.** On any exception: rollback. Always closed after the response, regardless of outcome.
 
+## Background jobs
+
+When `"fastframe.tasks"` is installed, each Celery task runs inside its own `session_scope()`. That session is not the request session. It commits if the task returns and rolls back if the task raises. The worker and Beat processes are not inside a request. See [tasks.md](tasks.md).
+
 ## `manage.py shell`
 
 1. Bootstrap, then `begin_session()` binds a session for the whole REPL.
@@ -44,6 +48,7 @@ pytest fixtures provided by the project template (`tests/conftest.py`):
 
 ```python
 from fastframe.testing import override_settings
+
 
 def test_feature_flag_disabled(client):
     from config import settings

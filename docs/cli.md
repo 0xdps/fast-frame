@@ -44,6 +44,9 @@ python manage.py startapp users
 python manage.py createadminuser
 python manage.py startadmin
 python manage.py buildadmin
+python manage.py work
+python manage.py beat
+python manage.py showtasks
 python manage.py --version
 ```
 
@@ -159,6 +162,18 @@ This stays **planned**, after background jobs. The jobs app
 ([ADR 0012](adr/0012-background-jobs.md)) does not include a command
 loader. Exact discovery for app commands is still TBD; the path follows
 Django familiarity.
+
+### `work` and `beat`
+
+Require `"fastframe.tasks"` in `INSTALLED_APPS` and `pip install "fast-frame[tasks]"`.
+
+```text
+python manage.py work       # Celery worker
+python manage.py beat       # Celery Beat; enqueues periodic tasks, does not run them
+python manage.py showtasks  # list Beat schedules and registered tasks
+```
+
+`--loglevel` defaults to `info` on `work` and `beat`. `showtasks` reads this process's configuration. It does not start a worker or Beat, and it does not connect to the broker. See [tasks.md](tasks.md).
 
 ### `createadminuser`
 

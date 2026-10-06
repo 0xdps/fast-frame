@@ -49,10 +49,11 @@ create/update/delete, `get_or_create()`/`update_or_create()`,
 `values()`/`values_list()`, `only()`/`defer()`, and an `atomic()`
 transaction helper — see [docs/orm-features.md](docs/orm-features.md).
 
-See [docs/roadmap.md](docs/roadmap.md) for what's next: background jobs
-([docs/adr/0012-background-jobs.md](docs/adr/0012-background-jobs.md)).
-Templates, caching, signals, and app management commands stay planned for
-later. Email and object storage are out of scope.
+Background jobs are an optional Celery app
+([docs/tasks.md](docs/tasks.md)). See [docs/roadmap.md](docs/roadmap.md)
+for what's next: templates and static files. Caching, signals, and app
+management commands stay planned for later. Email and object storage are
+out of scope.
 [docs/mvp-v0.1.md](docs/mvp-v0.1.md) is the original first-release cut, not
 the current product.
 

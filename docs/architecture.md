@@ -79,6 +79,7 @@ mechanism is gone; `INSTALLED_APPS` membership is now the *only* switch.
 - OpenAPI docs (`fastframe.docs`)
 - Health check (`fastframe.health`) — included in a new project's `INSTALLED_APPS`
 - Audit log (`fastframe.admin.audit`) — registered as a side effect of installing admin or the REST API, whichever runs first
+- Background jobs (`fastframe.tasks`) — Celery, Redis by default. Needs `pip install "fast-frame[tasks]"`. See [tasks.md](tasks.md)
 
 Note: the compiled admin UI static assets are still force-included in
 every built wheel regardless of whether a project installs
@@ -95,9 +96,8 @@ project explicitly installs them — to avoid the application factory
 slowly becoming the monolith the [design principles](design-principles.md)
 warn against:
 
-- Background jobs (`fastframe.tasks`, Celery, Redis by default) — next, see [ADR 0012](adr/0012-background-jobs.md)
-- Templates (Jinja2) and static files for app views — planned, after jobs. Not an admin UI
-- Caching, signals, a custom management-command loader, observability helpers — planned, after jobs
+- Templates (Jinja2) and static files for app views — next. Not an admin UI
+- Caching, signals, a custom management-command loader, observability helpers — planned, later
 
 Email and object storage are not future components. [ADR 0012](adr/0012-background-jobs.md) keeps them out.
 
@@ -116,7 +116,8 @@ Shipped, opt-in via INSTALLED_APPS
 ├── Admin (fastframe.admin)
 ├── Auth & permissions (fastframe.contrib.auth)
 ├── Generic REST API (fastframe.api)
-└── OpenAPI docs (fastframe.docs)
+├── OpenAPI docs (fastframe.docs)
+└── Background jobs (fastframe.tasks) — Celery; extra install
 
 Always available (not gated by INSTALLED_APPS)
 ├── Models / ORM helpers
@@ -124,7 +125,6 @@ Always available (not gated by INSTALLED_APPS)
 └── Shell
 
 Future, opt-in from the start (not yet built)
-├── Tasks (fastframe.tasks) — next, ADR 0012
 ├── Templates
 ├── Static
 ├── Cache

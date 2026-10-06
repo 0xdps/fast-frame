@@ -30,12 +30,16 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+tasks = [
+    "celery[redis]>=5.4",
+]
 dev = [
     "pytest>=8.3.0",
     "httpx>=0.28.0",
     "ruff>=0.8.0",
     "pylint>=3.3.0",
     "pre-commit>=4.0.0",
+    "celery[redis]>=5.4",
 ]
 
 [project.urls]

@@ -2,7 +2,11 @@
 
 ## Status
 
-Accepted. Not implemented. The next battery to build. See [the roadmap](../roadmap.md).
+Accepted. Implemented. See [tasks.md](../tasks.md).
+
+## Addition (2026-10-06)
+
+`python manage.py showtasks` prints the Beat schedule and the registered task names from this process. It does not start a worker or Beat, and it does not connect to the broker. The processes below are unchanged: one Beat process enqueues, and any number of workers run the tasks.
 
 ## Context
 

@@ -60,6 +60,7 @@ nav:
       - Admin: admin-setup.md
       - Deploying admin: admin-deployment.md
       - REST API: rest-api.md
+      - Background jobs: tasks.md
       - Security: ADMIN_SECURITY_WARNING.md
   - Reference:
       - Apps: app-contract.md

@@ -15,7 +15,7 @@ settings.ADMIN_API_PREFIX
 `bootstrap()` and `get_asgi_application()` reload this object after the
 environment variable is set.
 
-## Enabling admin, auth, the REST API, and the health check
+## Enabling admin, auth, the REST API, health, and background jobs
 
 These ship inside `fastframe` but are **opt-in apps**, not
 always-on settings flags — add their dotted path to `INSTALLED_APPS` to
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "fastframe.contrib.auth",  # User/Group models + general session auth
     "fastframe.admin",  # admin UI + API (requires the line above)
     "fastframe.api",  # token-authenticated generic REST API
+    "fastframe.tasks",  # Celery worker; needs pip install "fast-frame[tasks]"
     "myapp",
 ]
 ```
@@ -36,6 +37,21 @@ A freshly generated project's `INSTALLED_APPS` includes
 `"fastframe.health"` by default (so `GET /health` works immediately) and
 none of the others — add what you want. The settings below configure an
 *already-installed* app; they don't turn it on by themselves.
+
+## Background jobs
+
+Off unless `"fastframe.tasks"` is in `INSTALLED_APPS`. Install Celery with
+`pip install "fast-frame[tasks]"`. Tasks are Celery's `@shared_task`. See
+[tasks.md](tasks.md).
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `CELERY_BROKER_URL` | `"redis://localhost:6379/0"` | Broker URL. Redis is the documented default. |
+| `CELERY_RESULT_BACKEND` | `None` | Optional Celery result backend. |
+| `CELERY_TASK_ALWAYS_EAGER` | `False` | When `True`, `.delay()` runs the task in-process. Tests use this. |
+| `CELERY_BEAT_SCHEDULE` | `{}` | Periodic tasks. Beat enqueues them. A worker runs them. |
+
+`python manage.py work` starts a worker. `python manage.py beat` starts Beat. Run one Beat process. `python manage.py showtasks` lists the schedule and the registered tasks.
 
 ## Health check
 

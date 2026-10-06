@@ -34,6 +34,7 @@ Each app is a Python package. Conventional files FastFrame **may** auto-discover
 | --- | --- |
 | `apps.py` → `AppConfig` subclass | Metadata and `ready()` hook |
 | `models.py` | ORM models for migration discovery |
+| `tasks.py` | Celery tasks, imported when `fastframe.tasks` is installed |
 | `api.py` → `api` | `FastFrameAPI` (or a native `APIRouter`) mounted for this app |
 | `urls.py` → `router` | FastAPI `APIRouter`, aggregated by `config/urls.py` |
 | `management/commands/` | Custom `manage.py` commands |

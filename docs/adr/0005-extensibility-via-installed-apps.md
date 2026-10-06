@@ -6,7 +6,7 @@ Accepted
 
 ## Addition (2026-10-04)
 
-The consequence below that leaves storage backends "deferred until needed" is withdrawn. FastFrame will not ship an email battery or a storage battery. Background jobs are the next optional app. See [ADR 0012](0012-background-jobs.md). The rest of this decision is unchanged.
+The consequence below that leaves storage backends "deferred until needed" is withdrawn. FastFrame will not ship an email battery or a storage battery. Background jobs are the optional `fastframe.tasks` app. See [ADR 0012](0012-background-jobs.md). The rest of this decision is unchanged.
 
 ## Context
 
