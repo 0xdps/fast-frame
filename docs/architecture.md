@@ -97,7 +97,8 @@ slowly becoming the monolith the [design principles](design-principles.md)
 warn against:
 
 - Templates (Jinja2) and static files for app views — next. Not an admin UI
-- Caching, signals, observability helpers — planned, later
+- Caching — proposed in [ADR 0013](adr/0013-caching.md), not built
+- Signals, observability helpers — planned, later
 
 Email and object storage are not future components. [ADR 0012](adr/0012-background-jobs.md) keeps them out.
 
@@ -127,7 +128,7 @@ Always available (not gated by INSTALLED_APPS)
 Future, opt-in from the start (not yet built)
 ├── Templates
 ├── Static
-├── Cache
+├── Cache — proposed, ADR 0013, not built
 └── Signals
 ```
 
