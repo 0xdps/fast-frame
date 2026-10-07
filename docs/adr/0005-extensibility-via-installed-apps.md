@@ -12,6 +12,10 @@ The consequence below that leaves storage backends "deferred until needed" is wi
 
 The consequence that defers cache backends is decided in [ADR 0013](0013-caching.md): one cache, Redis by default, and an in-process backend for tests. That is not a general backend protocol. Storage backends stay withdrawn.
 
+## Addition (2026-10-07)
+
+The decision line that says templates ship as an optional app is withdrawn. FastFrame will not ship a templates app. Admin and auth already ship as optional apps. See the Addition on [ADR 0002](0002-fastapi-as-http-layer.md).
+
 ## Context
 
 FastFrame aims for “batteries included, not forced.” Django's extensibility model (installed apps, AppConfig, commands) is a proven pattern; cloning every Django feature is not.

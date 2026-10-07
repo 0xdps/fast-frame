@@ -96,11 +96,10 @@ project explicitly installs them — to avoid the application factory
 slowly becoming the monolith the [design principles](design-principles.md)
 warn against:
 
-- Templates (Jinja2) and static files for app views — next. Not an admin UI
 - Caching — proposed in [ADR 0013](adr/0013-caching.md), not built
 - Signals, observability helpers — planned, later
 
-Email and object storage are not future components. [ADR 0012](adr/0012-background-jobs.md) keeps them out.
+Email, object storage, Jinja templates, and app static files are not future components. [ADR 0012](adr/0012-background-jobs.md) keeps email and storage out. The Addition on [ADR 0002](adr/0002-fastapi-as-http-layer.md) keeps templates out. The admin stays the React UI.
 
 ## Modularity model
 
@@ -126,8 +125,6 @@ Always available (not gated by INSTALLED_APPS)
 └── Shell
 
 Future, opt-in from the start (not yet built)
-├── Templates
-├── Static
 ├── Cache — proposed, ADR 0013, not built
 └── Signals
 ```

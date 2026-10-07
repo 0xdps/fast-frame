@@ -14,6 +14,10 @@ The Context and Decision below are the original proposal. They are unchanged. St
 
 There is no Jinja admin. That code, and the `jinja2` dependency, were removed before the first release. It is not coming back in Phase 5. Templates in that phase are for application views. The related-decisions line that called the admin the first Jinja2 consumer is withdrawn.
 
+## Addition (2026-10-07)
+
+The sentence above that keeps Phase 5 templates for application views is withdrawn. FastFrame will not ship Jinja templates for app views, app static files, or `collectstatic`. Pages stay FastAPI responses. The admin stays the React UI.
+
 ## Context
 
 FastFrame v0.3 aims to provide a Django-admin-like interface. Must decide between:

@@ -4,6 +4,10 @@
 
 Accepted
 
+## Addition (2026-10-07)
+
+The consequence that defers template-driven HTML views to an optional component is withdrawn. FastFrame will not ship Jinja templates, app static files, or `collectstatic`. The admin stays the React UI. The rest of this decision is unchanged.
+
 ## Context
 
 FastFrame is built on FastAPI. We must decide whether to introduce a Django-like view layer or expose FastAPI directly inside projects.

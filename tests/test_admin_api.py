@@ -40,6 +40,7 @@ class ApiBook(Model):
     )
     pages = fields.IntegerField(default=0)
     is_active = fields.BooleanField(default=True)
+    author_id = fields.ForeignKey(ApiAuthor, null=True, blank=True, on_delete="SET NULL")
 
     class Meta:
         db_table = "api_books"
@@ -54,7 +55,7 @@ class ApiAuthorAdmin(ModelAdmin):
 
 class ApiBookAdmin(ModelAdmin):
     list_display = ["title", "status", "pages"]
-    search_fields = ["title"]
+    search_fields = ["title", "author__name"]
     list_filter = ["status"]
 
 
@@ -230,6 +231,39 @@ def test_list_search(client, seeded):
     data = resp.json()
     assert data["total"] == 1
     assert data["data"][0]["title"] == "Book 3"
+
+
+def test_list_search_follows_a_relationship(client):
+    with session_scope():
+        alice = ApiAuthor.objects.create(name="Alice", email="alice@example.com")
+        ApiBook.objects.create(title="Matched", status="draft", author_id=alice.id)
+        ApiBook.objects.create(title="Other", status="draft")
+
+    resp = client.get("/api/admin/apibook?q=Alice")
+    data = resp.json()
+    assert data["total"] == 1
+    assert data["data"][0]["title"] == "Matched"
+
+
+def test_list_filter_boolean(client):
+    with session_scope():
+        ApiBook.objects.create(title="Off", status="draft", is_active=False)
+        ApiBook.objects.create(title="On", status="draft", is_active=True)
+
+    resp = client.get("/api/admin/apibook?is_active=false")
+    titles = [row["title"] for row in resp.json()["data"]]
+    assert titles == ["Off"]
+
+
+def test_schema_show_in_navigation(client):
+    ApiAuthorAdmin.show_in_navigation = False
+    try:
+        resp = client.get("/api/admin/schema")
+        models = {item["resource"]: item for item in resp.json()["models"]}
+        assert models["apiauthor"]["showInNavigation"] is False
+        assert models["apibook"]["showInNavigation"] is True
+    finally:
+        ApiAuthorAdmin.show_in_navigation = True
 
 
 def test_list_filter_by_field(client, seeded):

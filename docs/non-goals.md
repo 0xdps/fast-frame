@@ -45,6 +45,7 @@ Decided in [ADR 0012](adr/0012-background-jobs.md). These are not deferred.
 
 - Email. No mail backend, no `send_mail`. A project calls its own mail library.
 - Object storage, `FileField`, and `ImageField`. A project stores a path or URL on a normal field and uses its own file library.
+- Jinja templates, app static files, and `collectstatic`. A page is a FastAPI response. The admin is the React UI, and its compiled files stay in `fastframe/admin/static`. See the Addition on [ADR 0002](adr/0002-fastapi-as-http-layer.md).
 
 ## Deferred features (not rejected forever)
 
@@ -52,7 +53,7 @@ Decided in [ADR 0012](adr/0012-background-jobs.md). These are not deferred.
 | --- | --- |
 | Admin | Shipped as `fastframe.admin`. Still not part of core. The UI is the bundled Tailwind app, not React Admin — see the Addition on [ADR 0008](adr/0008-rest-api-react-admin.md) |
 | Auth | Shipped as `fastframe.contrib.auth`. Still not part of core |
-| Templates / static | Planned, not next. Phase 5, for app views only. The admin has no Jinja UI |
+| Templates / static | Out of scope. Not a later phase. The admin is the React UI |
 | Background jobs | Implemented. Opt in with `fastframe.tasks`. See [tasks.md](tasks.md) |
 | Signals | Still planned, later. Only if hooks and `ready()` are insufficient. Not part of the jobs app |
 | Caching | Proposed in [ADR 0013](adr/0013-caching.md). Not implemented. One cache, Redis by default, in-process for tests |

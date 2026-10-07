@@ -18,7 +18,6 @@ import { cn } from "./lib/cn";
 import { logout } from "./lib/client";
 import { initials, isUserModel, toneFor } from "./lib/format";
 
-const HIDDEN_FROM_SIDEBAR = new Set(["auditlog"]);
 
 function groupByApp(models: ModelSchema[]): Map<string, ModelSchema[]> {
   const grouped = new Map<string, ModelSchema[]>();
@@ -193,7 +192,7 @@ export function Shell() {
   }, [pathname, models, site.title]);
 
   const menuModels = useMemo(
-    () => models.filter((model) => !HIDDEN_FROM_SIDEBAR.has(model.resource)),
+    () => models.filter((model) => model.showInNavigation !== false),
     [models],
   );
   const grouped = useMemo(() => groupByApp(menuModels), [menuModels]);

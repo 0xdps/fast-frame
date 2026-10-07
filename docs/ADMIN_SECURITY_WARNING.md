@@ -125,10 +125,11 @@ who (`user_id`, `username`), what (`action`, `model_name`, `object_id`,
 create/delete, `{field: {"old", "new"}}` diff of only changed fields for
 update).
 
-- Read-only: registered with `admin_site` so it's browsable in the admin
-  UI, but `has_add_permission` / `has_change_permission` /
-  `has_delete_permission` are all `False` — it can't be edited or deleted
-  through either API.
+- Read-only in the admin. `show_in_navigation` is `False`, so it is not in
+  the sidebar. Overview links to it when the user can view it, and
+  `/admin/#/auditlog` still opens it. `has_add_permission` /
+  `has_change_permission` / `has_delete_permission` are all `False`, so it
+  can't be edited or deleted through either API.
 - Best-effort: a failure writing an audit entry never blocks or fails the
   action it's recording (`record_audit()` swallows its own exceptions).
 - Login/logout and failed-login attempts are **not** recorded — only

@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
-import type { ModelSchema } from "../api";
+import type { FieldSchema, ModelSchema } from "../api";
 import { useAdmin } from "../admin-state";
 import { Button } from "../components/ui/button";
 import { ConfirmDialog } from "../components/ui/dialog";
 import { Input } from "../components/ui/input";
-import { deleteRecords, listRecords } from "../lib/client";
+import { SelectField, type SelectOption } from "../components/ui/select";
+import { deleteRecords, fieldChoices, listRecords } from "../lib/client";
 import { cn } from "../lib/cn";
 import {
   fieldForColumn,
@@ -56,6 +57,116 @@ function RecordCell({
   );
 }
 
+function filterFields(model: ModelSchema): FieldSchema[] {
+  return model.listFilter
+    .map((name) => model.fields.find((field) => field.name === name))
+    .filter((field): field is FieldSchema => Boolean(field));
+}
+
+function ListFilterControl({
+  model,
+  field,
+  value,
+  onChange,
+}: {
+  model: ModelSchema;
+  field: FieldSchema;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [options, setOptions] = useState<SelectOption[]>([{ value: "", label: "All" }]);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (field.choices?.length) {
+      setOptions([
+        { value: "", label: "All" },
+        ...field.choices.map((choice) => ({ value: String(choice.value), label: choice.label })),
+      ]);
+      return;
+    }
+    if (field.type === "BooleanField") {
+      setOptions([
+        { value: "", label: "All" },
+        { value: "true", label: "Yes" },
+        { value: "false", label: "No" },
+      ]);
+      return;
+    }
+    if (!field.reference) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      fieldChoices(model.resource, field.name, query)
+        .then((next) => {
+          if (cancelled) return;
+          setOptions([
+            { value: "", label: "All" },
+            ...next.map((choice) => ({ value: String(choice.value), label: choice.label })),
+          ]);
+        })
+        .catch(() => {
+          if (!cancelled) setOptions([{ value: "", label: "All" }]);
+        });
+    }, 200);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [field, model.resource, query]);
+
+  if (field.choices?.length || field.type === "BooleanField" || field.reference) {
+    return (
+      <div className="w-48">
+        <SelectField
+          ariaLabel={`Filter by ${field.label}`}
+          value={value}
+          options={options}
+          searchable={Boolean(field.reference)}
+          query={query}
+          onQueryChange={setQuery}
+          onChange={onChange}
+        />
+      </div>
+    );
+  }
+
+  return <TextFilter label={field.label} value={value} onChange={onChange} />;
+}
+
+function TextFilter({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const [text, setText] = useState(value);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  useEffect(() => {
+    setText(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (text === value) return;
+    const timer = window.setTimeout(() => onChangeRef.current(text), 250);
+    return () => window.clearTimeout(timer);
+  }, [text, value]);
+
+  return (
+    <Input
+      value={text}
+      onChange={(event) => setText(event.target.value)}
+      placeholder={label}
+      aria-label={`Filter by ${label}`}
+      className="w-48"
+    />
+  );
+}
+
 export function ResourceList() {
   const { resource = "" } = useParams();
   const { models, refreshKey, refresh } = useAdmin();
@@ -70,6 +181,7 @@ export function ResourceList() {
   const [sortOrder, setSortOrder] = useState<"ASC" | "DESC">(initialSort.order);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [filters, setFilters] = useState<Record<string, string>>({});
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +199,7 @@ export function ResourceList() {
     setSortOrder(initialSort.order);
     setQuery("");
     setDebouncedQuery("");
+    setFilters({});
     setPagedQuery("");
     setSelected([]);
     setRows([]);
@@ -98,7 +211,8 @@ export function ResourceList() {
     setPage(1);
   }
 
-  const fetchKey = `${resource}|${page}|${perPage}|${sortField}|${sortOrder}|${debouncedQuery}|${refreshKey}`;
+  const filterKey = JSON.stringify(filters);
+  const fetchKey = `${resource}|${page}|${perPage}|${sortField}|${sortOrder}|${debouncedQuery}|${filterKey}|${refreshKey}`;
   const pending = Boolean(model) && loadedKey !== fetchKey;
 
   useEffect(() => {
@@ -116,6 +230,7 @@ export function ResourceList() {
       sortField,
       sortOrder,
       q: debouncedQuery || undefined,
+      filters,
     })
       .then((result) => {
         if (cancelled) return;
@@ -133,7 +248,7 @@ export function ResourceList() {
     return () => {
       cancelled = true;
     };
-  }, [model, scope, resource, page, perPage, sortField, sortOrder, debouncedQuery, refreshKey, fetchKey]);
+  }, [model, scope, resource, page, perPage, sortField, sortOrder, debouncedQuery, filters, refreshKey, fetchKey]);
 
   if (!model) {
     return <p className="p-6 text-sm text-muted-foreground">This model is not in the admin.</p>;
@@ -181,15 +296,31 @@ export function ResourceList() {
         ) : null}
       </div>
 
-      {model.searchFields.length ? (
-        <Input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder={`Search ${model.labelPlural.toLowerCase()}`}
-          aria-label={`Search ${model.labelPlural}`}
-          className="max-w-sm"
-        />
+      {model.searchFields.length || filterFields(model).length ? (
+        <div className="flex flex-wrap items-center gap-3">
+          {model.searchFields.length ? (
+            <Input
+              type="search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={`Search ${model.labelPlural.toLowerCase()}`}
+              aria-label={`Search ${model.labelPlural}`}
+              className="max-w-sm"
+            />
+          ) : null}
+          {filterFields(model).map((field) => (
+            <ListFilterControl
+              key={field.name}
+              model={model}
+              field={field}
+              value={filters[field.name] ?? ""}
+              onChange={(next) => {
+                setFilters((current) => ({ ...current, [field.name]: next }));
+                setPage(1);
+              }}
+            />
+          ))}
+        </div>
       ) : null}
 
       {error ? (

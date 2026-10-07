@@ -52,6 +52,7 @@ export interface ModelSchema {
   searchFields: string[];
   listFilter: string[];
   listPerPage: number;
+  showInNavigation: boolean;
   permissions: ModelPermissions;
 }
 

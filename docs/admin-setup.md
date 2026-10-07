@@ -170,30 +170,47 @@ myproject/
 
 ```python
 class ArticleAdmin(ModelAdmin):
-    # List page
-    list_display = ["title", "author", "published"]  # Columns to show
-    search_fields = ["title", "content"]             # Fields to search
-    list_filter = ["published", "author"]            # Filter sidebar
-    list_per_page = 50                               # Pagination
+    list_display = ["title", "author", "published"]
+    search_fields = ["title", "author__name"]
+    list_filter = ["published", "status"]
+    list_per_page = 25
+    show_in_navigation = True
+    fields = ["title", "content", "published"]
+    readonly_fields = ["created_at"]
 
-    # Permissions
     has_add_permission = True
     has_change_permission = True
     has_delete_permission = True
     has_view_permission = True
 
-    # Custom queryset
     def get_queryset(self, request):
         return super().get_queryset(request).filter(published=True)
 
-    # Custom search
     def get_search_results(self, qs, search_term):
         return qs.filter(title__icontains=search_term)
 
-    # Custom ordering
     def get_ordering(self):
         return ["-created_at", "title"]
 ```
+
+The list page shows `list_display` as columns. `search_fields` match with
+`icontains`. A name can follow a relationship, such as `"author__name"`.
+
+`list_filter` adds one control per field. A field with choices, a boolean,
+or a foreign key is a menu. Any other field matches the value you type,
+exactly. The list API also accepts those names as query parameters, for
+example `GET /api/admin/article?status=draft`.
+
+`list_per_page` defaults to 25.
+
+`show_in_navigation = False` leaves the model out of the sidebar. It stays
+registered, and a user who can view it can still open its URL. The audit
+log uses this. Overview still links to that log when the current user can
+view it.
+
+`fields` lists the form fields. `exclude` lists the ones to leave out. Set
+one of them, not both. `readonly_fields` stay on the form, and a create or
+update that tries to change them is rejected.
 
 ### Field Options for Admin
 
@@ -209,10 +226,7 @@ class Article(Model):
     title = fields.CharField(max_length=200, help_text="Article headline")
 
     # Choices appear as dropdowns
-    status = fields.CharField(
-        max_length=20,
-        choices=[("draft", "Draft"), ("published", "Published")]
-    )
+    status = fields.CharField(max_length=20, choices=[("draft", "Draft"), ("published", "Published")])
 ```
 
 ## Example: Blog App

@@ -35,28 +35,28 @@ class ModelAdmin:
     list_filter: list[str] = []  # Fields to filter by
     search_fields: list[str] = []  # Fields to search in
     ordering: list[str] | None = None  # Default ordering (uses model Meta if None)
-    
+
     # Pagination
-    list_per_page: int = 100  # Items per page
+    list_per_page: int = 25  # Items per page
     list_max_show_all: int = 200  # Max items for "show all" link
-    
+
     # Performance
     list_select_related: list[str] | None = None  # Auto-detect if None
     prefetch_related: list[str] = []  # M2M and reverse FKs to prefetch
-    
+
     # Form configuration
     fields: list[str] | None = None  # Fields to show in form (all if None)
     exclude: list[str] = []  # Fields to exclude from form
     readonly_fields: list[str] = []  # Read-only fields
-    
+
     # Detail view
     fieldsets: list[tuple[str | None, dict[str, Any]]] | None = None  # Grouped fields
-    
+
     # Actions
     actions: list[str] = []  # Bulk actions
     actions_on_top: bool = True
     actions_on_bottom: bool = False
-    
+
     # Permissions
     #
     # These four stay static booleans by default (same for every user) —
@@ -74,7 +74,11 @@ class ModelAdmin:
 
     #: Opt-in per model. See the permissions block above.
     enforce_permissions: bool = False
-    
+
+    #: When False, the model stays registered and reachable by URL, and is
+    #: left out of the sidebar.
+    show_in_navigation: bool = True
+
     # Safety features
     confirmation_required: list[str] = ["delete"]  # Actions requiring confirmation
     save_as: bool = False  # "Save as new" button
@@ -89,7 +93,9 @@ class ModelAdmin:
         """
         self.model = model
         self.admin_site = admin_site
-        
+        if self.fields is not None and self.exclude:
+            raise ValueError(f"{type(self).__name__} sets both fields and exclude. Use one of them.")
+
         # Auto-detect select_related if not specified
         if self.list_select_related is None:
             self.list_select_related = self._auto_detect_select_related()
@@ -102,7 +108,7 @@ class ModelAdmin:
         """
         if not hasattr(self.model, "_meta"):
             return []
-        
+
         select_related = []
         for field_name, field in self.model._meta.get("fields", {}).items():
             # Check if it's a ForeignKey
@@ -111,7 +117,7 @@ class ModelAdmin:
                 rel_name = getattr(field, "relationship_name", None)
                 if rel_name:
                     select_related.append(rel_name)
-        
+
         return select_related
 
     def get_list_display(self) -> list[str]:
@@ -134,20 +140,20 @@ class ModelAdmin:
             QuerySet for the model.
         """
         qs = self.model.objects.all()
-        
+
         # Apply select_related for performance
         if self.list_select_related:
             # Note: Our current QuerySet doesn't have select_related yet
             # This is a placeholder for future implementation
             pass
-        
+
         # Apply ordering
         ordering = self.get_ordering()
         if ordering:
             # Note: Our current QuerySet doesn't have order_by yet
             # Uses model Meta ordering for now
             pass
-        
+
         return qs
 
     def get_ordering(self) -> list[str]:
@@ -173,22 +179,22 @@ class ModelAdmin:
         """
         if not search_term or not self.search_fields:
             return queryset
-        
+
         # Build Q object for OR search across search_fields
         from fastframe.models import Q
-        
+
         q_objects = []
         for field in self.search_fields:
             # Use icontains for case-insensitive partial match
             q_objects.append(Q(**{f"{field}__icontains": search_term}))
-        
+
         # Combine with OR
         if q_objects:
             combined_q = q_objects[0]
             for q in q_objects[1:]:
                 combined_q = combined_q | q
             queryset = queryset.filter(combined_q)
-        
+
         return queryset
 
     # ------------------------------------------------------------------
@@ -233,9 +239,7 @@ class ModelAdmin:
         # Auto PK is never writable on create either way (handled upstream
         # in deserialize_payload); nothing extra to do for that here.
         return {
-            key: value
-            for key, value in cleaned.items()
-            if (allowed is None or key in allowed) and key not in blocked
+            key: value for key, value in cleaned.items() if (allowed is None or key in allowed) and key not in blocked
         }
 
 

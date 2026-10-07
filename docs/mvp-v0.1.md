@@ -9,7 +9,7 @@ This file records the **original first-release cut**. It is not a description of
 | FastAPI, project and app scaffold, settings, routing, models, migrations, shell, runserver, tests | Shipped |
 | Admin, authentication, permissions, token REST API, audit log | Shipped. Opt in with `INSTALLED_APPS`. A new project includes `fastframe.health` only |
 | `Q()`, `F()`, eager loading, bulk operations, `atomic()` | Shipped. The original cut below listed a full queryset algebra as out of scope |
-| Templates, static files | Next unbuilt work. Phase 5, for app views. The admin has no Jinja UI |
+| Templates, static files | Out of scope. Not a later phase. The admin is the React UI |
 | Background jobs | Implemented. Opt in with `fastframe.tasks`. [tasks.md](tasks.md) |
 | App `manage.py` commands | Implemented. `<app>/management/commands/<name>.py`. See [cli.md](cli.md#app-commands) |
 | Caching | Proposed in [ADR 0013](adr/0013-caching.md). Not implemented |
