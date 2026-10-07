@@ -11,11 +11,13 @@ release is **0.1.3**. Commit messages that say `v0.2.0`, `v0.3.0`, or
 Fixes bump the patch version and a new feature bumps the minor version.
 Background jobs are implemented on trunk
 ([ADR 0012](adr/0012-background-jobs.md), [tasks.md](tasks.md)) and are not
-in the 0.1.3 release. Installed apps can add `manage.py` commands. The next
-unbuilt work is templates and static files. Caching is proposed in
-[ADR 0013](adr/0013-caching.md) and is not implemented. Signals stay planned
-and come later. Email and object storage are out of scope, not a
-later phase. Work listed under `[Unreleased]` in the changelog is on trunk
+in the 0.1.3 release. Installed apps can add `manage.py` commands. Jinja
+templates, app static files, and `collectstatic` are out of scope. Caching
+is proposed in [ADR 0013](adr/0013-caching.md) and is not implemented. The
+admin list slice in [ADR 0014](adr/0014-admin-configuration.md) is
+implemented. Fieldsets, actions, and inlines are still planned.
+Signals stay planned and come later. Email and object storage are out of
+scope, not a later phase. Work listed under `[Unreleased]` in the changelog is on trunk
 and is not in 0.1.3 yet.
 
 | Phase | Theme | Status |
@@ -25,7 +27,7 @@ and is not in 0.1.3 yet.
 | Phase 3 | Admin, relationships, session auth | ✅ Shipped (0.1.x) |
 | Phase 4 | Harden auth & authorization | ✅ Shipped (0.1.x) |
 | Phase 4.5 | App registry for batteries + richer ORM | ✅ Shipped (0.1.x) |
-| Phase 5 | Templates and static files | 🔜 Next |
+| Phase 5 | Templates and static files | ❌ Out of scope |
 | Phase 6 | Background jobs | ✅ Implemented (unreleased) |
 | Later | Caching | 📋 Proposed ([ADR 0013](adr/0013-caching.md)) |
 | Later | Signals, observability | 📋 Planned |
@@ -124,12 +126,9 @@ for the up-to-date list of what's still open.
   instead of trying to create a literal directory named that at the
   project root.
 
-## Phase 5 — Templates and static files 🔜
+## Phase 5 — Templates and static files ❌
 
-- Jinja2 templates and discovery for app-defined views
-- Static file handling and `collectstatic` for production
-
-The admin is not part of this phase. It stays the bundled React UI. There is no Jinja admin.
+Out of scope. FastFrame will not ship Jinja templates, discovery for HTML views, app static files, or `collectstatic`. A page is a FastAPI response. The admin stays the bundled React UI, and its compiled files stay in `fastframe/admin/static`. See the Addition on [ADR 0002](adr/0002-fastapi-as-http-layer.md).
 
 ## Phase 6 — Background jobs ✅
 
@@ -139,10 +138,14 @@ FastFrame does not wrap Celery and does not keep a second queue in the database.
 
 Email and object storage are not a phase. FastFrame will not ship them, and it will not ship `FileField` or `ImageField`. Caching, signals, and observability helpers stay planned. They are later than this phase, and they are not part of `fastframe.tasks`. Installed apps register `manage.py` commands on their own. See [cli.md](cli.md#app-commands).
 
+## Admin configuration 📋
+
+[ADR 0014](adr/0014-admin-configuration.md). Not a new phase. The list slice is implemented: `list_filter` controls, `search_fields` such as `"movie__title"`, `list_per_page` defaulting to 25, rejecting both `fields` and `exclude`, and `show_in_navigation = False`. Fieldsets, custom bulk actions, and inlines come next. Quick Access, recently viewed, and global search stay site behavior. The activity log and relationship links already ship.
+
 ## Caching 📋
 
-Proposed in [ADR 0013](adr/0013-caching.md). Not implemented. Optional app `fastframe.cache`. One cache object: `get`, `set`, `add`, `delete`, `get_or_set`, and `clear`. Values are JSON. The default store is Redis at `redis://localhost:6379/1`, separate from Celery's broker database. `locmem://` is an in-process store for tests. `clear` deletes the project's key prefix only. This does not move the work ahead of templates.
+Proposed in [ADR 0013](adr/0013-caching.md). Not implemented. Optional app `fastframe.cache`. One cache object: `get`, `set`, `add`, `delete`, `get_or_set`, and `clear`. Values are JSON. The default store is Redis at `redis://localhost:6379/1`, separate from Celery's broker database. `locmem://` is an in-process store for tests. `clear` deletes the project's key prefix only.
 
 ## Phase 7 — Production-ready platform 📋
 
-Stable public API, migration story, documentation, and operational commands (`check --deploy`, `migrate`, `collectstatic`) that teams trust for production.
+Stable public API, migration story, documentation, and operational commands (`check --deploy`, `migrate`) that teams trust for production.

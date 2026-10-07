@@ -14,12 +14,20 @@ feature bumps the minor version.
 
 ### Changed
 
+- Jinja templates, app static files, and `collectstatic` are out of scope.
+  The admin stays the React UI. See the Addition on
+  [ADR 0002](docs/adr/0002-fastapi-as-http-layer.md).
+- The admin list slice in [ADR 0014](docs/adr/0014-admin-configuration.md)
+  is implemented. The list page shows `list_filter` controls. `search_fields`
+  can follow a relationship. `list_per_page` defaults to 25. Setting both
+  `fields` and `exclude` is rejected. `show_in_navigation = False` hides a
+  model from the sidebar. Fieldsets, custom actions, and inlines are still
+  planned.
 - Caching is proposed in [ADR 0013](docs/adr/0013-caching.md): an optional
   `fastframe.cache` app, Redis by default, an in-process backend for tests.
   It is not implemented.
-- The admin has no Jinja UI, and Phase 5 will not add one. Templates in
-  that phase are for app views. ADR 0007 no longer lists the admin as the
-  first Jinja consumer.
+- The admin has no Jinja UI. ADR 0007 no longer lists the admin as the
+  first Jinja consumer. App-view templates are out of scope too.
 - Docs describe the 0.1.3 tree. ADR 0007 and ADR 0008 keep their original
   decisions and add a note on later moves: SSR was dropped, then the
   bundled admin left React Admin for the Tailwind UI.

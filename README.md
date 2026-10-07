@@ -50,11 +50,13 @@ create/update/delete, `get_or_create()`/`update_or_create()`,
 transaction helper — see [docs/orm-features.md](docs/orm-features.md).
 
 Background jobs are an optional Celery app
-([docs/tasks.md](docs/tasks.md)). See [docs/roadmap.md](docs/roadmap.md)
-for what's next: templates and static files. Caching is proposed in
-[docs/adr/0013-caching.md](docs/adr/0013-caching.md). Signals stay
-planned for later. An installed app can add `manage.py` commands. Email
-and object storage are out of scope.
+([docs/tasks.md](docs/tasks.md)). See [docs/roadmap.md](docs/roadmap.md).
+Caching is proposed in
+[docs/adr/0013-caching.md](docs/adr/0013-caching.md). The admin list slice in
+[docs/adr/0014-admin-configuration.md](docs/adr/0014-admin-configuration.md)
+is implemented. Fieldsets, actions, and inlines are still planned.
+Signals stay planned for later. An installed app can add `manage.py`
+commands. Email, object storage, and Jinja templates are out of scope.
 [docs/mvp-v0.1.md](docs/mvp-v0.1.md) is the original first-release cut, not
 the current product.
 
@@ -65,7 +67,7 @@ the current product.
 | `manage.py`-style project workflow | Django-style views or URL dispatch |
 | Apps, settings, and extension hooks | A full query-algebra ORM (no `annotate()`, no subquery/window functions) |
 | Rich-enough model helpers: `filter`/`Q`/`F`, eager loading, bulk ops, `values()`, `atomic()`, … (see [docs/orm-features.md](docs/orm-features.md)) | Hiding SQLAlchemy for complex queries — it's always one import away |
-| Migrations (Alembic, convention-driven) | Templates and static files (planned), email, object storage, `FileField` |
+| Migrations (Alembic, convention-driven) | Jinja templates, app static files, email, object storage, `FileField` |
 | Shell, runserver, test integration | Replacing FastAPI routing or Pydantic |
 | Admin, general auth, REST API — opt-in via `INSTALLED_APPS` | CSRF tokens beyond `SameSite=Lax`, per-object permissions |
 | Opt-in, per-model permissions (`ModelAdmin.enforce_permissions`) | `ManyToManyField(through=...)` (deferred) |

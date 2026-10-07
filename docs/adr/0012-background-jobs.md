@@ -12,6 +12,10 @@ Accepted. Implemented. See [tasks.md](../tasks.md).
 
 The consequence that leaves a custom management-command loader planned is done. Installed apps register `manage.py` commands under `<app>/management/commands/<name>.py`. That loader is not part of `fastframe.tasks`. Caching and signals stay planned.
 
+## Addition (2026-10-07)
+
+The consequence that leaves templates and static files planned is withdrawn. FastFrame will not ship them. See the Addition on [ADR 0002](0002-fastapi-as-http-layer.md).
+
 ## Context
 
 Phases 1 through 4.5 shipped the project loop, admin, auth, and the token API. The old Phase 6 list bundled background tasks with email, caching, and storage (`FileField` / `ImageField`).

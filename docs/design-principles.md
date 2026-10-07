@@ -14,7 +14,7 @@ Advanced configuration comes later; the first path stays simple.
 
 ## 2. Batteries included, not batteries forced
 
-FastFrame provides first-party solutions (models, migrations, shell, CLI) without requiring every app to use admin, templates, sessions, auth, or static files.
+FastFrame provides first-party solutions (models, migrations, shell, CLI) without requiring every app to use admin, sessions, or auth.
 
 Optional capabilities should plug in as **apps** or **components**, not as mandatory core.
 
@@ -46,7 +46,7 @@ Eventually support a clear path:
 development → testing → staging → production
 ```
 
-Examples: `check --deploy`, migrate, collectstatic (when static files exist). Deployment remains conventional (Docker, K8s, VMs, managed ASGI) — not a bundled cloud platform in v0.1.
+Examples: `check --deploy` and migrate. Deployment remains conventional (Docker, K8s, VMs, managed ASGI) — not a bundled cloud platform in v0.1.
 
 ## 7. Composable architecture
 
@@ -60,4 +60,4 @@ Do **not** rebrand FastAPI routers or SQLAlchemy query APIs without a proven, re
 
 ## 9. Extensibility over feature cloning
 
-Copy Django's **extension model** (installed apps, hooks, commands), not every built-in feature. Admin, auth, and templates can arrive as optional apps once the contract is stable.
+Copy Django's **extension model** (installed apps, hooks, commands), not every built-in feature. Admin and auth ship as optional apps. Jinja templates do not.

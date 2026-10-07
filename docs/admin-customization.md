@@ -30,6 +30,21 @@ sidebar.
 
 See [ADR 0011](adr/0011-admin-sidebar-stays-expanded.md).
 
+`show_in_navigation = False` on a `ModelAdmin` leaves that model out of the
+sidebar. The model stays registered, and its URL still opens for a user
+who can view it. The audit log is hidden this way. Overview still links
+to it when the current user can view `AuditLog`.
+
+## List page
+
+The list searches `search_fields`, including a related field such as
+`"author__name"`. Each name in `list_filter` is a control above the
+table. Choices, booleans, and foreign keys are menus. Other fields match
+the typed value exactly. The page size is `list_per_page`, which defaults
+to 25. Checkboxes on the rows delete the selection.
+
+See [admin-setup.md](admin-setup.md#modeladmin-options).
+
 ## Record page
 
 Opening a record shows the same form with every field disabled, so the
@@ -50,7 +65,7 @@ each related record; they stay read-only.
 | --- | --- |
 | `src/shell.tsx` | Sidebar and top bar. The sidebar stays expanded; see [Sidebar](#sidebar). |
 | `src/pages/overview.tsx` | The Overview page: a short greeting and recent activity when the current user can view `AuditLog`. |
-| `src/pages/resource-list.tsx` | Schema-driven list: search, sort, pagination, bulk delete. |
+| `src/pages/resource-list.tsx` | Schema-driven list: search, `list_filter` controls, sort, pagination, bulk delete. |
 | `src/pages/resource-form.tsx` | Schema-driven create and record pages, including the user profile and change-password panel. |
 | `src/admin-state.ts` | Theme and refresh. Dark mode is a `data-theme` attribute on `<html>`. |
 | `src/currentUser.ts` | `useCurrentUser()` — fetches `GET /me` for the user menu. |

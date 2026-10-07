@@ -83,6 +83,7 @@ export async function listRecords(
     sortField: string;
     sortOrder: "ASC" | "DESC";
     q?: string;
+    filters?: Record<string, string>;
   },
 ): Promise<ListResult> {
   const query = new URLSearchParams({
@@ -92,6 +93,9 @@ export async function listRecords(
     sortOrder: params.sortOrder,
   });
   if (params.q) query.set("q", params.q);
+  for (const [key, value] of Object.entries(params.filters ?? {})) {
+    if (value) query.set(key, value);
+  }
   const json = await http<Envelope<Record<string, unknown>[]>>(`${API_URL}/${resource}?${query}`);
   return { data: json.data, total: json.total ?? json.data.length };
 }

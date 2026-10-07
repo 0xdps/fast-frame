@@ -227,9 +227,14 @@ def _build_crud_router(
         if q:
             qs = model_admin.get_search_results(qs, q)
 
-        # Field filters: any query param matching a field (supports __lookups)
+        # Field filters: any query param matching a field (supports __lookups).
+        # The list page only offers the fields named in list_filter.
         reserved = {"page", "perPage", "sortField", "sortOrder", "q"}
-        filter_kwargs = {key: value for key, value in request.query_params.items() if key not in reserved}
+        filter_kwargs = {
+            key: _coerce_filter_value(model, key, value)
+            for key, value in request.query_params.items()
+            if key not in reserved and value != ""
+        }
         if filter_kwargs:
             qs = qs.filter(**filter_kwargs)
 
@@ -632,6 +637,30 @@ def _resource_counts(session: Any, registry: dict[type, Any], current_user: Any,
             counts[str(resource)] = int(total)
 
     return counts
+
+
+def _coerce_filter_value(model: type, key: str, raw: str) -> Any:
+    """Turn a query-string filter into a value the column can compare.
+
+    Relationship paths are left as strings. The ORM walks those.
+    """
+    if "__" in key:
+        return raw
+    field = model._meta["fields"].get(key)
+    if field is None:
+        return raw
+    kind = field.__class__.__name__
+    if kind == "BooleanField":
+        lowered = raw.lower()
+        if lowered in {"1", "true", "yes"}:
+            return True
+        if lowered in {"0", "false", "no"}:
+            return False
+        return raw
+    if kind in {"IntegerField", "BigIntegerField", "SmallIntegerField", "AutoField", "BigAutoField", "ForeignKey"}:
+        if raw.lstrip("-").isdigit():
+            return int(raw)
+    return raw
 
 
 def _find_resource(resource: str) -> tuple[type, Any]:

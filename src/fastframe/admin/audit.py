@@ -45,10 +45,7 @@ class AuditLog(Model):
     object_repr = fields.CharField(max_length=255, blank=True, default="")
     changes = fields.JSONField(
         default=dict,
-        help_text=(
-            "create/delete: {'fields': {...}} snapshot. "
-            "update: {field: {'old': ..., 'new': ...}} diff."
-        ),
+        help_text=("create/delete: {'fields': {...}} snapshot. update: {field: {'old': ..., 'new': ...}} diff."),
     )
     created_at = fields.DateTimeField(auto_now_add=True)
 
@@ -75,6 +72,7 @@ class AuditLogAdmin(ModelAdmin):
     has_add_permission = False
     has_change_permission = False
     has_delete_permission = False
+    show_in_navigation = False
 
 
 admin_site.register(AuditLog, AuditLogAdmin)

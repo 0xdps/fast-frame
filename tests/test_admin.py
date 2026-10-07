@@ -46,7 +46,17 @@ def test_model_admin_init():
 
     assert admin.model == AdminTestModel
     assert admin.admin_site == admin_site
-    assert admin.list_per_page == 100
+    assert admin.list_per_page == 25
+    assert admin.show_in_navigation is True
+
+
+def test_fields_and_exclude_cannot_both_be_set():
+    class Both(ModelAdmin):
+        fields = ["name"]
+        exclude = ["email"]
+
+    with pytest.raises(ValueError, match="both fields and exclude"):
+        Both(model=AdminTestModel, admin_site=admin_site)
 
 
 def test_admin_site_register():

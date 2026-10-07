@@ -69,7 +69,7 @@ class QuerySet(Generic[T]):
             - isnull: field is NULL
             - startswith, istartswith, endswith, iendswith: string matching
         """
-        from fastframe.models.query import Q, _apply_lookup, resolve_value
+        from fastframe.models.query import Q, lookup_expr, resolve_value
 
         clone = self._clone()
 
@@ -78,17 +78,8 @@ class QuerySet(Generic[T]):
             if isinstance(q_obj, Q):
                 clone._stmt = clone._stmt.where(q_obj.to_sqlalchemy(self.model_class))
 
-        # Handle field lookups
         for key, value in kwargs.items():
-            value = resolve_value(value, self.model_class)
-            if "__" in key:
-                # Field lookup like "age__gte"
-                field_name, lookup = key.rsplit("__", 1)
-                column = getattr(self.model_class, field_name)
-                clone._stmt = clone._stmt.where(_apply_lookup(column, lookup, value))
-            else:
-                # Simple equality
-                clone._stmt = clone._stmt.where(getattr(self.model_class, key) == value)
+            clone._stmt = clone._stmt.where(lookup_expr(self.model_class, key, resolve_value(value, self.model_class)))
 
         return clone
 
@@ -104,7 +95,7 @@ class QuerySet(Generic[T]):
 
     def order_by(self, *fields: str) -> QuerySet[T]:
         """Order by one or more fields. Prefix with '-' for descending.
-        
+
         Example: .order_by('-created_at', 'id')
         """
         clone = self._clone()
@@ -134,9 +125,7 @@ class QuerySet(Generic[T]):
 
         clone = self._clone()
         for field in fields:
-            clone._stmt = clone._stmt.options(_chained_load_option(
-                self.model_class, field, joinedload
-            ))
+            clone._stmt = clone._stmt.options(_chained_load_option(self.model_class, field, joinedload))
         return clone
 
     def prefetch_related(self, *fields: str) -> QuerySet[T]:
@@ -156,9 +145,7 @@ class QuerySet(Generic[T]):
 
         clone = self._clone()
         for field in fields:
-            clone._stmt = clone._stmt.options(_chained_load_option(
-                self.model_class, field, selectinload
-            ))
+            clone._stmt = clone._stmt.options(_chained_load_option(self.model_class, field, selectinload))
         return clone
 
     def only(self, *fields: str) -> QuerySet[T]:
@@ -329,9 +316,7 @@ class ValuesQuerySet:
     pairs) or want plain, JSON-serializable dicts.
     """
 
-    def __init__(
-        self, queryset: QuerySet[Any], fields: tuple[str, ...], *, flat: bool, as_tuple: bool
-    ) -> None:
+    def __init__(self, queryset: QuerySet[Any], fields: tuple[str, ...], *, flat: bool, as_tuple: bool) -> None:
         self._queryset = queryset
         self._fields = fields
         self._flat = flat
@@ -446,9 +431,7 @@ class Manager(Generic[T]):
         self.session.flush()
         return instance
 
-    def get_or_create(
-        self, defaults: dict[str, Any] | None = None, **kwargs: Any
-    ) -> tuple[T, bool]:
+    def get_or_create(self, defaults: dict[str, Any] | None = None, **kwargs: Any) -> tuple[T, bool]:
         """Look up an object matching ``kwargs``; create it if missing.
 
         ``defaults`` supplies extra fields used only when creating (not
@@ -465,9 +448,7 @@ class Manager(Generic[T]):
         except DoesNotExist:
             return self.create(**kwargs, **(defaults or {})), True
 
-    def update_or_create(
-        self, defaults: dict[str, Any] | None = None, **kwargs: Any
-    ) -> tuple[T, bool]:
+    def update_or_create(self, defaults: dict[str, Any] | None = None, **kwargs: Any) -> tuple[T, bool]:
         """Look up an object matching ``kwargs``; update it with
         ``defaults`` if found, else create it (with ``kwargs`` + ``defaults``).
 
@@ -513,18 +494,14 @@ class Manager(Generic[T]):
         if not objects:
             return []
         chunks = (
-            [objects]
-            if not batch_size
-            else [objects[i : i + batch_size] for i in range(0, len(objects), batch_size)]
+            [objects] if not batch_size else [objects[i : i + batch_size] for i in range(0, len(objects), batch_size)]
         )
         for chunk in chunks:
             self.session.add_all(chunk)
             self.session.flush()
         return objects
 
-    def bulk_update(
-        self, objects: list[T], fields: list[str], batch_size: int | None = None
-    ) -> int:
+    def bulk_update(self, objects: list[T], fields: list[str], batch_size: int | None = None) -> int:
         """Update specific fields on many existing objects in as few
         round-trips as possible.
 
@@ -555,9 +532,7 @@ class Manager(Generic[T]):
         pk_name = pk_columns[0].name
 
         chunks = (
-            [objects]
-            if not batch_size
-            else [objects[i : i + batch_size] for i in range(0, len(objects), batch_size)]
+            [objects] if not batch_size else [objects[i : i + batch_size] for i in range(0, len(objects), batch_size)]
         )
         stmt = sa_update(self.model_class)
         # no_autoflush: otherwise any *other* pending change on these (or
@@ -566,10 +541,7 @@ class Manager(Generic[T]):
         # before our own statement even runs.
         with self.session.no_autoflush:
             for chunk in chunks:
-                params = [
-                    {pk_name: getattr(obj, pk_name), **{f: getattr(obj, f) for f in fields}}
-                    for obj in chunk
-                ]
+                params = [{pk_name: getattr(obj, pk_name), **{f: getattr(obj, f) for f in fields}} for obj in chunk]
                 self.session.execute(stmt, params)
                 for obj in chunk:
                     self.session.expire(obj)

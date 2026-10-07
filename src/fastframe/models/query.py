@@ -56,18 +56,10 @@ class Q:
         """Convert Q object to SQLAlchemy filter expression."""
         # Base case: simple field=value conditions
         if self.conditions and not self.children:
-            filters = []
-            for key, value in self.conditions.items():
-                value = resolve_value(value, model_class)
-                # Parse field lookups like "age__gte"
-                if "__" in key:
-                    field_name, lookup = key.rsplit("__", 1)
-                    column = getattr(model_class, field_name)
-                    filters.append(_apply_lookup(column, lookup, value))
-                else:
-                    column = getattr(model_class, key)
-                    filters.append(column == value)
-
+            filters = [
+                lookup_expr(model_class, key, resolve_value(value, model_class))
+                for key, value in self.conditions.items()
+            ]
             expr = and_(*filters) if len(filters) > 1 else filters[0]
             return not_(expr) if self.negated else expr
 
@@ -141,16 +133,8 @@ class FExpression:
 
     def resolve(self, model_class: type) -> ColumnElement[Any]:
         """Resolve to SQLAlchemy expression."""
-        left_col = (
-            self.left.resolve(model_class)
-            if isinstance(self.left, (F, FExpression))
-            else self.left
-        )
-        right_col = (
-            self.right.resolve(model_class)
-            if isinstance(self.right, (F, FExpression))
-            else self.right
-        )
+        left_col = self.left.resolve(model_class) if isinstance(self.left, (F, FExpression)) else self.left
+        right_col = self.right.resolve(model_class) if isinstance(self.right, (F, FExpression)) else self.right
 
         if self.op == "+":
             return left_col + right_col
@@ -177,6 +161,62 @@ def resolve_value(value: Any, model_class: type) -> Any:
     if isinstance(value, (F, FExpression)):
         return value.resolve(model_class)
     return value
+
+
+_LOOKUPS = frozenset(
+    {
+        "exact",
+        "iexact",
+        "contains",
+        "icontains",
+        "gt",
+        "gte",
+        "lt",
+        "lte",
+        "in",
+        "isnull",
+        "startswith",
+        "istartswith",
+        "endswith",
+        "iendswith",
+    }
+)
+
+
+def lookup_expr(model_class: type, key: str, value: Any) -> ColumnElement[bool]:
+    """Turn ``name__icontains`` or ``author__name__icontains`` into a SQL expression.
+
+    A path walks relationships. ``author__name`` filters the related ``name``
+    column. The last segment is a lookup when it is one of the names
+    ``_apply_lookup`` understands. Otherwise the comparison is equality.
+    """
+    parts = key.split("__")
+    lookup = "exact"
+    if len(parts) > 1 and parts[-1] in _LOOKUPS:
+        lookup = parts[-1]
+        parts = parts[:-1]
+    return _path_expr(model_class, parts, lookup, value)
+
+
+def _path_expr(model_class: type, parts: list[str], lookup: str, value: Any) -> ColumnElement[bool]:
+    from sqlalchemy.orm import RelationshipProperty
+
+    if not parts:
+        raise ValueError("Empty filter path")
+    name, *rest = parts
+    attr = getattr(model_class, name)
+    prop = getattr(attr, "property", None)
+    if isinstance(prop, RelationshipProperty):
+        if not rest:
+            raise ValueError(f"Filter {name!r} needs a field on the related model")
+        target = prop.mapper.class_
+        inner = _path_expr(target, rest, lookup, value)
+        if prop.uselist:
+            return attr.any(inner)
+        return attr.has(inner)
+    if rest:
+        raise ValueError(f"Unknown lookup path: {'__'.join(parts)}")
+    return _apply_lookup(attr, lookup, value)
 
 
 def _apply_lookup(column: ColumnElement[Any], lookup: str, value: Any) -> ColumnElement[bool]:
@@ -224,4 +264,4 @@ def _apply_lookup(column: ColumnElement[Any], lookup: str, value: Any) -> Column
         raise ValueError(f"Unknown lookup: {lookup}")
 
 
-__all__ = ["F", "FExpression", "Q", "resolve_value"]
+__all__ = ["F", "FExpression", "Q", "lookup_expr", "resolve_value"]

@@ -324,6 +324,7 @@ def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) 
         result["searchFields"] = model_admin.search_fields
         result["listFilter"] = model_admin.list_filter
         result["listPerPage"] = model_admin.list_per_page
+        result["showInNavigation"] = bool(model_admin.show_in_navigation)
         result["permissions"] = {
             "create": model_admin.get_has_add_permission(user),
             "edit": model_admin.get_has_change_permission(user),

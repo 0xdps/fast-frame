@@ -4,6 +4,10 @@
 
 Proposed. Not implemented.
 
+## Addition (2026-10-07)
+
+Templates are out of scope, including template fragment caching. See the Addition on [ADR 0002](0002-fastapi-as-http-layer.md). This proposal is not waiting on them.
+
 ## Context
 
 Background jobs ([ADR 0012](0012-background-jobs.md)) and app `manage.py` commands are in place. Templates and static files are still the next unbuilt product phase. Caching was left on the later list, next to signals and observability, with no shape of its own.
@@ -63,7 +67,7 @@ There is no second named cache, no `incr`, and no cache version field. Changing 
 ### Out of scope
 
 - HTTP cache headers and a view decorator.
-- Template fragment caching. Templates are a separate phase.
+- Template fragment caching. FastFrame will not ship templates.
 - Caching query results inside the ORM.
 - Moving the login rate limiter onto this cache.
 - Memcached, a database table, or a file backend.

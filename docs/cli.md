@@ -219,4 +219,3 @@ A command name that matches a built-in command, or the same name from two instal
 ## Future
 
 - `check --deploy`
-- `collectstatic` when static files exist
