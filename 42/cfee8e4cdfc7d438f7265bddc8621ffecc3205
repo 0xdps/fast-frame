@@ -1,0 +1,127 @@
+docs/adr/0014-admin-configuration.md
+  s_8de26d66febf8a::t_bb9abf333cc145 5,8-9
+  s_8de26d66febf8a::t_869c93476a5cee 82
+  s_8de26d66febf8a::t_f9ac57c88a5000 6-7,10-11
+  s_8de26d66febf8a::t_2a632dad257974 1-4,12-81
+docs/roadmap.md
+  s_8de26d66febf8a::t_83aa1719aa732c 30
+  s_8de26d66febf8a::t_db3362e77e9b8e 16-18
+  s_8de26d66febf8a::t_2dcc9fd7b44e5b 129,131
+  s_8de26d66febf8a::t_bb43ca09fa1f07 151
+  s_8de26d66febf8a::t_f799a4cdd42da9 14-15,19-20
+  s_8de26d66febf8a::t_aa9370addbb6f2 147
+  s_8de26d66febf8a::t_fc3cdcf08f42f6 141-142,144
+  s_8de26d66febf8a::t_a8febb77a6333d 143
+docs/adr/0002-fastapi-as-http-layer.md
+  s_8de26d66febf8a::t_b2fc14b37bcc09 7-10
+src/fastframe/admin/site.py
+  s_8de26d66febf8a::t_9fc36ab5d8243d 40
+  s_8de26d66febf8a::t_7101ab46bad481 96-98
+  s_8de26d66febf8a::t_2115b9149569d5 77-80
+  s_8de26d66febf8a::t_13ea785bf04fbc 38,42,46,51,54,59,81,111,120,143,149,156,182,185,190,197,242
+src/fastframe/admin/api.py
+  s_8de26d66febf8a::t_424e3d9932563c 230-231,233-237
+  s_8de26d66febf8a::t_f7925c9a786bda 642-665
+CHANGELOG.md
+  s_8de26d66febf8a::t_d43642ef566e7d 29-30
+  s_8de26d66febf8a::t_6ccfbbd6d307da 20-25
+  s_8de26d66febf8a::t_05d443b6eb9bc4 17-19
+README.md
+  s_8de26d66febf8a::t_6d3f7cbebf400c 53
+  s_8de26d66febf8a::t_d006839a5cad72 55-57
+  s_8de26d66febf8a::t_25ab856c543c32 54,58-59
+  s_8de26d66febf8a::t_375c6035428c23 70
+src/fastframe/models/manager.py
+  s_8de26d66febf8a::t_2d51cb1920cf14 82
+  s_8de26d66febf8a::t_2679722c23896d 72
+  s_8de26d66febf8a::t_a869e7533fe1c7 98,128,148,319,434,451,497,504,535,544
+docs/ADMIN_SECURITY_WARNING.md
+  s_8de26d66febf8a::t_0035dbf0db3b77 128-132
+src/fastframe/admin/static/assets/index-S5NrXjjD.js
+  s_8de26d66febf8a::t_2a385723eb2ce1 1-53
+tests/test_admin.py
+  s_8de26d66febf8a::t_32633d71e0c611 49-59
+src/fastframe/admin/templates/admin-ui/src/lib/client.ts
+  s_8de26d66febf8a::t_626c526f1a737d 86,96-98
+tests/test_admin_api.py
+  s_8de26d66febf8a::t_e1da2b24031e30 43
+  s_8de26d66febf8a::t_558e828de05e7e 58
+  s_8de26d66febf8a::t_68758fe6fea47f 236-268
+docs/adr/0007-ssr-for-admin-v0-3.md
+  s_8de26d66febf8a::t_3782e6ae6c2a8a 17-20
+docs/adr/0012-background-jobs.md
+  s_8de26d66febf8a::t_5f9cb2c2d36cc3 15-18
+docs/adr/0005-extensibility-via-installed-apps.md
+  s_8de26d66febf8a::t_01d455c6cef17b 15-18
+docs/adr/0013-caching.md
+  s_8de26d66febf8a::t_cf59ca3f5aff98 7-10
+  s_8de26d66febf8a::t_dc6afbda54da20 70
+src/fastframe/admin/serializers.py
+  s_8de26d66febf8a::t_9c2c067cddb944 327
+src/fastframe/admin/audit.py
+  s_8de26d66febf8a::t_b5694c52691be3 75
+  s_8de26d66febf8a::t_c54392c29be1cc 48
+src/fastframe/admin/templates/admin-ui/src/pages/resource-list.tsx
+  s_8de26d66febf8a::t_da5a34cb939ade 146
+  s_8de26d66febf8a::t_77977b3aa8ffe8 4,9-10
+  s_8de26d66febf8a::t_9d70d318d66fca 214-215
+  s_8de26d66febf8a::t_ecec123da79b40 184
+  s_8de26d66febf8a::t_698dc96c3afad0 133-145,147-158,161-164
+  s_8de26d66febf8a::t_c87f13b27b6fe0 1
+  s_8de26d66febf8a::t_1574cf92bb89da 233
+  s_8de26d66febf8a::t_a748c45d988944 251
+  s_8de26d66febf8a::t_c93264e3dd7fb6 202
+  s_8de26d66febf8a::t_d4b9cd090e6a06 60-132,159-160,165-169
+  s_8de26d66febf8a::t_bfb24d7dc38a36 299-323
+src/fastframe/admin/templates/admin-ui/src/shell.tsx
+  s_8de26d66febf8a::t_ef77fca3c7b3d6 195
+docs/admin-customization.md
+  s_8de26d66febf8a::t_bd64ba460b43dc 33-36,40-44
+  s_8de26d66febf8a::t_381a9bba099394 68
+  s_8de26d66febf8a::t_7c75afa69324e7 37-39,45-47
+docs/design-principles.md
+  s_8de26d66febf8a::t_bb34e049271966 63
+  s_8de26d66febf8a::t_d9633b4391f2da 17
+  s_8de26d66febf8a::t_806adc99b354dc 49
+docs/admin-setup.md
+  s_8de26d66febf8a::t_81061c6fcbc231 196-197,199-202,206-213
+  s_8de26d66febf8a::t_4efc9be58fea87 214
+  s_8de26d66febf8a::t_af6042b9acdb34 173-179,198,203-205
+  s_8de26d66febf8a::t_9153c6f3a848ef 229
+src/fastframe/admin/static/assets/index-DkFFPeq_.css
+  s_8de26d66febf8a::t_2a385723eb2ce1 1-2
+src/fastframe/admin/templates/admin-ui/src/api.ts
+  s_8de26d66febf8a::t_cd2782517a6fb2 55
+docs/adr/README.md
+  s_8de26d66febf8a::t_663ee0ea91d7d2 28
+src/fastframe/models/query.py
+  s_8de26d66febf8a::t_7cb9300db39b19 166-221
+  s_8de26d66febf8a::t_c455b8f368e14c 267
+  s_8de26d66febf8a::t_00de291c5bbdc5 59-62
+  s_8de26d66febf8a::t_a19d25fff3049a 136-137
+src/fastframe/admin/static/index.html
+  s_8de26d66febf8a::t_2a385723eb2ce1 26-27
+docs/non-goals.md
+  s_8de26d66febf8a::t_2b3b5d4d6861e9 48
+  s_8de26d66febf8a::t_c80c7061572564 56
+docs/architecture.md
+  s_8de26d66febf8a::t_92612de79b3784 102
+docs/mvp-v0.1.md
+  s_8de26d66febf8a::t_526a69d2690c26 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "42cfee8e4cdfc7d438f7265bddc8621ffecc3205",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "grok-4.7"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
