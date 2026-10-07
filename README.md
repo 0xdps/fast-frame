@@ -51,7 +51,8 @@ transaction helper — see [docs/orm-features.md](docs/orm-features.md).
 
 Background jobs are an optional Celery app
 ([docs/tasks.md](docs/tasks.md)). See [docs/roadmap.md](docs/roadmap.md)
-for what's next: templates and static files. Caching and signals stay
+for what's next: templates and static files. Caching is proposed in
+[docs/adr/0013-caching.md](docs/adr/0013-caching.md). Signals stay
 planned for later. An installed app can add `manage.py` commands. Email
 and object storage are out of scope.
 [docs/mvp-v0.1.md](docs/mvp-v0.1.md) is the original first-release cut, not

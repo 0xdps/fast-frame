@@ -24,5 +24,6 @@ We use ADRs to capture significant technical decisions: context, decision, and c
 | [0010](0010-curated-reexports.md) | Curated re-exports, not wrapped engines | Accepted |
 | [0011](0011-admin-sidebar-stays-expanded.md) | Admin sidebar stays expanded | Accepted |
 | [0012](0012-background-jobs.md) | Background jobs; no email or storage batteries | Accepted |
+| [0013](0013-caching.md) | Caching | Proposed |
 
 When superseding an ADR, link the old and new records and update this index.

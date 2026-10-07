@@ -8,6 +8,10 @@ Accepted
 
 The consequence below that leaves storage backends "deferred until needed" is withdrawn. FastFrame will not ship an email battery or a storage battery. Background jobs are the optional `fastframe.tasks` app. See [ADR 0012](0012-background-jobs.md). The rest of this decision is unchanged.
 
+## Addition (2026-10-06)
+
+The consequence that defers cache backends is decided in [ADR 0013](0013-caching.md): one cache, Redis by default, and an in-process backend for tests. That is not a general backend protocol. Storage backends stay withdrawn.
+
 ## Context
 
 FastFrame aims for “batteries included, not forced.” Django's extensibility model (installed apps, AppConfig, commands) is a proven pattern; cloning every Django feature is not.

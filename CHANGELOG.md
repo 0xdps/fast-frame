@@ -14,6 +14,9 @@ feature bumps the minor version.
 
 ### Changed
 
+- Caching is proposed in [ADR 0013](docs/adr/0013-caching.md): an optional
+  `fastframe.cache` app, Redis by default, an in-process backend for tests.
+  It is not implemented.
 - The admin has no Jinja UI, and Phase 5 will not add one. Templates in
   that phase are for app views. ADR 0007 no longer lists the admin as the
   first Jinja consumer.

@@ -12,7 +12,8 @@ This file records the **original first-release cut**. It is not a description of
 | Templates, static files | Next unbuilt work. Phase 5, for app views. The admin has no Jinja UI |
 | Background jobs | Implemented. Opt in with `fastframe.tasks`. [tasks.md](tasks.md) |
 | App `manage.py` commands | Implemented. `<app>/management/commands/<name>.py`. See [cli.md](cli.md#app-commands) |
-| Caching, signals | Still planned, later. Not part of the jobs app |
+| Caching | Proposed in [ADR 0013](adr/0013-caching.md). Not implemented |
+| Signals | Still planned, later. Not part of the jobs app |
 | Email, object storage, `FileField` / `ImageField` | Out of scope. Not a later phase |
 
 The sections below are that original cut, kept so the first target stays readable.
