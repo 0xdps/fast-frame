@@ -12,8 +12,30 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Fixed
+
+- `ModelMeta` no longer trips mypy's metaclass-conflict check on every
+  single `Model` subclass. The real metaclass (SQLAlchemy's
+  `DeclarativeAttributeIntercept`, resolved at runtime via
+  `type(DeclarativeBase)` to stay safe across SQLAlchemy versions) is now
+  also named directly under `TYPE_CHECKING`, so type checkers see
+  `ModelMeta` as a proper subclass of it instead of an unrelated class.
+  Confirmed with both `mypy` and `pyright` against a plain `class
+  User(Model):` in an external project. This was blocking a planned
+  `py.typed` marker — shipping one before this fix would have put a mypy
+  error on every model in every FastFrame project.
+
 ### Added
 
+- FastFrame now ships a `py.typed` marker (PEP 561) and the `Typing ::
+  Typed` classifier, so type checkers (mypy, pyright) and IDEs
+  (Cursor/VSCode via Pylance, PyCharm) actually use its inline type hints
+  instead of treating the installed package as untyped. Confirmed the
+  wheel includes it and that a plain consumer project sees real type
+  information, not blanket `Any`, for both `mypy` and `pyright`. This
+  doesn't change the ORM facade's generic typing — `Model.objects` is
+  still `Manager[Any]`, so query results aren't yet typed as the specific
+  model subclass; that's a separate, larger effort (see roadmap).
 - `python manage.py shell` can now launch `ptpython` or `IPython` instead
   of the plain standard library REPL, for syntax highlighting and
   autosuggestion. Controlled by the new `SHELL_INTERFACE` setting

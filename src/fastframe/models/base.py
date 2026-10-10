@@ -7,10 +7,21 @@ from sqlalchemy.orm import DeclarativeBase
 from fastframe.models.manager import Manager
 
 if TYPE_CHECKING:
+    # Statically, name DeclarativeBase's real metaclass directly so type
+    # checkers see ModelMeta as a proper subclass of it (no conflict) for
+    # every Model subclass, not just here. At runtime we still compute it
+    # via type(DeclarativeBase) instead of importing this name directly,
+    # since it lives in a SQLAlchemy-internal module path
+    # (sqlalchemy.orm.decl_api) that isn't re-exported from sqlalchemy.orm
+    # and could move between SQLAlchemy versions.
+    from sqlalchemy.orm.decl_api import DeclarativeAttributeIntercept as _ModelMetaBase
+
     from fastframe.models.fields import Field
+else:
+    _ModelMetaBase = type(DeclarativeBase)
 
 
-class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
+class ModelMeta(_ModelMetaBase):
     """Metaclass that processes Field declarations into SQLAlchemy columns.
 
     When a Model subclass is created, this metaclass:
@@ -58,26 +69,30 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
             # Use DEFAULT_AUTO_FIELD setting to determine PK type
             try:
                 from fastframe.conf import settings
+
                 auto_field_type = settings.DEFAULT_AUTO_FIELD
             except (ImportError, AttributeError):
                 # Fallback if settings not available
                 auto_field_type = "AutoField"
-            
+
             if auto_field_type == "AutoField":
                 from fastframe.models.fields import AutoField
+
                 auto_id = AutoField()
             elif auto_field_type == "BigAutoField":
                 from fastframe.models.fields import BigAutoField
+
                 auto_id = BigAutoField()
             elif auto_field_type == "UUIDField":
                 from fastframe.models.fields import UUIDField
+
                 auto_id = UUIDField(primary_key=True)
             else:
                 raise ValueError(
                     f"Invalid DEFAULT_AUTO_FIELD: {auto_field_type}. "
                     f"Must be 'AutoField', 'BigAutoField', or 'UUIDField'."
                 )
-            
+
             auto_id.__set_name__(None, "id")  # type: ignore[arg-type]
             fields["id"] = auto_id
 
@@ -111,9 +126,7 @@ class ModelMeta(type(DeclarativeBase)):  # type: ignore[misc]
             "fields": fields,
             "ordering": meta_options.get("ordering", []),
             "verbose_name": meta_options.get("verbose_name", name),
-            "verbose_name_plural": meta_options.get(
-                "verbose_name_plural", f"{name}s"
-            ),
+            "verbose_name_plural": meta_options.get("verbose_name_plural", f"{name}s"),
             "unique_together": meta_options.get("unique_together", []),
             "indexes": meta_options.get("indexes", []),
             **meta_options,
@@ -167,9 +180,7 @@ def _rel_attr_name(field_name: str) -> str:
     return field_name + "_rel"
 
 
-def _install_relationship(
-    model_class: type, field_name: str, field: Any, target: type
-) -> None:
+def _install_relationship(model_class: type, field_name: str, field: Any, target: type) -> None:
     """Attach a FK constraint and relationship attributes for one ForeignKey."""
     from sqlalchemy import ForeignKey as SAForeignKey
     from sqlalchemy.orm import relationship as sa_relationship
@@ -262,9 +273,7 @@ def _m2m_join_table(model_class: type, field_name: str, field: Any, target: type
     )
 
 
-def _install_m2m_relationship(
-    model_class: type, field_name: str, field: Any, target: type
-) -> None:
+def _install_m2m_relationship(model_class: type, field_name: str, field: Any, target: type) -> None:
     """Attach the join table and relationship attributes for one ManyToManyField.
 
     Explicit ``primaryjoin``/``secondaryjoin`` are required (not just for
@@ -452,10 +461,7 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
         cls_attrs = type(self).__dict__
         for key, value in kwargs.items():
             if key not in cls_attrs and not hasattr(type(self), key):
-                raise TypeError(
-                    f"{type(self).__name__!r} is an invalid keyword argument "
-                    f"for {type(self).__name__}"
-                )
+                raise TypeError(f"{type(self).__name__!r} is an invalid keyword argument for {type(self).__name__}")
             setattr(self, key, value)
 
     def __repr__(self) -> str:
@@ -502,9 +508,7 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
 
             if isinstance(field, (AutoField, BigAutoField)):
                 continue
-            if isinstance(field, DateTimeField) and (
-                field.auto_now or field.auto_now_add
-            ):
+            if isinstance(field, DateTimeField) and (field.auto_now or field.auto_now_add):
                 continue
 
             try:
@@ -546,11 +550,7 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
 
         session = get_current_session()
 
-        f_fields = {
-            name: value
-            for name, value in vars(self).items()
-            if isinstance(value, (F, FExpression))
-        }
+        f_fields = {name: value for name, value in vars(self).items() if isinstance(value, (F, FExpression))}
         if f_fields:
             self._save_f_expressions(session, f_fields)
             return
@@ -600,7 +600,7 @@ class Model(DeclarativeBase, metaclass=ModelMeta):
         super().__init_subclass__(**kwargs)
         if cls is not Model and getattr(cls, "__tablename__", None):
             cls.objects = Manager(cls)
-            
+
             # Setup FK/M2M relationships now that __table__ exists
             fields_for_fk = getattr(cls, "_fields_for_fk_setup", {})
             if fields_for_fk:
