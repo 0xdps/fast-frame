@@ -1,0 +1,27 @@
+docs/roadmap.md
+  s_8de26d66febf8a::t_65476843177305 152-159
+src/fastframe/models/base.py
+  s_8de26d66febf8a::t_8a550b4e12e43f 10-18,20-21,24
+  s_8de26d66febf8a::t_946bb606cb30ff 72,77,80,84,88,95,129,183,276,464,511,553,603
+CHANGELOG.md
+  s_8de26d66febf8a::t_cddf5f18f562b3 30-38
+  s_8de26d66febf8a::t_883e55d6df6af7 15-27
+pyproject.toml
+  s_8de26d66febf8a::t_0a5837dda0b0b7 22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "97283eeba20ffb156dc94fc48b585e96a732b593",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
