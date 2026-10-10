@@ -1,6 +1,8 @@
 # Shell
 
-FastFrame uses the **standard library Python REPL** only (`code.interact`). There is no built-in IPython or ptpython integration.
+`python manage.py shell` runs the standard library REPL (`code.interact`) by
+default, but can launch `ptpython` or `IPython` instead for syntax
+highlighting and autosuggestion — see "Interface" below.
 
 ## What loads automatically
 
@@ -13,6 +15,48 @@ On `python manage.py shell`:
 5. Optional **`AppConfig.shell(context)`** hooks run for each installed app.
 
 Always available: `settings`, `session`.
+
+## Interface (syntax highlighting, autosuggestion)
+
+The REPL itself is chosen *after* the namespace above is built, so models,
+`session`, and anything from `SHELL_IMPORTS` / `shell_startup.py` / app
+hooks are available no matter which one runs.
+
+| `SHELL_INTERFACE` | Behavior |
+| --- | --- |
+| `"auto"` (default) | `ptpython` → `IPython` → standard library REPL, whichever is installed first |
+| `"ptpython"` | Force `ptpython`. Errors out if not installed |
+| `"ipython"` | Force `IPython`. Errors out if not installed |
+| `"python"` | Force the standard library REPL — skip auto-detection entirely |
+
+Neither `ptpython` nor `IPython` is a hard dependency. Install both with:
+
+```bash
+pip install fast-frame[shell]
+```
+
+...or just one (`pip install ptpython` / `pip install ipython`). With `auto`
+(or no `ptpython`/`IPython` installed at all), you get the plain REPL — no
+highlighting, no autosuggestion, same as before this setting existed.
+
+`ptpython` is tried before `IPython` in `auto` mode because FastFrame turns
+its autosuggestion on explicitly (it's off by default upstream) on top of
+its default syntax highlighting. Modern `IPython` (8.12+) ships both
+syntax highlighting and history-based autosuggestion on by default too —
+either gets you the same result.
+
+FastFrame also turns off IPython's default blank line before every
+`In [n]:` prompt (`separate_in`, `"\n"` upstream) so the REPL stays as
+dense as a normal terminal/the standard library REPL.
+
+Override per-invocation without touching settings:
+
+```bash
+python manage.py shell -i ipython
+python manage.py shell --interface python   # force the plain REPL for one run
+```
+
+`-i`/`--interface` takes priority over `SHELL_INTERFACE` when both are given.
 
 ## Settings
 
@@ -30,6 +74,10 @@ SHELL_IMPORTS = [
 
 # Optional path relative to BASE_DIR (default: config/shell_startup.py if that file exists)
 SHELL_STARTUP = "config/shell_startup.py"
+
+# "auto" (default) tries ptpython, then IPython, then the standard library
+# REPL. Pin to "ptpython", "ipython", or "python" to force one.
+SHELL_INTERFACE = "auto"
 ```
 
 ## Startup script
@@ -41,6 +89,7 @@ SHELL_STARTUP = "config/shell_startup.py"
 
 from users.models import User
 from billing.utils import format_money
+
 
 def active_users():
     return User.objects.filter(is_active=True)

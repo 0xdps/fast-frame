@@ -1,16 +1,26 @@
 from __future__ import annotations
 
 import argparse
-import code
 
 from fastframe.core.bootstrap import bootstrap
 from fastframe.db.init import import_app_models
 from fastframe.db.session import begin_session, end_session
 from fastframe.shell.context import ShellStartupError, build_shell_namespace
+from fastframe.shell.interfaces import ShellInterfaceError, resolve_shell_interface, run_shell
 
 
 def add_arguments(parser: argparse.ArgumentParser) -> None:
-    pass
+    parser.add_argument(
+        "-i",
+        "--interface",
+        choices=["auto", "ptpython", "ipython", "python"],
+        default=None,
+        help=(
+            "REPL to use. Overrides the SHELL_INTERFACE setting for this run "
+            "(default: SHELL_INTERFACE, or 'auto' if unset — tries ptpython, "
+            "then IPython, then the standard library REPL)."
+        ),
+    )
 
 
 def execute(args: argparse.Namespace) -> None:
@@ -29,8 +39,15 @@ def execute(args: argparse.Namespace) -> None:
         end_session(session, token, commit=False)
         raise SystemExit(str(exc)) from exc
 
+    interface_setting = args.interface or getattr(registry.settings, "SHELL_INTERFACE", "auto")
     try:
-        code.interact(banner=banner, local=local_namespace)
+        interface = resolve_shell_interface(interface_setting)
+    except ShellInterfaceError as exc:
+        end_session(session, token, commit=False)
+        raise SystemExit(str(exc)) from exc
+
+    try:
+        run_shell(interface, local_namespace, banner)
         end_session(session, token, commit=True)
     except SystemExit:
         end_session(session, token, commit=True)
