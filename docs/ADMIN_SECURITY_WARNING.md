@@ -23,8 +23,12 @@ True` by default.
   with `401` (not logged in) or `403` (logged in, but `can_access_admin` is
   `False`).
 - The bundled admin UI (`ADMIN_MODE = "static"`, the default, or `"custom"`
-  for a project-built React app) serves a minimal login page instead of the
-  SPA shell until a valid session exists.
+  for a project-built React app) gates the SPA shell itself, not just the
+  API: no session gets a minimal login page; a valid session for a user
+  *without* `can_access_admin` gets a distinct "access denied" page (`403`,
+  with a sign-out button) rather than either the login form or a broken SPA
+  that would just 403 on its first API call; only a session with
+  `can_access_admin` gets the real SPA shell.
 - The same session cookie now also works for general, non-admin app
   routes via `POST /api/auth/login` / `/logout` / `GET /api/auth/me` — see
   [auth.md](auth.md#general-purpose-session-auth-outside-admin).

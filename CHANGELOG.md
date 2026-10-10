@@ -20,6 +20,20 @@ feature bumps the minor version.
   `.exclude()` call are combined with AND, then negated as a group,
   matching Django — chain two `.exclude()` calls to negate each condition
   independently. See [orm-features.md](docs/orm-features.md).
+- `ModelAdmin.list_select_related` is now actually applied in
+  `get_queryset()` (it was computed but silently dropped before), and
+  auto-detection now considers every `ForeignKey` on the model — not just
+  ones named in `list_display` — since the list response serializes every
+  FK's related label regardless. This closes a real N+1 query per admin
+  list page. `ManyToManyField` is excluded from auto-detection (a `JOIN`
+  would duplicate paginated rows); use `prefetch_related` semantics for
+  those once available.
+- The admin static UI shell now gates on `can_access_admin` specifically,
+  not just "any valid session". A logged-in user without admin access
+  previously fell through to the SPA shell, which then failed with a
+  confusing `403` on its first API call (`GET /api/admin/schema`); it now
+  gets a clear "access denied" page with a sign-out action instead. See
+  [ADMIN_SECURITY_WARNING.md](docs/ADMIN_SECURITY_WARNING.md).
 
 ### Changed
 

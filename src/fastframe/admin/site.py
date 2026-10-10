@@ -103,17 +103,31 @@ class ModelAdmin:
     def _auto_detect_select_related(self) -> list[str]:
         """Auto-detect ForeignKey fields to select_related.
 
+        Every ForeignKey on the model is serialized for the list response
+        (``serialize_instance(..., include_relations=True)`` in
+        ``fastframe.admin.serializers`` looks up the related object's label
+        for *every* FK, not just ones named in ``list_display``), so every
+        FK relationship is selected here — not just the ones shown as
+        columns.
+
+        Only ``ForeignKey`` (many-to-one, one related object per row)
+        qualifies. ``ManyToManyField`` is a collection relationship —
+        ``select_related``'s SQL JOIN would duplicate rows and breaks
+        under ``LIMIT``/``OFFSET`` pagination; that one needs
+        ``prefetch_related`` instead, which this does not auto-apply.
+
         Returns:
-            List of field names that are ForeignKeys.
+            List of relationship attribute names (e.g. ``"author"`` for an
+            ``author_id`` ForeignKey column).
         """
         if not hasattr(self.model, "_meta"):
             return []
 
+        from fastframe.models.fields import ForeignKey
+
         select_related = []
-        for field_name, field in self.model._meta.get("fields", {}).items():
-            # Check if it's a ForeignKey
-            if hasattr(field, "to") and field_name in self.get_list_display():
-                # Get the relationship attribute name
+        for field in self.model._meta.get("fields", {}).values():
+            if isinstance(field, ForeignKey):
                 rel_name = getattr(field, "relationship_name", None)
                 if rel_name:
                     select_related.append(rel_name)
@@ -141,18 +155,17 @@ class ModelAdmin:
         """
         qs = self.model.objects.all()
 
-        # Apply select_related for performance
+        # Apply select_related for performance (every FK is touched during
+        # list serialization regardless of list_display — see
+        # _auto_detect_select_related).
         if self.list_select_related:
-            # Note: Our current QuerySet doesn't have select_related yet
-            # This is a placeholder for future implementation
-            pass
+            qs = qs.select_related(*self.list_select_related)
 
-        # Apply ordering
-        ordering = self.get_ordering()
-        if ordering:
-            # Note: Our current QuerySet doesn't have order_by yet
-            # Uses model Meta ordering for now
-            pass
+        # Ordering is intentionally not applied here. The list route
+        # (fastframe.admin.api.list_records) calls get_ordering() itself,
+        # only when the request has no explicit sortField — adding it here
+        # too would make it a second, lower-priority ORDER BY key behind an
+        # explicit column sort, since SQLAlchemy's order_by() is additive.
 
         return qs
 

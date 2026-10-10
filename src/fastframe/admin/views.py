@@ -121,18 +121,63 @@ def _login_page_html(api_prefix: str) -> str:
     return _LOGIN_PAGE_TEMPLATE.replace("__API_LOGIN_URL__", login_url).replace("__SITE_TITLE__", title)
 
 
-def _admin_login_redirect(request: Request) -> HTMLResponse | None:
-    """Return a login page response if the request isn't authenticated.
+_ACCESS_DENIED_TEMPLATE = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>__SITE_TITLE__ — Access denied</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:22rem;margin:6rem auto;padding:0 1rem;color:#172033}
+h1{font-size:1.25rem}
+p{color:#475569;font-size:.9rem}
+button{margin-top:1rem;width:100%;padding:.6rem;border:0;border-radius:6px;
+background:#2563eb;color:#fff;font-weight:600;cursor:pointer}
+</style></head>
+<body>
+<h1>__SITE_TITLE__</h1>
+<p>You're signed in, but this account doesn't have admin access.</p>
+<button id="logout-btn" type="button">Sign out</button>
+<script>
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await fetch(__API_LOGOUT_URL__, { method: 'POST', credentials: 'include' });
+  window.location.reload();
+});
+</script>
+</body></html>"""
 
-    Returns None when the request already carries a valid admin session,
-    meaning the real view should proceed. Admin auth is always required —
-    there is no setting to disable it.
+
+def _access_denied_html(api_prefix: str) -> str:
+    """Render a page for a logged-in user who lacks ``can_access_admin``.
+
+    Shown instead of either the SPA shell or the login form: re-submitting
+    the same credentials to ``{api_prefix}/login`` would just 403 again, so
+    this explains the situation and offers a sign-out instead.
+    """
+    from fastframe.admin.api import _admin_site_branding
+
+    logout_url = json.dumps(f"{api_prefix}/logout")
+    title = html.escape(_admin_site_branding()["title"])
+    return _ACCESS_DENIED_TEMPLATE.replace("__API_LOGOUT_URL__", logout_url).replace("__SITE_TITLE__", title)
+
+
+def _admin_login_redirect(request: Request) -> HTMLResponse | None:
+    """Return a login/access-denied page if the request shouldn't get the SPA.
+
+    Returns None only when the request carries a valid session for a user
+    with ``can_access_admin`` — meaning the real view should proceed.
+    Admin auth is always required — there is no setting to disable it.
+
+    A valid session for a user *without* ``can_access_admin`` does not fall
+    through to the SPA shell either (it would just 403 on every API call,
+    e.g. ``GET /api/admin/schema``) — it gets a distinct "access denied"
+    page instead of the login form, since re-entering the same credentials
+    there would just fail the same way.
     """
     from fastframe.admin.auth import get_current_admin_user
 
-    if get_current_admin_user(request) is not None:
-        return None
-    return HTMLResponse(_login_page_html(_admin_api_prefix()))
+    user = get_current_admin_user(request)
+    if user is None:
+        return HTMLResponse(_login_page_html(_admin_api_prefix()))
+    if not getattr(user, "can_access_admin", False):
+        return HTMLResponse(_access_denied_html(_admin_api_prefix()), status_code=403)
+    return None
 
 
 def _built_admin_router(directory: pathlib.Path, prefix: str) -> APIRouter:
@@ -141,7 +186,9 @@ def _built_admin_router(directory: pathlib.Path, prefix: str) -> APIRouter:
     Unauthenticated requests get a minimal login page instead of the SPA
     shell, since the SPA itself has no built-in login flow (see
     ``docs/ADMIN_SECURITY_WARNING.md``). Once the session cookie is set via
-    ``/api/admin/login``, a page reload serves the real assets.
+    ``/api/admin/login``, a page reload serves the real assets. Requests
+    with a valid session but no ``can_access_admin`` get a distinct
+    access-denied page instead of either (see ``_admin_login_redirect``).
     """
     from fastapi.responses import FileResponse
 
