@@ -1,0 +1,53 @@
+docs/app-contract.md
+  s_8de26d66febf8a::t_f073ec4821a4cc 45,48,70-76,79-82
+  s_8de26d66febf8a::t_6b8469acfd177e 132-136
+  s_8de26d66febf8a::t_4313e764d1e056 91-95,97
+  s_8de26d66febf8a::t_b752226b30a71b 83
+docs/cli.md
+  s_8de26d66febf8a::t_8a56e78cb49bb3 110-127,130
+  s_8de26d66febf8a::t_a7b4ea1cdbb886 128-129
+docs/adr/README.md
+  s_8de26d66febf8a::t_7cfdfd35cd0efc 8
+  s_8de26d66febf8a::t_eca222d7f6d9e6 22
+  s_8de26d66febf8a::t_0d312945640548 26-28
+docs/adr/0008-rest-api-react-admin.md
+  s_8de26d66febf8a::t_41d4c59ea36501 3-6
+CHANGELOG.md
+  s_8de26d66febf8a::t_0b861faa8fb9a5 15-23
+docs/adr/0013-caching.md
+  s_8de26d66febf8a::t_e82dbf8b4da6ae 9
+tests/test_queryset.py
+  s_8de26d66febf8a::t_dc0c90c9aa95f3 144-198
+  s_8de26d66febf8a::t_c83cd36fa91898 199-221
+  s_8de26d66febf8a::t_7b87f7553acedb 281
+src/fastframe/conf/global_settings.py
+  s_8de26d66febf8a::t_eda2a108122fd1 104,106-107
+  s_8de26d66febf8a::t_4838b7842ff698 41
+src/fastframe/models/manager.py
+  s_8de26d66febf8a::t_c71e8b91ef1185 86-98,101,103,105-110
+  s_8de26d66febf8a::t_d3eee47c97feb2 102,104
+  s_8de26d66febf8a::t_270f9aa740eeef 396-398
+docs/adr/0014-admin-configuration.md
+  s_8de26d66febf8a::t_cf684a4ecdc0c8 44,46
+docs/orm-features.md
+  s_8de26d66febf8a::t_e275d23cfe314a 43,45-47,49-51,53-58,60-63
+  s_8de26d66febf8a::t_12b8cddc318521 20,44,48,52,59,64-81
+  s_8de26d66febf8a::t_d8adfd8cb5cfbc 82
+  s_8de26d66febf8a::t_987cdceb4d1bec 228,230
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "87c8bf2de1d2afb65d492acc456b2ed5d29ba82b",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
