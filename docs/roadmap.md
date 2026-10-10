@@ -149,3 +149,11 @@ Proposed in [ADR 0013](adr/0013-caching.md). Not implemented. Optional app `fast
 ## Phase 7 — Production-ready platform 📋
 
 Stable public API, migration story, documentation, and operational commands (`check --deploy`, `migrate`) that teams trust for production.
+
+- **Type-safe ORM results.** `py.typed` (shipped, unreleased) makes
+  FastFrame's own type hints visible to consumers' type checkers, but
+  `Model.objects` is still declared `ClassVar[Manager[Any]]` — a
+  subclass's `.objects.filter(...)` doesn't statically resolve to that
+  subclass, so query results don't get field-level autocomplete in an
+  IDE. Django solves the equivalent problem with a dedicated
+  `django-stubs` mypy/Pyright plugin; FastFrame doesn't have one yet.
