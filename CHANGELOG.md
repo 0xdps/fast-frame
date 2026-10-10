@@ -12,6 +12,15 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Fixed
+
+- `.exclude()` (`QuerySet` and `Manager`) now accepts the same field
+  lookups (`age__gte=18`), `Q()` objects, and relationship paths as
+  `.filter()`, instead of equality only. Multiple conditions passed to one
+  `.exclude()` call are combined with AND, then negated as a group,
+  matching Django — chain two `.exclude()` calls to negate each condition
+  independently. See [orm-features.md](docs/orm-features.md).
+
 ### Changed
 
 - Jinja templates, app static files, and `collectstatic` are out of scope.

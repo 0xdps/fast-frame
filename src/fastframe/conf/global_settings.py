@@ -38,7 +38,7 @@ API_PREFIX = "/api/v1"
 API_TOKEN_DEFAULT_EXPIRY_DAYS: int | None = None
 
 # ===== General-purpose session auth (outside /admin) =====
-# POST/DELETE /api/auth/login, /api/auth/logout, GET /api/auth/me — a
+# POST /api/auth/login, POST /api/auth/logout, GET /api/auth/me — a
 # plain login for any active user, independent of can_access_admin. Uses
 # the same signed session cookie mechanism as the admin. Mounted when
 # ``"fastframe.contrib.auth"`` is in ``INSTALLED_APPS`` — not a setting
@@ -101,9 +101,10 @@ HEALTH_CHECK: str | None = None
 # ===== Middleware =====
 # Dotted paths to Starlette-compatible middleware classes (each must accept
 # just `app` in its constructor and read any settings it needs itself),
-# applied in list order via app.add_middleware(). Applied *after* the
+# applied in list order via app.add_middleware(). Added *before* the
 # built-in CORS/security-headers middleware (see CORS_ALLOWED_ORIGINS,
-# SECURE_HEADERS above), which are independent of this list.
+# SECURE_HEADERS above), so those two end up wrapping this list — CORS is
+# outermost. See docs/settings.md's MIDDLEWARE row.
 MIDDLEWARE: list[str] = []
 
 # ===== Security =====

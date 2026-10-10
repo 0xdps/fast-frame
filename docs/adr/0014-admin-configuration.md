@@ -41,9 +41,9 @@ These stay as they are. The next slices do not re-add them.
 
 There is no `permissions` dict, no `object_label`, and no `autocomplete_fields`. The permission flags and `__str__` already cover those, and every foreign key already searches.
 
-### Next slice
+### Next slice (shipped 2026-10-07)
 
-Finish the list, and tighten the form rules that already exist.
+This was the plan, and it shipped as written — see the Addition at the top. Left here as the record of what was decided and why.
 
 - Render `list_filter` as controls on the list. The list API already accepts field query params. The controls offer only the fields named in `list_filter`. A filter is a field name. No `DateRangeFilter` class and no custom filter objects in this slice.
 - `search_fields` may name a related field, such as `"movie__title"`. That is the same lookup the list search already builds.

@@ -83,14 +83,31 @@ class QuerySet(Generic[T]):
 
         return clone
 
-    def exclude(self, **kwargs: Any) -> QuerySet[T]:
-        """Exclude rows matching field equality. Returns a new QuerySet for chaining."""
-        from fastframe.models.query import resolve_value
+    def exclude(self, *args: Any, **kwargs: Any) -> QuerySet[T]:
+        """Exclude rows matching all of the given conditions. Returns a new
+        QuerySet for chaining.
+
+        Mirrors `.filter()`: accepts the same field lookups (`age__gte=18`),
+        `Q()` objects, and `F()` values. Conditions passed to one `.exclude()`
+        call are combined with AND, then the whole group is negated —
+        `.exclude(a=1, b=2)` drops rows where `a=1 AND b=2`, not rows where
+        `a=1 OR b=2` (matching Django).
+        """
+        from sqlalchemy import and_, not_
+
+        from fastframe.models.query import Q, lookup_expr, resolve_value
 
         clone = self._clone()
-        for key, value in kwargs.items():
-            value = resolve_value(value, self.model_class)
-            clone._stmt = clone._stmt.where(getattr(self.model_class, key) != value)
+
+        conditions: list[Any] = [q_obj.to_sqlalchemy(self.model_class) for q_obj in args if isinstance(q_obj, Q)]
+        conditions.extend(
+            lookup_expr(self.model_class, key, resolve_value(value, self.model_class)) for key, value in kwargs.items()
+        )
+
+        if conditions:
+            combined = and_(*conditions) if len(conditions) > 1 else conditions[0]
+            clone._stmt = clone._stmt.where(not_(combined))
+
         return clone
 
     def order_by(self, *fields: str) -> QuerySet[T]:
@@ -376,9 +393,9 @@ class Manager(Generic[T]):
         """Return a QuerySet filtered by field conditions."""
         return self.all().filter(*args, **kwargs)
 
-    def exclude(self, **kwargs: Any) -> QuerySet[T]:
-        """Return a QuerySet excluding objects matching field equality."""
-        return self.all().exclude(**kwargs)
+    def exclude(self, *args: Any, **kwargs: Any) -> QuerySet[T]:
+        """Return a QuerySet excluding objects matching the given conditions."""
+        return self.all().exclude(*args, **kwargs)
 
     def order_by(self, *fields: str) -> QuerySet[T]:
         """Return a QuerySet ordered by fields."""
