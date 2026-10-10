@@ -52,7 +52,9 @@ def test_shell_invokes_interact(miniproject_env) -> None:
     from fastframe.cli.commands import shell
 
     with patch("code.interact") as interact:
-        shell.execute(argparse.Namespace())
+        # Force the stdlib interface explicitly — "auto" (the default) would
+        # pick ptpython/IPython instead if either happens to be installed.
+        shell.execute(argparse.Namespace(interface="python"))
         interact.assert_called_once()
 
 

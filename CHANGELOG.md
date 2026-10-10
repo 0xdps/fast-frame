@@ -12,6 +12,19 @@ feature bumps the minor version.
 
 ## [Unreleased]
 
+### Added
+
+- `python manage.py shell` can now launch `ptpython` or `IPython` instead
+  of the plain standard library REPL, for syntax highlighting and
+  autosuggestion. Controlled by the new `SHELL_INTERFACE` setting
+  (`"auto"` by default — tries `ptpython`, then `IPython`, then falls back
+  to the standard library REPL) or overridden per-run with
+  `manage.py shell -i ipython`. Neither package is a hard dependency;
+  install with `pip install fast-frame[shell]` or individually. IPython's
+  default blank line before every `In [n]:` prompt is turned off, so it
+  stays as dense as a normal terminal. See
+  [shell.md](docs/shell.md#interface-syntax-highlighting-autosuggestion).
+
 ### Fixed
 
 - `.exclude()` (`QuerySet` and `Manager`) now accepts the same field

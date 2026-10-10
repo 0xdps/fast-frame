@@ -20,3 +20,8 @@ DATABASE_URL = os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite
 SHELL_AUTO_IMPORT_MODELS = True
 # SHELL_IMPORTS = ["from myapp import utils"]
 # SHELL_STARTUP = "config/shell_startup.py"  # optional; auto-loads if file exists
+
+# "auto" (default) tries ptpython, then IPython, then the standard library
+# REPL — whichever is installed (`pip install fast-frame[shell]`). Pin to
+# "ptpython", "ipython", or "python" to force one.
+# SHELL_INTERFACE = "auto"
