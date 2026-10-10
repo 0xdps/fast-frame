@@ -42,10 +42,10 @@ Each app is a Python package. Conventional files FastFrame **may** auto-discover
 
 Apps **must not** be required to implement every file. Missing modules are skipped.
 
-## AppConfig (draft)
+## AppConfig
 
 ```python
-# users/apps.py (illustrative — not implemented)
+# users/apps.py
 class UsersConfig(AppConfig):
     name = "users"
     label = "users"
@@ -67,7 +67,19 @@ class UsersConfig(AppConfig):
         # return routers built programmatically from settings, instead of
         # (or in addition to) the static urls.py -> router convention below
         ...
+
+    def shell(self, context: dict) -> None:
+        # optional: mutate manage.py shell's local namespace in place.
+        # Not a method on the AppConfig base class — fastframe.shell calls
+        # it via getattr(app_config, "shell", None), so it's opt-in per
+        # app. See docs/shell.md.
+        ...
 ```
+
+`ready()`, `shutdown()`, `checks()`, and `get_routers()` are base-class
+methods with no-op defaults — override only the ones an app needs.
+`shell()` is duck-typed, not declared on the base class; define it only
+on apps that want to contribute to the shell namespace.
 
 Resolved:
 
@@ -76,11 +88,13 @@ Resolved:
 
 ## Router discovery
 
-Three mechanisms, all mounted by `get_asgi_application()`:
+Three mechanisms, all mounted by `get_asgi_application()`, in this order:
 
-1. **`<app>.api` → `api`.** An installed app may export `api = FastFrameAPI()` from `api.py`. FastFrame mounts `api.router`. A native `APIRouter` assigned to the same name is mounted too. A missing `api.py` is normal. The path is never inferred from a class name. See [API](api-layer.md).
-2. **`urls.py` → `router`.** Each app may expose `router = APIRouter()` from `urls.py`. `manage.py startapp` scaffolds this, and `add_router_to_urls()` wires it into `config/urls.py`. The app factory mounts that list after the discovered `api` routers.
-3. **`AppConfig.get_routers()`.** Override this to return routers built at mount time, when the shape depends on settings. The factory collects these in `INSTALLED_APPS` order, after every app's `ready()` has run.
+1. **`AppConfig.get_routers()`.** Override this to return routers built at mount time, when the shape depends on settings. The factory collects these in `INSTALLED_APPS` order, after every app's `ready()` has run.
+2. **`<app>.api` → `api`.** An installed app may export `api = FastFrameAPI()` from `api.py`. FastFrame mounts `api.router`. A native `APIRouter` assigned to the same name is mounted too. A missing `api.py` is normal. The path is never inferred from a class name. See [API](api-layer.md).
+3. **`urls.py` → `router`.** Each app may expose `router = APIRouter()` from `urls.py`. `manage.py startapp` scaffolds this, and `add_router_to_urls()` wires it into `config/urls.py`. The app factory mounts that list last, after both of the above.
+
+A literal path registered earlier wins over a catch-all registered later (FastAPI/Starlette match routes in registration order) — this is why, for example, `fastframe.admin`'s `get_routers()` mounts its auth router before its `/{resource}` CRUD router.
 
 This is also what makes FastFrame's own batteries opt-in: `fastframe.admin`, `fastframe.contrib.auth`, `fastframe.api`, and `fastframe.docs`. Their code runs only when listed in `INSTALLED_APPS`. There is no `ENABLE_*` setting for turning one on. `fastframe.docs` is the switch for `/docs`, `/redoc`, and `/openapi.json`. See [architecture.md](https://github.com/0xdps/fast-frame/blob/trunk/docs/architecture.md).
 
@@ -115,9 +129,10 @@ Versioning of the app contract will be documented when v0.1 ships; breaking chan
 ## Proof point for v0.2 — done
 
 The built-in `fastframe.health` app (listed in every generated project's
-`INSTALLED_APPS`) plus the real `manage.py check`/`check --database`
-framework (`fastframe.core.checks`) validated the contract end-to-end: a
-router (mounted via `AppConfig.get_routers()`), models discovery, and
-app-level `checks()` all work through the same `AppConfig` mechanism.
+`INSTALLED_APPS`) validated the router half of the contract end-to-end: a
+router mounted purely via `AppConfig.get_routers()`, with nothing
+reachable unless the app is actually installed. (`HealthConfig` does not
+override `checks()` — for that half of the contract, see
+`fastframe.tasks`'s `tasks.E001` check, in `src/fastframe/tasks/apps.py`.)
 Before building admin (v0.3), this is the pattern third-party apps should
 follow.

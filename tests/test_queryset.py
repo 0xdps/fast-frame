@@ -141,6 +141,84 @@ def test_queryset_exclude(miniproject_env) -> None:
         assert "active@example.com" not in emails
 
 
+def test_queryset_exclude_accepts_lookups(miniproject_env) -> None:
+    """exclude() mirrors filter(): field__lookup kwargs work, not just equality."""
+    from users.models import User
+
+    from fastframe.db.session import session_scope
+
+    with session_scope():
+        User.objects.create(email="active@example.com", is_active=True)
+        User.objects.create(email="inactive1@example.com", is_active=False)
+        User.objects.create(email="inactive2@example.com", is_active=False)
+
+        remaining = User.objects.exclude(email__icontains="inactive1")
+        emails = {u.email for u in remaining}
+        assert emails == {"active@example.com", "inactive2@example.com"}
+
+
+def test_queryset_exclude_multiple_conditions_are_anded_then_negated(miniproject_env) -> None:
+    """exclude(a=1, b=2) drops rows matching a=1 AND b=2, not a=1 OR b=2."""
+    from users.models import User
+
+    from fastframe.db.session import session_scope
+
+    with session_scope():
+        User.objects.create(email="active@example.com", is_active=True)
+        User.objects.create(email="inactive1@example.com", is_active=False)
+        User.objects.create(email="inactive2@example.com", is_active=False)
+
+        # Only the row matching BOTH conditions is dropped.
+        remaining = User.objects.exclude(is_active=True, email="active@example.com")
+        emails = {u.email for u in remaining}
+        assert emails == {"inactive1@example.com", "inactive2@example.com"}
+
+        # Chaining two .exclude() calls negates each condition independently.
+        remaining_chained = User.objects.exclude(is_active=True).exclude(email="inactive1@example.com")
+        chained_emails = {u.email for u in remaining_chained}
+        assert chained_emails == {"inactive2@example.com"}
+
+
+def test_queryset_exclude_accepts_q_objects(miniproject_env) -> None:
+    """exclude() accepts Q() objects, same as filter()."""
+    from users.models import User
+
+    from fastframe.db.session import session_scope
+    from fastframe.models import Q
+
+    with session_scope():
+        User.objects.create(email="active@example.com", is_active=True)
+        User.objects.create(email="inactive1@example.com", is_active=False)
+        User.objects.create(email="inactive2@example.com", is_active=False)
+
+        remaining = User.objects.exclude(Q(is_active=True) | Q(email__icontains="inactive1"))
+        emails = {u.email for u in remaining}
+        assert emails == {"inactive2@example.com"}
+
+
+def test_queryset_filter_through_relationship(miniproject_env) -> None:
+    """.filter() walks a relationship path, e.g. post__author__email."""
+    from posts.models import Post
+    from users.models import User
+
+    from fastframe.db.session import session_scope
+
+    with session_scope():
+        alice = User.objects.create(email="alice@example.com", is_active=True)
+        bob = User.objects.create(email="bob@example.com", is_active=True)
+        Post.objects.create(title="Alice's post", content="...", author_id=alice.id)
+        Post.objects.create(title="Bob's post", content="...", author_id=bob.id)
+
+        matches = Post.objects.filter(author__email__icontains="alice")
+        titles = [p.title for p in matches]
+        assert titles == ["Alice's post"]
+
+        # Reverse FK (one-to-many): find users who authored a given post.
+        authors = User.objects.filter(posts__title="Bob's post")
+        emails = [u.email for u in authors]
+        assert emails == ["bob@example.com"]
+
+
 def test_queryset_exists(miniproject_env) -> None:
     """Test exists() method."""
     from users.models import User
@@ -200,11 +278,7 @@ def test_queryset_filter_chaining(miniproject_env) -> None:
         User.objects.create(email="charlie@example.com", is_active=False)
 
         # Chain filters
-        users = (
-            User.objects
-            .filter(is_active=True)
-            .filter(email="alice@example.com")
-        )
+        users = User.objects.filter(is_active=True).filter(email="alice@example.com")
         assert len(users) == 1
         assert users[0].email == "alice@example.com"
 

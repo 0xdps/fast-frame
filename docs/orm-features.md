@@ -17,7 +17,7 @@ always available; see [design-principles.md](https://github.com/0xdps/fast-frame
 
 ## Field lookups
 
-`.filter()`/`.exclude()` accept Django-style `field__lookup=value` kwargs:
+`.filter()` accepts Django-style `field__lookup=value` kwargs:
 
 ```python
 Post.objects.filter(views__gte=100)
@@ -39,6 +39,46 @@ Post.objects.filter(deleted_at__isnull=True)
 | `endswith`, `iendswith` | Suffix match (case-sensitive / insensitive) |
 
 Plain equality (`.filter(status="published")`) also works without `__`.
+
+### `.exclude()`
+
+`.exclude()` accepts the same lookups, `Q()` objects, and `F()` values as
+`.filter()`:
+
+```python
+Post.objects.exclude(status="draft")
+Post.objects.exclude(views__gte=100)
+Post.objects.exclude(Q(status="draft") | Q(views__lt=10))
+```
+
+Conditions passed to **one** `.exclude()` call are combined with AND, then
+the whole group is negated — `.exclude(status="draft", views__gte=100)`
+drops rows where `status="draft" AND views>=100`, not rows where either
+condition alone holds (same as Django). Chain two `.exclude()` calls to
+negate each condition independently:
+
+```python
+# drops draft rows, and (separately) drops low-view rows
+Post.objects.exclude(status="draft").exclude(views__lt=10)
+```
+
+### Filtering through a relationship
+
+A lookup path can walk a `ForeignKey` or reverse relationship by naming
+the relationship attribute, not the raw FK column:
+
+```python
+Post.objects.filter(author__name__icontains="alice")
+Author.objects.filter(posts__status="published")  # reverse FK, one-to-many
+```
+
+The last segment is the lookup (`icontains` above); everything before it
+is a path of relationship names ending in a field on the related model.
+Use the relationship attribute (`author`, from an `author_id` column),
+not the column name itself (`author_id__name` does not work). A one-to-many
+step becomes `EXISTS (...)` (`.any()`); a many-to-one step becomes
+`.has()`. This also powers admin `search_fields` entries like
+`"author__name"` (see [admin-setup.md](admin-setup.md)).
 
 ## Q objects — AND / OR / NOT composition
 
@@ -185,13 +225,9 @@ modeled only at the ORM level).
 ## `get_or_create()` / `update_or_create()`
 
 ```python
-user, created = User.objects.get_or_create(
-    username="alice", defaults={"email": "alice@example.com"}
-)
+user, created = User.objects.get_or_create(username="alice", defaults={"email": "alice@example.com"})
 
-setting, created = Setting.objects.update_or_create(
-    key="theme", defaults={"value": "dark"}
-)
+setting, created = Setting.objects.update_or_create(key="theme", defaults={"value": "dark"})
 ```
 
 `get_or_create(defaults=None, **kwargs)` looks up an object matching

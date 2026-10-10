@@ -1,5 +1,9 @@
 # FastFrame Admin - REST API + React Admin Architecture
 
+## Status
+
+Accepted. The Addition below records a later move off React Admin; the REST-API decision itself still holds.
+
 ## Addition (2026-10-04)
 
 The sections below are the original decision. They are unchanged.

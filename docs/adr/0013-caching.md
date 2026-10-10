@@ -6,7 +6,7 @@ Proposed. Not implemented.
 
 ## Addition (2026-10-07)
 
-Templates are out of scope, including template fragment caching. See the Addition on [ADR 0002](0002-fastapi-as-http-layer.md). This proposal is not waiting on them.
+Templates are out of scope, including template fragment caching. See the Addition on [ADR 0002](0002-fastapi-as-http-layer.md). This withdraws the Context sentence below that calls templates "the next unbuilt product phase," and the Consequences bullet that says this ADR "does not pull caching ahead of templates." There is no template phase to wait on, implemented or not — only signals and observability stay ahead of this in the plan.
 
 ## Context
 

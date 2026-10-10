@@ -107,6 +107,27 @@ Migrations are grouped by the app that owns the file (see
 which surfaces the same "N unapplied migration(s)" fact as a one-line
 warning suitable for CI.
 
+#### System check IDs
+
+Built-in framework checks (`fastframe.core.checks`) and `fastframe.tasks`'s
+own check, by `id`:
+
+| ID | Level | When | Runs with `--database`? |
+| --- | --- | --- | --- |
+| `fastframe.W001` | WARNING | `INSTALLED_APPS` is empty. | No |
+| `fastframe.E001` | ERROR | Two `AppConfig`s share the same `label`. | No |
+| `fastframe.E002` | ERROR | `DATABASE_URL` is not set. | No |
+| `fastframe.E003` | ERROR | Database connection failed. | Yes |
+| `fastframe.E004` | ERROR | Could not determine migration status. | Yes |
+| `fastframe.W002` | WARNING | There are unapplied migrations. | Yes |
+| `fastframe.E005` | ERROR | An `INSTALLED_APPS` entry can't be imported (likely a typo). | No |
+| `fastframe.C001` | CRITICAL | An app's own `checks()` raised an exception. | No |
+| `tasks.E001` | ERROR | `fastframe.tasks` is installed, `CELERY_TASK_ALWAYS_EAGER` is off, and `CELERY_BROKER_URL` is empty. | No |
+
+No ID is currently silenceable from settings — treat the hint line as the
+fix. See [tasks.md](tasks.md#tests) for `tasks.E001` specifically — it's
+one line under "Tests."
+
 ### `dbshell`
 
 Opens the native CLI for whatever `DATABASE_URL` points at (`sqlite3`,
