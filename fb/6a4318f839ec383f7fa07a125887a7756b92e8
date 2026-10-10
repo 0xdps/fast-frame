@@ -1,0 +1,45 @@
+src/fastframe/cli/commands/shell.py
+  s_8de26d66febf8a::t_c70fc339e71da5 9,13-23,42-48,50
+pyproject.toml
+  s_8de26d66febf8a::t_2ade980213263d 36-39
+  s_8de26d66febf8a::t_d11b3f2bcef839 47-50
+CHANGELOG.md
+  s_8de26d66febf8a::t_3871af1b4141eb 15-22,26-27
+  s_8de26d66febf8a::t_c9530e6f5e81aa 23-25
+src/fastframe/shell/interfaces.py
+  s_8de26d66febf8a::t_d8877ab730f34e 1-10,13-26,30-38,40-42,44-64,70-135
+  s_8de26d66febf8a::t_d98f4a24a73450 28-29
+  s_8de26d66febf8a::t_5fe10397b48b0e 65-69
+  s_8de26d66febf8a::t_17f688c0cafa2f 11-12
+  s_8de26d66febf8a::t_0336288e3e7c72 27,39,43
+src/fastframe/shell/__init__.py
+  s_8de26d66febf8a::t_6de36df55a6ca2 2,4-9
+docs/shell.md
+  s_8de26d66febf8a::t_e36872836899e6 3-5
+  s_8de26d66febf8a::t_b57503a75256c1 19-47,52-60,77-80
+  s_8de26d66febf8a::t_b27925264b4b2e 48-51
+  s_8de26d66febf8a::t_8b107ae21b1852 93
+tests/test_scaffold.py
+  s_8de26d66febf8a::t_eae00b01194ff6 55-57
+src/fastframe/project_template/config/settings.py
+  s_8de26d66febf8a::t_ac6d2d7b87068f 23-27
+tests/test_shell_interfaces.py
+  s_8de26d66febf8a::t_7be36eb3191be2 61-78
+  s_8de26d66febf8a::t_19db4b1ad06fa3 1-60,79-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fb6a4318f839ec383f7fa07a125887a7756b92e8",
+  "prompts": {},
+  "sessions": {
+    "s_8de26d66febf8a": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d74245ea-2e49-4f35-8539-20ff634c475b",
+        "model": "claude-sonnet-5"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
