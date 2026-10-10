@@ -245,6 +245,60 @@ def test_list_search_follows_a_relationship(client):
     assert data["data"][0]["title"] == "Matched"
 
 
+def test_list_select_related_avoids_n_plus_1(client):
+    """ModelAdmin.get_queryset() applies list_select_related, so listing
+    books with authors is one query (a JOIN), not one extra query per row.
+    """
+    from contextlib import contextmanager
+
+    from sqlalchemy import event
+
+    from fastframe.db.engine import get_engine
+
+    with session_scope():
+        alice = ApiAuthor.objects.create(name="Alice", email="alice@example.com")
+        bob = ApiAuthor.objects.create(name="Bob", email="bob@example.com")
+        alice_id, bob_id = alice.id, bob.id
+        for i, author_id in enumerate([alice_id, bob_id, alice_id, bob_id, alice_id]):
+            ApiBook.objects.create(title=f"Book {i}", status="draft", author_id=author_id)
+
+    @contextmanager
+    def _count_queries():
+        counter = {"n": 0}
+        engine = get_engine()
+
+        def _before_cursor_execute(*args, **kwargs):
+            counter["n"] += 1
+
+        event.listen(engine, "before_cursor_execute", _before_cursor_execute)
+        try:
+            yield counter
+        finally:
+            event.remove(engine, "before_cursor_execute", _before_cursor_execute)
+
+    admin = ApiBookAdmin(model=ApiBook, admin_site=test_site)
+    assert admin.list_select_related == ["author"]
+
+    with _count_queries() as counter:
+        resp = client.get("/api/admin/apibook")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 5
+    queries_for_5_rows = counter["n"]
+
+    # Add two more books and confirm the query count doesn't grow with the
+    # row count — if select_related weren't applied, each extra row would
+    # add one more query to fetch its author (N+1).
+    with session_scope():
+        ApiBook.objects.create(title="Book 5", status="draft", author_id=alice_id)
+        ApiBook.objects.create(title="Book 6", status="draft", author_id=bob_id)
+
+    with _count_queries() as counter:
+        resp = client.get("/api/admin/apibook")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 7
+    assert counter["n"] == queries_for_5_rows
+
+
 def test_list_filter_boolean(client):
     with session_scope():
         ApiBook.objects.create(title="Off", status="draft", is_active=False)
