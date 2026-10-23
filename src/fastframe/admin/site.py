@@ -51,6 +51,9 @@ class ModelAdmin:
 
     # Detail view
     fieldsets: list[tuple[str | None, dict[str, Any]]] | None = None  # Grouped fields
+    #: Field shown as the record's title. ``None`` uses the model's ``__str__``,
+    #: then a recognizable text field, then the primary key.
+    record_title: str | None = None
 
     # Actions
     actions: list[str] = []  # Bulk actions
@@ -78,6 +81,11 @@ class ModelAdmin:
     #: When False, the model stays registered and reachable by URL, and is
     #: left out of the sidebar.
     show_in_navigation: bool = True
+
+    #: Sidebar section. ``None`` groups the model under its app label.
+    #: ``"Admin"`` pins it to the Admin section at the foot of the menu
+    #: (users, roles, activity).
+    nav_group: str | None = None
 
     # Safety features
     confirmation_required: list[str] = ["delete"]  # Actions requiring confirmation

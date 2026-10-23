@@ -139,6 +139,7 @@ def serialize_instance(instance: Model, *, include_relations: bool = True) -> di
     if "id" not in data and pk_name in data:
         data["id"] = data[pk_name]
 
+    data["__str__"] = display_label(instance)
     return data
 
 
@@ -325,6 +326,12 @@ def model_schema(model: type[Model], model_admin: Any = None, user: Any = None) 
         result["listFilter"] = model_admin.list_filter
         result["listPerPage"] = model_admin.list_per_page
         result["showInNavigation"] = bool(model_admin.show_in_navigation)
+        nav_group = getattr(model_admin, "nav_group", None)
+        if nav_group:
+            result["navGroup"] = nav_group
+        record_title = getattr(model_admin, "record_title", None)
+        if record_title:
+            result["recordTitle"] = record_title
         result["permissions"] = {
             "create": model_admin.get_has_add_permission(user),
             "edit": model_admin.get_has_change_permission(user),

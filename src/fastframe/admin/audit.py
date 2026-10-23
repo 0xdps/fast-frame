@@ -62,7 +62,11 @@ class AuditLog(Model):
 
 
 class AuditLogAdmin(ModelAdmin):
-    """Read-only in the admin — audit entries are never editable."""
+    """Read-only in the admin — audit entries are never editable.
+
+    Shown as Activity in the Admin section of the sidebar. Record pages
+    also filter this log by ``model_name`` and ``object_id`` for History.
+    """
 
     list_display = ["created_at", "username", "action", "model_name", "object_repr", "source"]
     list_filter = ["action", "model_name", "source"]
@@ -72,7 +76,8 @@ class AuditLogAdmin(ModelAdmin):
     has_add_permission = False
     has_change_permission = False
     has_delete_permission = False
-    show_in_navigation = False
+    show_in_navigation = True
+    nav_group = "Admin"
 
 
 admin_site.register(AuditLog, AuditLogAdmin)

@@ -6,13 +6,17 @@ from .models import Group, User
 
 
 class UserAdmin(ModelAdmin):
-    """Admin interface for the default User model."""
-    
+    """Admin interface for the default User model.
+
+    Lives in the Admin section of the sidebar, beside Groups and Activity.
+    """
+
     # List page configuration
     list_display = ["username", "email", "first_name", "last_name", "is_active", "date_joined"]
     list_filter = ["is_active", "date_joined"]
     search_fields = ["username", "email", "first_name", "last_name"]
     list_per_page = 50
+    nav_group = "Admin"
 
     # password is write_only, so it is omitted from edit forms.
     # Change it through the profile "Change password" action.
@@ -23,6 +27,7 @@ class GroupAdmin(ModelAdmin):
 
     list_display = ["name"]
     search_fields = ["name"]
+    nav_group = "Admin"
 
 
 # Register the User/Group models with the admin.

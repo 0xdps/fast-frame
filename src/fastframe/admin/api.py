@@ -23,6 +23,7 @@ Endpoints (relative to whichever prefix the router is mounted at):
     PUT    /{resource}/{id}             Update (422 on validation error)
     DELETE /{resource}/{id}             Delete one
     DELETE /{resource}?ids=a&ids=b      Bulk delete
+    GET    /{resource}/filters           Typed list filters, with choice counts
     GET    /{resource}/choices/{field}  Options for a ForeignKey dropdown
 
 Response shapes (React Admin compatible):
@@ -229,12 +230,9 @@ def _build_crud_router(
 
         # Field filters: any query param matching a field (supports __lookups).
         # The list page only offers the fields named in list_filter.
-        reserved = {"page", "perPage", "sortField", "sortOrder", "q"}
-        filter_kwargs = {
-            key: _coerce_filter_value(model, key, value)
-            for key, value in request.query_params.items()
-            if key not in reserved and value != ""
-        }
+        filter_kwargs: dict[str, Any] = {}
+        for key, value in _active_filters(model, request).items():
+            filter_kwargs.update(_expand_typed_filter(model, key, value))
         if filter_kwargs:
             qs = qs.filter(**filter_kwargs)
 
@@ -261,6 +259,37 @@ def _build_crud_router(
             "page": page,
             "perPage": perPage,
         }
+
+    # ------------------------------------------------------------------
+    # Typed list filters
+    # ------------------------------------------------------------------
+
+    @router.get("/{resource}/filters")
+    async def list_filters(
+        resource: str,
+        request: Request,
+        session=Depends(_admin_session),
+        current_user: Any = Depends(auth_dependency),
+    ) -> dict[str, Any]:
+        """Describe each list filter and count choice and yes/no options.
+
+        The drawer uses ``kind`` to pick a control. Counts ignore the field
+        they belong to and respect every other active filter, so the numbers
+        stay useful while the drawer is open.
+        """
+        _session_ctx.set(session)
+        model, model_admin = _find_resource(resource)
+        if not model_admin.get_has_view_permission(current_user):
+            raise HTTPException(status_code=403, detail="Permission denied")
+
+        active = _active_filters(model, request)
+        described = []
+        for name in model_admin.list_filter:
+            field = model._meta["fields"].get(name)
+            if field is None:
+                continue
+            described.append(_describe_filter(model, model_admin, request, field, name, active))
+        return {"data": described}
 
     # ------------------------------------------------------------------
     # ForeignKey choices (for dropdowns / autocomplete)
@@ -637,6 +666,129 @@ def _resource_counts(session: Any, registry: dict[type, Any], current_user: Any,
             counts[str(resource)] = int(total)
 
     return counts
+
+
+_NUMBER_FIELDS = {
+    "IntegerField",
+    "BigIntegerField",
+    "SmallIntegerField",
+    "FloatField",
+    "DecimalField",
+    "AutoField",
+    "BigAutoField",
+}
+_DATE_SHORTCUTS = ("today", "week", "month", "year")
+
+
+def _active_filters(model: type, request: Request) -> dict[str, str]:
+    reserved = {"page", "perPage", "sortField", "sortOrder", "q"}
+    grouped: dict[str, list[str]] = {}
+    for key, value in request.query_params.multi_items():
+        if key in reserved or value == "" or key.endswith("__lookup"):
+            continue
+        grouped.setdefault(key, []).append(value)
+    return {key: ",".join(values) for key, values in grouped.items()}
+
+
+def _filter_kind(field: Any) -> str:
+    name = field.__class__.__name__
+    if getattr(field, "choices", None):
+        return "choice"
+    if name == "BooleanField":
+        return "boolean"
+    if name in _NUMBER_FIELDS or name == "ForeignKey":
+        return "number" if name in _NUMBER_FIELDS else "relation"
+    if name in {"DateField", "DateTimeField"}:
+        return "date"
+    if name in {"CharField", "TextField", "EmailField"}:
+        return "text"
+    return "exact"
+
+
+def _count_values(qs: Any, field_name: str) -> dict[str, int]:
+    from sqlalchemy import func
+
+    column = qs.model_class.__table__.c[field_name]
+    rows = qs.session.execute(qs._stmt.with_only_columns(column, func.count()).group_by(column).order_by(None)).all()
+    return {"" if value is None else str(value): int(total) for value, total in rows}
+
+
+def _describe_filter(
+    model: type, model_admin: Any, request: Request, field: Any, name: str, active: dict[str, str]
+) -> dict[str, Any]:
+    kind = _filter_kind(field)
+    label = field.verbose_name or name.replace("_", " ").title()
+    described: dict[str, Any] = {"name": name, "label": label, "kind": kind}
+    if kind not in {"choice", "boolean"}:
+        if kind == "date":
+            described["shortcuts"] = list(_DATE_SHORTCUTS)
+        return described
+
+    others = {key: value for key, value in active.items() if key != name and not key.startswith(f"{name}__")}
+    qs = model_admin.get_queryset(request)
+    if others:
+        qs = qs.filter(**{key: _coerce_filter_value(model, key, value) for key, value in others.items()})
+    counts = _count_values(qs, name)
+    if kind == "boolean":
+        described["options"] = [
+            {
+                "value": "true",
+                "label": "Yes",
+                "count": counts.get("True", 0) + counts.get("true", 0) + counts.get("1", 0),
+            },
+            {
+                "value": "false",
+                "label": "No",
+                "count": counts.get("False", 0) + counts.get("false", 0) + counts.get("0", 0),
+            },
+        ]
+        return described
+    described["options"] = [
+        {"value": str(value), "label": option, "count": counts.get(str(value), 0)} for value, option in field.choices
+    ]
+    return described
+
+
+def _expand_typed_filter(model: type, key: str, raw: str) -> dict[str, Any]:
+    """Turn one drawer value into the lookups the ORM already understands."""
+    from datetime import datetime, timedelta
+
+    field = model._meta["fields"].get(key)
+    if field is None or "__" in key:
+        return {key: _coerce_filter_value(model, key, raw)}
+    kind = _filter_kind(field)
+    if kind == "text":
+        return {f"{key}__icontains": raw}
+    if kind == "number" and "," in raw:
+        start, _, end = raw.partition(",")
+        expanded: dict[str, Any] = {}
+        if start:
+            expanded[f"{key}__gte"] = _coerce_filter_value(model, key, start)
+        if end:
+            expanded[f"{key}__lte"] = _coerce_filter_value(model, key, end)
+        return expanded or {key: _coerce_filter_value(model, key, raw)}
+    if kind == "date":
+        if raw in _DATE_SHORTCUTS:
+            now = datetime.now()
+            start = {
+                "today": now,
+                "week": now - timedelta(days=now.weekday()),
+                "month": now.replace(day=1),
+                "year": now.replace(month=1, day=1),
+            }[raw]
+            start = start.replace(hour=0, minute=0, second=0, microsecond=0)
+            return {f"{key}__gte": start, f"{key}__lte": now}
+        if "," in raw:
+            start, _, end = raw.partition(",")
+            expanded = {}
+            if start:
+                expanded[f"{key}__gte"] = start
+            if end:
+                expanded[f"{key}__lte"] = end
+            return expanded
+    if kind == "choice" and "," in raw:
+        return {f"{key}__in": [_coerce_filter_value(model, key, part) for part in raw.split(",") if part]}
+    return {key: _coerce_filter_value(model, key, raw)}
 
 
 def _coerce_filter_value(model: type, key: str, raw: str) -> Any:

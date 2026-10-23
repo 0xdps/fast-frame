@@ -109,6 +109,16 @@ export function formatCell(record: Record<string, unknown>, fieldName: string, m
   return String(value);
 }
 
+export function recordTitle(record: Record<string, unknown> | null, model: ModelSchema, fallback: string): string {
+  if (!record) return fallback;
+  const named = model.recordTitle ? record[model.recordTitle] : undefined;
+  if (named != null && named !== "") return String(named);
+  const label = record.__str__;
+  if (typeof label === "string" && label.trim()) return label.trim();
+  const id = recordId(record, model);
+  return id ? `#${id}` : fallback;
+}
+
 export function recordId(record: Record<string, unknown>, model: ModelSchema): string {
   const raw = record.id ?? record[model.pkField];
   return raw == null ? "" : String(raw);

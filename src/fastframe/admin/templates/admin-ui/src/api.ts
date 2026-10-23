@@ -53,6 +53,10 @@ export interface ModelSchema {
   listFilter: string[];
   listPerPage: number;
   showInNavigation: boolean;
+  /** Sidebar section. Absent models stay under their app label. */
+  navGroup?: string;
+  /** Field used as the record title. Absent means the record's own label. */
+  recordTitle?: string;
   permissions: ModelPermissions;
 }
 

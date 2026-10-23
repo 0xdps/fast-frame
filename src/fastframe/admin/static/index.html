@@ -4,27 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/admin/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=Outfit:wght@500;600&display=swap"
-      rel="stylesheet"
-    />
     <title>FastFrame Admin</title>
     <script>
       try {
+        var root = document.documentElement;
         var saved = localStorage.getItem("frame.theme");
-        var theme =
+        root.dataset.theme =
           saved === "dark" || saved === "light"
             ? saved
             : matchMedia("(prefers-color-scheme: dark)").matches
               ? "dark"
               : "light";
-        document.documentElement.dataset.theme = theme;
+        if (localStorage.getItem("frame.density") === "1") root.dataset.density = "compact";
+        if (localStorage.getItem("frame.sidebar") === "1") root.dataset.sidebar = "folded";
       } catch (e) {}
     </script>
-    <script type="module" crossorigin src="/admin/assets/index-S5NrXjjD.js"></script>
-    <link rel="stylesheet" crossorigin href="/admin/assets/index-DkFFPeq_.css">
+    <script type="module" crossorigin src="/admin/assets/index-Cg7-WwmC.js"></script>
+    <link rel="stylesheet" crossorigin href="/admin/assets/index-BV-w-0fu.css">
   </head>
   <body>
     <div id="root"></div>

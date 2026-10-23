@@ -27,6 +27,32 @@ export interface Choice {
   label: string;
 }
 
+export interface FilterOption {
+  value: string;
+  label: string;
+  count?: number;
+}
+
+export interface ListFilter {
+  name: string;
+  label: string;
+  kind: "choice" | "boolean" | "number" | "date" | "relation" | "text" | "exact";
+  options?: FilterOption[];
+  shortcuts?: string[];
+}
+
+export async function listFilters(resource: string, filters: Record<string, string> = {}): Promise<ListFilter[]> {
+  const query = new URLSearchParams();
+  for (const [key, value] of Object.entries(filters)) {
+    for (const part of value.split(",")) {
+      if (part) query.append(key, part);
+    }
+  }
+  const suffix = query.size ? `?${query}` : "";
+  const json = await http<{ data: ListFilter[] }>(`${API_URL}/${resource}/filters${suffix}`);
+  return json.data;
+}
+
 async function http<T>(url: string, options: RequestInit = {}): Promise<T> {
   const headers = new Headers(options.headers);
   headers.set("Accept", "application/json");
@@ -94,7 +120,9 @@ export async function listRecords(
   });
   if (params.q) query.set("q", params.q);
   for (const [key, value] of Object.entries(params.filters ?? {})) {
-    if (value) query.set(key, value);
+    for (const part of value.split(",")) {
+      if (part) query.append(key, part);
+    }
   }
   const json = await http<Envelope<Record<string, unknown>[]>>(`${API_URL}/${resource}?${query}`);
   return { data: json.data, total: json.total ?? json.data.length };

@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from fastframe.admin import ModelAdmin, get_admin_api_router, get_admin_auth_router
-from fastframe.admin.audit import AuditLog
+from fastframe.admin.audit import AuditLog, AuditLogAdmin
 from fastframe.admin.site import AdminSite
 from fastframe.contrib.auth.models import User
 from fastframe.db.session import session_scope
@@ -40,6 +40,7 @@ class ApiBook(Model):
     )
     pages = fields.IntegerField(default=0)
     is_active = fields.BooleanField(default=True)
+    published_on = fields.DateTimeField(null=True, blank=True)
     author_id = fields.ForeignKey(ApiAuthor, null=True, blank=True, on_delete="SET NULL")
 
     class Meta:
@@ -56,12 +57,13 @@ class ApiAuthorAdmin(ModelAdmin):
 class ApiBookAdmin(ModelAdmin):
     list_display = ["title", "status", "pages"]
     search_fields = ["title", "author__name"]
-    list_filter = ["status"]
+    list_filter = ["status", "pages", "published_on"]
 
 
 test_site = AdminSite(name="test-api")
 test_site.register(ApiAuthor, ApiAuthorAdmin)
 test_site.register(ApiBook, ApiBookAdmin)
+test_site.register(AuditLog, AuditLogAdmin)
 
 
 # ----------------------------------------------------------------------
@@ -309,6 +311,35 @@ def test_list_filter_boolean(client):
     assert titles == ["Off"]
 
 
+def test_schema_admin_nav_group():
+    from fastframe.admin.serializers import model_schema
+    from fastframe.contrib.auth.admin import GroupAdmin, UserAdmin
+    from fastframe.contrib.auth.models import Group
+
+    users = model_schema(User, UserAdmin(User, AdminSite(name="nav")))
+    roles = model_schema(Group, GroupAdmin(Group, AdminSite(name="nav")))
+    activity = model_schema(AuditLog, AuditLogAdmin(AuditLog, AdminSite(name="nav")))
+    books = model_schema(ApiBook, ApiBookAdmin(ApiBook, AdminSite(name="nav")))
+    assert users["navGroup"] == "Admin"
+    assert roles["navGroup"] == "Admin"
+    assert activity["navGroup"] == "Admin"
+    assert activity["showInNavigation"] is True
+    assert "navGroup" not in books
+
+
+def test_record_history_filters_audit_log(client, seeded):
+    with session_scope():
+        book_id = ApiBook.objects.filter(title="Book 0").first().id
+    client.put(f"/api/admin/apibook/{book_id}", json={"pages": 777})
+
+    resp = client.get(f"/api/admin/auditlog?model_name=ApiBook&object_id={book_id}&sortField=created_at&sortOrder=DESC")
+    assert resp.status_code == 200
+    rows = resp.json()["data"]
+    assert rows
+    assert all(row["model_name"] == "ApiBook" and row["object_id"] == str(book_id) for row in rows)
+    assert rows[0]["changes"]["pages"] == {"old": 100, "new": 777}
+
+
 def test_schema_show_in_navigation(client):
     ApiAuthorAdmin.show_in_navigation = False
     try:
@@ -318,6 +349,39 @@ def test_schema_show_in_navigation(client):
         assert models["apibook"]["showInNavigation"] is True
     finally:
         ApiAuthorAdmin.show_in_navigation = True
+
+
+def test_typed_filters_describe_kind_and_counts(client, seeded):
+    resp = client.get("/api/admin/apibook/filters")
+    assert resp.status_code == 200
+    described = {item["name"]: item for item in resp.json()["data"]}
+    assert described["status"]["kind"] == "choice"
+    counts = {option["value"]: option["count"] for option in described["status"]["options"]}
+    assert counts == {"draft": 2, "published": 3}
+    assert described["pages"]["kind"] == "number"
+
+
+def test_choice_filter_accepts_several_values(client, seeded):
+    resp = client.get("/api/admin/apibook?status=draft&status=published")
+    assert resp.status_code == 200
+    assert resp.json()["total"] == 5
+
+
+def test_number_range_filter(client, seeded):
+    resp = client.get("/api/admin/apibook?pages=100,102")
+    pages = [row["pages"] for row in resp.json()["data"]]
+    assert pages == [100, 101, 102]
+
+
+def test_date_shortcut_filter(client):
+    from datetime import datetime, timedelta
+
+    with session_scope():
+        ApiBook.objects.create(title="Old", status="draft", published_on=datetime.now() - timedelta(days=40))
+        ApiBook.objects.create(title="New", status="draft", published_on=datetime.now())
+    resp = client.get("/api/admin/apibook?published_on=month")
+    titles = [row["title"] for row in resp.json()["data"]]
+    assert titles == ["New"]
 
 
 def test_list_filter_by_field(client, seeded):

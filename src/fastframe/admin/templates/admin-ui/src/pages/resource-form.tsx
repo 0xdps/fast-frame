@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 import type { FieldSchema, ModelSchema } from "../api";
 import { useAdmin } from "../admin-state";
+import { PageFrame } from "../components/page-frame";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { ConfirmDialog } from "../components/ui/dialog";
@@ -11,8 +12,8 @@ import { Label } from "../components/ui/label";
 import { SelectField, type SelectOption } from "../components/ui/select";
 import { Switch } from "../components/ui/switch";
 import { Textarea } from "../components/ui/textarea";
-import { ApiError, createRecord, deleteRecord, fieldChoices, getRecord, updateRecord, type Choice } from "../lib/client";
-import { fieldShown, initials, isUserModel, relatedObjects, resourceForReference, toneFor } from "../lib/format";
+import { ApiError, createRecord, deleteRecord, fieldChoices, getRecord, listRecords, updateRecord, type Choice } from "../lib/client";
+import { fieldShown, initials, isUserModel, recordTitle, relatedObjects, relativeTime, resourceForReference, toneFor } from "../lib/format";
 
 function createDefaults(model: ModelSchema): Record<string, unknown> {
   const values: Record<string, unknown> = {};
@@ -345,6 +346,85 @@ function FieldControl({
   );
 }
 
+const ACTION_LABEL: Record<string, string> = {
+  create: "Created",
+  update: "Changed",
+  delete: "Deleted",
+};
+
+function formatChange(value: unknown): string {
+  if (value == null || value === "") return "empty";
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function HistoryPanel({ modelName, objectId }: { modelName: string; objectId: string }) {
+  const [rows, setRows] = useState<Record<string, unknown>[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    listRecords("auditlog", {
+      page: 1,
+      perPage: 100,
+      sortField: "created_at",
+      sortOrder: "DESC",
+      filters: { model_name: modelName, object_id: objectId },
+    })
+      .then((result) => {
+        if (cancelled) return;
+        setRows(result.data);
+        setError(null);
+      })
+      .catch(() => {
+        if (!cancelled) setError("Couldn't load history.");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [modelName, objectId]);
+
+  if (error) return <p className="text-label text-muted-foreground">{error}</p>;
+  if (!rows) return <p className="text-label text-muted-foreground">Loading history…</p>;
+  if (!rows.length) return <p className="text-label text-muted-foreground">No changes recorded for this record.</p>;
+
+  return (
+    <ol className="flex flex-col">
+      {rows.map((row) => {
+        const action = String(row.action ?? "");
+        const changes = row.changes;
+        const fields =
+          changes && typeof changes === "object" && !Array.isArray(changes) && "fields" in changes
+            ? null
+            : changes && typeof changes === "object" && !Array.isArray(changes)
+              ? Object.entries(changes as Record<string, { old?: unknown; new?: unknown }>)
+              : null;
+        return (
+          <li key={String(row.id)} className="border-b border-line py-3 last:border-b-0">
+            <p className="text-label">
+              <span className="font-medium">{ACTION_LABEL[action] ?? action}</span>
+              <span className="text-muted-foreground"> by {String(row.username || "System")}</span>
+            </p>
+            <p className="text-note text-muted-foreground">{relativeTime(String(row.created_at ?? ""))}</p>
+            {fields?.length ? (
+              <ul className="mt-2 flex flex-col gap-1">
+                {fields.map(([name, pair]) => (
+                  <li key={name} className="text-label text-muted-foreground">
+                    <span className="font-medium text-foreground">{name.replaceAll("_", " ")}</span>
+                    {": "}
+                    {formatChange(pair?.old)} → {formatChange(pair?.new)}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
 function UserIdentity({ record }: { record: Record<string, unknown> }) {
   const first = String(record.first_name ?? "");
   const last = String(record.last_name ?? "");
@@ -361,13 +441,13 @@ function UserIdentity({ record }: { record: Record<string, unknown> }) {
         {initials(first, last, username)}
       </span>
       <div>
-        <h3 className="font-display text-xl font-semibold">{name}</h3>
+        <h2 className="text-lg font-semibold tracking-tight">{name}</h2>
         <p className="text-sm text-muted-foreground">
           {username ? `@${username}` : ""}
           {username && record.email ? " · " : ""}
           {String(record.email ?? "")}
         </p>
-        <Badge className={active ? "mt-2 bg-[#0F9F6E] text-white" : "mt-2"}>{active ? "Active" : "Inactive"}</Badge>
+        <Badge className={active ? "tone-2 mt-2" : "mt-2"}>{active ? "Active" : "Inactive"}</Badge>
       </div>
     </div>
   );
@@ -404,8 +484,8 @@ function ChangePassword({ resource, id, onDone }: { resource: string; id: string
   };
 
   return (
-    <form className="mt-4 flex flex-col gap-3 rounded-xl border border-border bg-card p-4" onSubmit={(event) => void submit(event)}>
-      <h3 className="font-display text-base font-semibold">Change password</h3>
+    <form className="mt-4 flex flex-col gap-3 rounded-box border border-border bg-subtle p-4" onSubmit={(event) => void submit(event)}>
+      <h3 className="text-label font-semibold">Change password</h3>
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="new-password">New password</Label>
         <Input id="new-password" type="password" autoComplete="new-password" value={password} onChange={(event) => setPassword(event.target.value)} />
@@ -450,6 +530,7 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
   const [saving, setSaving] = useState(false);
   const [editing, setEditing] = useState(isCreate);
   const [changingPassword, setChangingPassword] = useState(false);
+  const [tab, setTab] = useState<"details" | "history">("details");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const formKey = `${resource}:${isCreate ? "new" : id}:${isCreate ? 0 : refreshKey}`;
@@ -461,6 +542,7 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
     setFormError(null);
     setNotice(null);
     setChangingPassword(false);
+    setTab("details");
     setEditing(isCreate);
     if (isCreate) {
       setValues(createDefaults(model));
@@ -492,7 +574,11 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
   }, [model, isCreate, id, refreshKey]);
 
   if (!model) {
-    return <p className="p-6 text-sm text-muted-foreground">This model is not in the admin.</p>;
+    return (
+      <PageFrame title="Not found">
+        <p className="px-4 py-6 text-label text-muted-foreground lg:px-7">This model is not in the admin.</p>
+      </PageFrame>
+    );
   }
 
   const editable = isCreate ? model.permissions.create : model.permissions.edit;
@@ -569,27 +655,50 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-5 p-6">
-      <div>
-        <Link to={`/${model.resource}`} className="text-sm text-muted-foreground hover:text-foreground">
-          ← Back
-        </Link>
-        <h2 className="mt-1 font-display text-2xl font-semibold tracking-tight">
-          {isCreate ? `Add ${model.label}` : model.label}
-        </h2>
-      </div>
+  const heading = isCreate ? `New ${model.label}` : recordTitle(record, model, model.label);
+  const audit = models.find((item) => item.resource === "auditlog");
+  const showHistory = !isCreate && Boolean(audit?.permissions.view);
 
-      {pending ? <p className="text-sm text-muted-foreground">Loading…</p> : null}
-      {formError ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm whitespace-pre-wrap text-destructive">
-          {formError}
-        </p>
-      ) : null}
-      {notice ? <p className="text-sm text-[#0F9F6E]">{notice}</p> : null}
+  return (
+    <PageFrame
+      title={heading}
+      breadcrumb={
+        <>
+          <Link to={`/${model.resource}`} className="hover:text-foreground">
+            {model.labelPlural}
+          </Link>
+          <span aria-hidden="true">/</span>
+          {isCreate ? null : (
+            <>
+              <span>{model.label}</span>
+              <span aria-hidden="true">/</span>
+            </>
+          )}
+          <span aria-current="page" className="truncate text-foreground">
+            {heading}
+          </span>
+        </>
+      }
+      messages={
+        formError || notice ? (
+          <>
+            {formError ? (
+              <p className="rounded-box border border-destructive/30 bg-destructive/10 px-3 py-2 text-label whitespace-pre-wrap text-destructive">
+                {formError}
+              </p>
+            ) : null}
+            {notice ? (
+              <p className="rounded-box border border-primary/30 bg-selected px-3 py-2 text-label text-foreground">{notice}</p>
+            ) : null}
+          </>
+        ) : null
+      }
+    >
+    <div className="flex flex-1 flex-col gap-5 bg-background px-4 pt-6 lg:px-7">
+      {pending ? <p className="text-label text-muted-foreground">Loading…</p> : null}
 
       {!pending && userModel && !isCreate && record ? (
-        <div className="rounded-xl border border-border bg-card p-4">
+        <div className="rounded-box border border-border bg-card p-5 shadow-quiet">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <UserIdentity record={record} />
             <Button type="button" variant="outline" onClick={() => setChangingPassword((open) => !open)}>
@@ -609,8 +718,33 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
         </div>
       ) : null}
 
-      {!pending ? (
-        <form className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5" onSubmit={(event) => void submit(event)}>
+      {showHistory ? (
+        <div role="tablist" aria-label="Record" className="flex gap-1">
+          {(["details", "history"] as const).map((name) => (
+            <button
+              key={name}
+              type="button"
+              role="tab"
+              aria-selected={tab === name}
+              className={`h-8 rounded-field px-3 text-label font-medium ${
+                tab === name ? "bg-card text-foreground shadow-quiet" : "text-muted-foreground hover:text-foreground"
+              }`}
+              onClick={() => setTab(name)}
+            >
+              {name === "details" ? "Details" : "History"}
+            </button>
+          ))}
+        </div>
+      ) : null}
+
+      {!pending && tab === "history" && showHistory ? (
+        <section className="max-w-3xl rounded-box border border-border bg-card px-5 py-2 shadow-quiet">
+          <HistoryPanel modelName={model.name} objectId={id} />
+        </section>
+      ) : null}
+
+      {!pending && tab === "details" ? (
+        <form className="flex max-w-3xl flex-col gap-5 rounded-box border border-border bg-card p-5 shadow-quiet" onSubmit={(event) => void submit(event)}>
           {fields.map((field) => (
             <FieldControl
               key={field.name}
@@ -666,5 +800,6 @@ export function ResourceForm({ mode }: { mode: "create" | "edit" }) {
         onConfirm={() => void remove()}
       />
     </div>
+    </PageFrame>
   );
 }
