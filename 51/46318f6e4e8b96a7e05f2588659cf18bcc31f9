@@ -1,0 +1,130 @@
+src/fastframe/admin/api.py
+  s_7b7cd730c3de8e::t_095607b2c3dd21 711
+  s_7b7cd730c3de8e::t_ce29a731c42534 712
+  s_7b7cd730c3de8e::t_7bf8907cffe1b4 716-718,734-743,773-778
+  s_7b7cd730c3de8e::t_7e07a6501f3d63 26,233,235,263-293,671-684,691-710,713-715,719-733,744-772,779-791
+  s_7b7cd730c3de8e::t_bd5b8a0e92f0e3 234,685-690
+  s_7b7cd730c3de8e::t_5b447f88962f64 792-793
+src/fastframe/admin/templates/admin-ui/src/index.css
+  s_7b7cd730c3de8e::t_d463262fd033bf 4-5,7-11,13-15,20-23,25-26,34-51,54-55,57-58,60-70,72-106,111-172,187-189,222-232,235-243,246-262,265-270,277-286
+src/fastframe/admin/site.py
+  s_7b7cd730c3de8e::t_b7e6263ab56695 54-56
+  s_7b7cd730c3de8e::t_51af8a265c3116 85-89
+src/fastframe/admin/templates/admin-ui/src/lib/client.ts
+  s_7b7cd730c3de8e::t_0a248c3be240dc 47-49,123-125
+  s_7b7cd730c3de8e::t_4329d025813735 30-46,50-55
+src/fastframe/admin/templates/admin-ui/src/lib/format.ts
+  s_7b7cd730c3de8e::t_6636f089e549ee 112-121
+src/fastframe/admin/templates/admin-ui/src/components/ui/input.tsx
+  s_7b7cd730c3de8e::t_3a3fd53d56c047 9
+src/fastframe/admin/templates/admin-ui/src/components/ui/label.tsx
+  s_7b7cd730c3de8e::t_4a7c2257568dd9 6
+src/fastframe/admin/templates/admin-ui/src/components/page-frame.tsx
+  s_7b7cd730c3de8e::t_84f9cc623dd9cd 1-33,35-52
+  s_7b7cd730c3de8e::t_aabdd241b5abaf 34
+src/fastframe/admin/templates/admin-ui/src/components/ui/badge.tsx
+  s_7b7cd730c3de8e::t_d1c4deaf33c204 9
+src/fastframe/admin/templates/admin-ui/src/components/ui/switch.tsx
+  s_7b7cd730c3de8e::t_dfe88b20089922 10,15
+tests/test_admin_api.py
+  s_7b7cd730c3de8e::t_714441a330baab 66
+  s_7b7cd730c3de8e::t_050e92c17dc72f 328-342
+  s_7b7cd730c3de8e::t_d17ebdfc9516d6 13
+  s_7b7cd730c3de8e::t_a02e6457ffad3b 43,60,354-384
+  s_7b7cd730c3de8e::t_57d6f356951baa 314-327
+  s_7b7cd730c3de8e::t_fdeb1b3c33ff54 385-386
+src/fastframe/admin/templates/admin-ui/src/list-query.ts
+  s_7b7cd730c3de8e::t_bf4fdff3851baf 43-44,71-74
+  s_7b7cd730c3de8e::t_874c7a56db9904 1-42,45-70,75-78
+src/fastframe/admin/serializers.py
+  s_7b7cd730c3de8e::t_97d6dc6a47de2c 142,332-334
+  s_7b7cd730c3de8e::t_9f995561e2ad17 329-331
+src/fastframe/admin/templates/admin-ui/src/components/filter-drawer.tsx
+  s_7b7cd730c3de8e::t_04074dd5350c7a 4-15,33,35,41-71
+  s_7b7cd730c3de8e::t_8efd3843a5c888 335
+  s_7b7cd730c3de8e::t_29e5611cb2a593 149,171,176,178-334,336-347
+  s_7b7cd730c3de8e::t_7cc441a90e1eba 32,36-40,72-148,159,168
+  s_7b7cd730c3de8e::t_0e17729a49c7be 1-3
+  s_7b7cd730c3de8e::t_f67b5573a05767 16-18,29-31
+  s_7b7cd730c3de8e::t_5ac849ebbdec17 34
+  s_7b7cd730c3de8e::t_fa43664c544b18 150-152,156-158
+  s_7b7cd730c3de8e::t_b92deaa22aa8db 160-162,165-167
+  s_7b7cd730c3de8e::t_0926e7445f1438 169-170
+  s_7b7cd730c3de8e::t_984d6206c2dec9 172-175
+  s_7b7cd730c3de8e::t_5fddcf6e54f910 177
+  s_7b7cd730c3de8e::t_ef49dd6f8bfb81 19-28,153-155,163-164
+src/fastframe/admin/templates/admin-ui/src/admin-state.ts
+  s_7b7cd730c3de8e::t_d8aca3f1cd6df1 12-15,28-35,45-52
+src/fastframe/admin/templates/admin-ui/src/api.ts
+  s_7b7cd730c3de8e::t_64c21be5a8716a 56-57
+  s_7b7cd730c3de8e::t_5afa09f57badfb 58-59
+src/fastframe/admin/templates/admin-ui/src/shell.tsx
+  s_7b7cd730c3de8e::t_65e895d4eb0f4c 378
+  s_7b7cd730c3de8e::t_cf1f8d25cc8cd3 258,339
+  s_7b7cd730c3de8e::t_a0a687d5df9c9b 13-26,30,32-35,41-49,79-83,102-127,193,384
+  s_7b7cd730c3de8e::t_0c0431dbe20203 1-2,6,58,63-78,84-101,128-192,194,202-205,209-215,217,221,223-224,227,238-242,245,249-255,257,259-271,273-286,288-289,294,296-298,302,305-315,321-327,329-336,338,340-377,379-383,385-394,398-403,405,407-412,414-420,423-424
+src/fastframe/admin/templates/admin-ui/src/components/command-palette.tsx
+  s_7b7cd730c3de8e::t_4e48c84683ffd7 27-28
+  s_7b7cd730c3de8e::t_c77f255f126784 1-26,29-132
+src/fastframe/admin/templates/admin-ui/src/pages/resource-form.tsx
+  s_7b7cd730c3de8e::t_cc1b4628c95ff3 6,444,450,487-488
+  s_7b7cd730c3de8e::t_4a626ad1d36160 671-676
+  s_7b7cd730c3de8e::t_720f36c6e889ee 16,658
+  s_7b7cd730c3de8e::t_6a469a6559a5f5 545,659-660,721-746
+  s_7b7cd730c3de8e::t_6ccf34474decf5 15,349-427,533
+  s_7b7cd730c3de8e::t_6624b73d0fca00 577-581,662-670,677-698,701,747,803
+src/fastframe/admin/templates/admin-ui/src/admin-context.tsx
+  s_7b7cd730c3de8e::t_a2125126900156 4,16-17,22-26,41-58,62
+src/fastframe/admin/templates/admin-ui/src/pages/overview.tsx
+  s_7b7cd730c3de8e::t_0b7fa3079e52b9 5,48-49,51-54,58-59,61
+  s_7b7cd730c3de8e::t_c1c2f3b88adc2d 69,72,77,82,90-96
+src/fastframe/admin/templates/admin-ui/src/components/ui/textarea.tsx
+  s_7b7cd730c3de8e::t_3580a7c1a201de 9
+src/fastframe/admin/templates/admin-ui/src/components/column-menu.tsx
+  s_7b7cd730c3de8e::t_4c331bb12eb676 1-58
+src/fastframe/admin/audit.py
+  s_7b7cd730c3de8e::t_724c94c1a6485a 80
+  s_7b7cd730c3de8e::t_3fee0691fd685c 65-69,79
+src/fastframe/contrib/auth/admin.py
+  s_7b7cd730c3de8e::t_fe67c74cddb3b3 9-13
+  s_7b7cd730c3de8e::t_7bf8907cffe1b4 38
+  s_7b7cd730c3de8e::t_abda96530bf62c 19,30
+src/fastframe/admin/templates/admin-ui/src/components/page-header.tsx
+  s_7b7cd730c3de8e::t_8ba39d0ff4bb27 32
+  s_7b7cd730c3de8e::t_cafd71de768fb7 1-31,33-87
+src/fastframe/admin/templates/admin-ui/src/components/ui/dropdown-menu.tsx
+  s_7b7cd730c3de8e::t_08dd715f5da188 19,35
+src/fastframe/admin/static/index.html
+  s_7b7cd730c3de8e::t_f00910b81cfc19 10,12,18-19
+  s_7b7cd730c3de8e::t_620d72d6b3ba20 22-23
+src/fastframe/admin/templates/admin-ui/src/components/ui/button.tsx
+  s_7b7cd730c3de8e::t_1e983bd3c36740 8,12-15,20
+src/fastframe/admin/templates/admin-ui/src/components/ui/dialog.tsx
+  s_7b7cd730c3de8e::t_065c41182051c8 26,29,32-33
+src/fastframe/admin/templates/admin-ui/src/pages/resource-list.tsx
+  s_7b7cd730c3de8e::t_335eb44deea1ed 8,147-151,183-184,186-189,191-193,195,203
+  s_7b7cd730c3de8e::t_9f54a0d3e4e888 1-2,4,6-7,12,22,47,67-71,73-77,79,86,89-92,94-98,101-105,107-114,117,121-126,144,146,156-157,159-160,163-164,185,194,199-200,206-219,222-247,250-291,293-299,301-392,397-407
+  s_7b7cd730c3de8e::t_ad8c981ee17560 417
+src/fastframe/admin/templates/admin-ui/index.html
+  s_7b7cd730c3de8e::t_fcad4abd9416a5 10,12,18-19
+src/fastframe/admin/static/assets/index-BV-w-0fu.css
+  s_7b7cd730c3de8e::t_a0531b7df046f8 2
+src/fastframe/admin/static/assets/index-Cg7-WwmC.js
+  s_7b7cd730c3de8e::t_cf1117f9f81893 1,3,6,8-9,11,13-14,18,31,35,39,43,47-48,50,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5146318f6e4e8b96a7e05f2588659cf18bcc31f9",
+  "prompts": {},
+  "sessions": {
+    "s_7b7cd730c3de8e": {
+      "agent_id": {
+        "tool": "github-copilot-cli",
+        "id": "1b0613be-a0b7-499b-9418-7c31273653f3",
+        "model": "unknown"
+      },
+      "human_author": "Devendra Pratap <dps.manit@gmail.com>"
+    }
+  }
+}
